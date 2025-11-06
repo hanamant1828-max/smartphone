@@ -518,10 +518,6 @@ export async function init(app) {
 function calculatePriceFromMargin(priceType) {
   const costPrice = parseFloat(document.getElementById('productCostPrice').value) || 0;
   
-  if (costPrice <= 0) {
-    return;
-  }
-  
   let marginPercent = 0;
   let priceField = null;
   let hiddenField = null;
@@ -540,11 +536,15 @@ function calculatePriceFromMargin(priceType) {
     hiddenField = document.getElementById('productWholesalePrice');
   }
   
-  if (priceField && hiddenField) {
-    const calculatedPrice = costPrice + (costPrice * marginPercent / 100);
+  if (priceField && hiddenField && costPrice > 0) {
+    const calculatedPrice = costPrice * (1 + marginPercent / 100);
     const roundedPrice = Math.round(calculatedPrice * 100) / 100;
     priceField.value = roundedPrice.toFixed(2);
-    hiddenField.value = roundedPrice;
+    hiddenField.value = roundedPrice.toFixed(2);
+  } else if (priceField && hiddenField) {
+    // If cost price is 0 or invalid, clear the fields
+    priceField.value = '0.00';
+    hiddenField.value = '0.00';
   }
 }
 
