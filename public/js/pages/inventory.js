@@ -117,18 +117,18 @@ export function render(app) {
             <div style="display: grid; grid-template-columns: 1fr 250px; gap: 24px;">
               <!-- Left side: Form fields -->
               <div class="grid grid-cols-3 gap-4">
-              <!-- Row 1: Product Code, Product Name (span 2) -->
+              <!-- Row 1: Category, Brand, Model -->
               <div class="form-group">
-                <label for="productCode" class="form-label">Product Code</label>
-                <input type="text" id="productCode" class="form-input" data-testid="input-product-code" />
+                <label for="productCategory" class="form-label">Category*</label>
+                <select id="productCategory" class="form-select" required data-testid="select-product-category">
+                  <option value="">Select category</option>
+                  <option value="smartphone">Smartphone</option>
+                  <option value="feature_phone">Feature Phone</option>
+                  <option value="accessory">Accessory</option>
+                  <option value="spare_part">Spare Part</option>
+                </select>
               </div>
 
-              <div class="form-group" style="grid-column: span 2;">
-                <label for="productName" class="form-label">Product Name*</label>
-                <input type="text" id="productName" class="form-input" required data-testid="input-product-name" />
-              </div>
-
-              <!-- Row 2: Brand, Model, Category -->
               <div class="form-group">
                 <label for="productBrand" class="form-label">Brand*</label>
                 <select id="productBrand" class="form-select" required data-testid="select-product-brand" onchange="updateModelOptions()">
@@ -143,15 +143,15 @@ export function render(app) {
                 </select>
               </div>
 
+              <!-- Row 2: Product Code, Product Name (span 2) -->
               <div class="form-group">
-                <label for="productCategory" class="form-label">Category*</label>
-                <select id="productCategory" class="form-select" required data-testid="select-product-category">
-                  <option value="">Select category</option>
-                  <option value="smartphone">Smartphone</option>
-                  <option value="feature_phone">Feature Phone</option>
-                  <option value="accessory">Accessory</option>
-                  <option value="spare_part">Spare Part</option>
-                </select>
+                <label for="productCode" class="form-label">Product Code</label>
+                <input type="text" id="productCode" class="form-input" data-testid="input-product-code" />
+              </div>
+
+              <div class="form-group" style="grid-column: span 2;">
+                <label for="productName" class="form-label">Product Name*</label>
+                <input type="text" id="productName" class="form-input" required data-testid="input-product-name" />
               </div>
 
               <!-- Row 4: HSN Code, Part/Group, (empty) -->
