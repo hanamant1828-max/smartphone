@@ -193,47 +193,39 @@ export function render(app) {
               
               <!-- Right Column -->
               <div style="grid-column: span 2;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 8px;">
-                  <div style="text-align: right; padding-top: 8px;">
-                    <label class="form-label" style="margin-bottom: 0;">Margin %:</label>
+                <div style="display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start; margin-bottom: 16px;">
+                  <div style="padding-top: 32px;">
+                    <label class="form-label" style="margin-bottom: 0; white-space: nowrap;">Margin %:</label>
                   </div>
-                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                    <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" />
-                    <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" />
-                  </div>
-                </div>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                  <div class="form-group" style="margin: 0;">
-                    <label for="productMRP" class="form-label">MRP</label>
-                    <input type="number" id="productMRP" class="form-input" step="0.01" value="0.00" data-testid="input-product-mrp" />
-                  </div>
-                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                    <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" />
-                    <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" />
-                  </div>
-                </div>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                  <div class="form-group" style="margin: 0;">
-                    <label for="productPrice" class="form-label">Retail Sale Price*</label>
-                    <input type="number" id="productPrice" class="form-input" step="0.01" required data-testid="input-product-price" />
-                  </div>
-                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                    <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" />
-                    <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" />
+                  <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                      <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" />
+                      <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" />
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                      <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" />
+                      <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" />
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                      <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" />
+                      <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" />
+                    </div>
                   </div>
                 </div>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                  <div class="form-group" style="margin: 0;">
-                    <label for="productWholesalePrice" class="form-label">Wholesale Price</label>
-                    <input type="number" id="productWholesalePrice" class="form-input" step="0.01" value="0.00" data-testid="input-product-wholesale-price" />
-                  </div>
-                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                    <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" />
-                    <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" />
-                  </div>
+                <div style="display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; margin-bottom: 16px;">
+                  <label for="productMRP" class="form-label" style="margin: 0;">MRP:</label>
+                  <input type="number" id="productMRP" class="form-input" step="0.01" value="0.00" data-testid="input-product-mrp" style="margin: 0;" />
+                </div>
+                
+                <div style="display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; margin-bottom: 16px;">
+                  <label for="productPrice" class="form-label" style="margin: 0;">Retail Sale Price*:</label>
+                  <input type="number" id="productPrice" class="form-input" step="0.01" required data-testid="input-product-price" style="margin: 0;" />
+                </div>
+                
+                <div style="display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; margin-bottom: 16px;">
+                  <label for="productWholesalePrice" class="form-label" style="margin: 0;">Wholesale Price:</label>
+                  <input type="number" id="productWholesalePrice" class="form-input" step="0.01" value="0.00" data-testid="input-product-wholesale-price" style="margin: 0;" />
                 </div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
