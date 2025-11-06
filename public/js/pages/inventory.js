@@ -114,7 +114,7 @@ export function render(app) {
           <form id="productForm">
             <input type="hidden" id="productId" />
 
-            <div style="display: grid; grid-template-columns: 1fr 250px; gap: 24px;">
+            <div style="display: grid; grid-template-columns: 1fr 200px; gap: 24px;">
               <!-- Left side: Form fields -->
               <div class="grid grid-cols-3 gap-4">
               <!-- Row 1: Category, Brand, Model -->
@@ -392,8 +392,32 @@ export function render(app) {
               </div>
               </div>
 
-              <!-- Right side: Image upload section -->
-              <!-- This section has been removed as per the request -->
+              <!-- Right side: Action buttons column -->
+              <div style="display: flex; flex-direction: column; gap: 12px; align-self: start; position: sticky; top: 20px;">
+                <button type="button" class="btn" style="width: 100%; padding: 16px; background: linear-gradient(180deg, #6B9BD1 0%, #4A7AB8 100%); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" onclick="openAddProductModal()" data-testid="button-new">
+                  New
+                </button>
+                
+                <button type="submit" class="btn" style="width: 100%; padding: 16px; background: linear-gradient(180deg, #7BC67E 0%, #5CAD5F 100%); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" data-testid="button-save-action">
+                  Save
+                </button>
+                
+                <button type="button" class="btn" style="width: 100%; padding: 16px; background: linear-gradient(180deg, #D0D0D0 0%, #A8A8A8 100%); color: #333; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" onclick="updateProductAction()" data-testid="button-update-action">
+                  Update
+                </button>
+                
+                <button type="button" class="btn" style="width: 100%; padding: 16px; background: linear-gradient(180deg, #D0D0D0 0%, #A8A8A8 100%); color: #333; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" onclick="deleteProductAction()" data-testid="button-delete-action">
+                  Delete
+                </button>
+                
+                <button type="button" class="btn" style="width: 100%; padding: 16px; background: linear-gradient(180deg, #6B9BD1 0%, #4A7AB8 100%); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" onclick="getProductData()" data-testid="button-get-data">
+                  Get Data
+                </button>
+                
+                <button type="button" class="btn" style="width: 100%; padding: 16px; background: linear-gradient(180deg, #6B9BD1 0%, #4A7AB8 100%); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" onclick="generateBarcode()" data-testid="button-barcode">
+                  Barcode
+                </button>
+              </div>
             </div>
 
             <div class="form-group" style="margin-top: 16px;">
@@ -511,8 +535,49 @@ export async function init(app) {
   window.updateModelOptions = updateModelOptions;
   window.calculatePriceFromMargin = calculatePriceFromMargin;
   window.recalculateAllPrices = recalculateAllPrices;
+  window.updateProductAction = updateProductAction;
+  window.deleteProductAction = deleteProductAction;
+  window.getProductData = getProductData;
+  window.generateBarcode = generateBarcode;
   // window.handleImageSelect = handleImageSelect; // Removed
   // window.updateImagePreview = updateImagePreview; // Removed
+}
+
+function updateProductAction() {
+  const productId = document.getElementById('productId').value;
+  if (!productId) {
+    showToast('Please select a product to update', 'error');
+    return;
+  }
+  saveProduct();
+}
+
+function deleteProductAction() {
+  const productId = document.getElementById('productId').value;
+  if (!productId) {
+    showToast('Please select a product to delete', 'error');
+    return;
+  }
+  deleteProduct(productId);
+}
+
+function getProductData() {
+  const imei = document.getElementById('productIMEI').value;
+  const barcode = document.getElementById('productBarcode').value;
+  
+  if (!imei && !barcode) {
+    showToast('Please enter IMEI or Barcode to fetch data', 'info');
+    return;
+  }
+  
+  showToast('Fetching product data...', 'info');
+  // Add your data fetching logic here
+}
+
+function generateBarcode() {
+  const productCode = document.getElementById('productCode').value || `PRD${Date.now()}`;
+  document.getElementById('productBarcode').value = productCode;
+  showToast('Barcode generated', 'success');
 }
 
 function calculatePriceFromMargin(priceType) {
