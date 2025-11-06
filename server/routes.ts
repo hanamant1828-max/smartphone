@@ -54,6 +54,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { username, password } = req.body;
       
+      console.log('Login attempt for username:', username);
+      
       if (!username || !password) {
         return res.status(400).json({ message: 'Username and password are required' });
       }
@@ -61,14 +63,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.getUserByUsername(username);
       
       if (!user) {
+        console.log('User not found:', username);
         return res.status(401).json({ message: 'Invalid credentials' });
       }
       
+      console.log('User found, comparing password...');
       const validPassword = await bcrypt.compare(password, user.passwordHash);
       
       if (!validPassword) {
+        console.log('Password mismatch for user:', username);
         return res.status(401).json({ message: 'Invalid credentials' });
       }
+      
+      console.log('Login successful for user:', username);
       
       const token = jwt.sign(
         { id: user.id, username: user.username, role: user.role },
