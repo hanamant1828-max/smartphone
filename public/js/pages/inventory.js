@@ -140,14 +140,10 @@ export function render(app) {
                 </select>
               </div>
               
-              <!-- Row 4: HSN Code, Check HSN Online button, Part/Group -->
+              <!-- Row 4: HSN Code, Part/Group, (empty) -->
               <div class="form-group">
                 <label for="productHSN" class="form-label">HSN Code</label>
                 <input type="text" id="productHSN" class="form-input" data-testid="input-product-hsn" />
-              </div>
-              
-              <div class="form-group">
-                <button type="button" class="btn btn-outline" style="margin-top: 24px;">Check HSN Online</button>
               </div>
               
               <div class="form-group">
@@ -155,11 +151,7 @@ export function render(app) {
                 <input type="text" id="productPart" class="form-input" data-testid="input-product-part" />
               </div>
               
-              <!-- Row 5: Save into Unit Categories (span 3) -->
-              <div class="form-group" style="grid-column: span 3;">
-                <label for="productUnitCategory" class="form-label">Save into Unit Categories (Optional)</label>
-                <input type="text" id="productUnitCategory" class="form-input" data-testid="input-product-unit-category" />
-              </div>
+              <div class="form-group"></div>
               
               <!-- Row 6: Purchase Price, Min Stock, Sales Discount % -->
               <div class="form-group">
