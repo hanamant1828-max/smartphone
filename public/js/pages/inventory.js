@@ -477,7 +477,7 @@ async function saveProduct() {
     name: document.getElementById('productName').value,
     nameHindi: null,
     nameConvertLatin: null,
-    brand: null,
+    brand: null, // This field is not present in the form, so it's null
     sizeBrand: null,
     model: document.getElementById('productModel').value || null,
     category: document.getElementById('productCategory').value,
