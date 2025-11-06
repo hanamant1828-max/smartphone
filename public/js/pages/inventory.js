@@ -276,6 +276,22 @@ export function render(app) {
 
               <div class="form-group"></div>
 
+              <!-- Row 13a: Batch/Serial No., Mfg Date, Expiry Date -->
+              <div class="form-group">
+                <label for="productBatchSerialNo" class="form-label">Batch/Serial No.:</label>
+                <input type="text" id="productBatchSerialNo" class="form-input" data-testid="input-product-batch-serial" />
+              </div>
+
+              <div class="form-group">
+                <label for="productMfgDate" class="form-label">Mfg. Date:</label>
+                <input type="date" id="productMfgDate" class="form-input" data-testid="input-product-mfg-date" />
+              </div>
+
+              <div class="form-group">
+                <label for="productExpiryDate" class="form-label">Expiry Date:</label>
+                <input type="date" id="productExpiryDate" class="form-input" data-testid="input-product-expiry-date" />
+              </div>
+
               <!-- Hidden stock field for backward compatibility -->
               <input type="number" id="productStock" value="0" data-testid="input-product-stock" style="display: none;" />
 
@@ -541,6 +557,9 @@ async function saveProduct() {
     taxTypePurchase: document.getElementById('productTaxTypePurchase').value || 'inclusive',
     defaultSaleQty: parseInt(document.getElementById('productDefaultSaleQty').value) || 1,
     orderPrintSection: document.getElementById('productOrderPrintSection').value || null,
+    batchSerialNo: document.getElementById('productBatchSerialNo').value || null,
+    mfgDate: document.getElementById('productMfgDate').value ? new Date(document.getElementById('productMfgDate').value).getTime() : null,
+    expiryDate: document.getElementById('productExpiryDate').value ? new Date(document.getElementById('productExpiryDate').value).getTime() : null,
   };
 
   try {
@@ -602,6 +621,9 @@ async function editProduct(id) {
     document.getElementById('productTaxTypePurchase').value = product.taxTypePurchase || 'inclusive';
     document.getElementById('productDefaultSaleQty').value = product.defaultSaleQty || 1;
     document.getElementById('productOrderPrintSection').value = product.orderPrintSection || '';
+    document.getElementById('productBatchSerialNo').value = product.batchSerialNo || '';
+    document.getElementById('productMfgDate').value = product.mfgDate ? new Date(product.mfgDate).toISOString().split('T')[0] : '';
+    document.getElementById('productExpiryDate').value = product.expiryDate ? new Date(product.expiryDate).toISOString().split('T')[0] : '';
 
     // Image preview update logic removed as the feature is removed.
     // if (product.imageUrl) {
