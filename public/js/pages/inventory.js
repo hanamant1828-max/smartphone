@@ -114,7 +114,9 @@ export function render(app) {
           <form id="productForm">
             <input type="hidden" id="productId" />
             
-            <div class="grid grid-cols-3 gap-4">
+            <div style="display: grid; grid-template-columns: 1fr 250px; gap: 24px;">
+              <!-- Left side: Form fields -->
+              <div class="grid grid-cols-3 gap-4">
               <!-- Product Code -->
               <div class="form-group">
                 <label for="productCode" class="form-label">Product Code*</label>
@@ -335,9 +337,44 @@ export function render(app) {
                 <label for="productIMEI" class="form-label">IMEI Number</label>
                 <input type="text" id="productIMEI" class="form-input" maxlength="15" data-testid="input-product-imei" />
               </div>
+              </div>
+              
+              <!-- Right side: Image upload section -->
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="border: 2px dashed var(--border); border-radius: 8px; padding: 16px; text-align: center; background: var(--bg-secondary); min-height: 250px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                  <input type="file" id="productImageInput" accept="image/*" style="display: none;" onchange="handleImageSelect(event)" data-testid="input-product-image" />
+                  <div id="imagePreview" style="width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                    <div style="text-align: center; color: var(--text-secondary);">
+                      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin: 0 auto 8px; opacity: 0.5;">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                      </svg>
+                      <div style="font-size: 0.875rem; font-weight: 600;">NO IMAGE AVAILABLE</div>
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('productImageInput').click()" data-testid="button-upload-image">
+                    Upload Image
+                  </button>
+                  <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 8px;">Image Limit: 10</p>
+                </div>
+                
+                <div style="padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-tertiary);">
+                  <label for="productImageUrl" class="form-label" style="margin-bottom: 4px;">Photo URL</label>
+                  <input 
+                    type="text" 
+                    id="productImageUrl" 
+                    class="form-input" 
+                    placeholder="Or paste image URL" 
+                    oninput="updateImagePreview()"
+                    data-testid="input-product-image-url"
+                    style="margin: 0;"
+                  />
+                </div>
+              </div>
             </div>
             
-            <div class="form-group">
+            <div class="form-group" style="margin-top: 16px;">
               <label for="productDescription" class="form-label">Description</label>
               <textarea id="productDescription" class="form-textarea" rows="3" data-testid="textarea-product-description"></textarea>
             </div>
@@ -449,6 +486,8 @@ export async function init(app) {
   window.deleteProduct = deleteProduct;
   window.filterProducts = filterProducts;
   window.setFilter = setFilter;
+  window.handleImageSelect = handleImageSelect;
+  window.updateImagePreview = updateImagePreview;
 }
 
 function openAddProductModal() {
@@ -472,7 +511,10 @@ async function saveProduct() {
   const productId = document.getElementById('productId').value;
   const productData = {
     name: document.getElementById('productName').value,
+    nameHindi: document.getElementById('productHindi').value || null,
+    nameConvertLatin: document.getElementById('productConvertLatin').value || null,
     brand: document.getElementById('productBrand').value || null,
+    sizeBrand: document.getElementById('productBrand2').value || null,
     model: document.getElementById('productModel').value || null,
     category: document.getElementById('productCategory').value,
     imeiNumber: document.getElementById('productIMEI').value || null,
@@ -484,11 +526,13 @@ async function saveProduct() {
     stockQuantity: parseInt(document.getElementById('productStock').value) || 0,
     minStockLevel: parseInt(document.getElementById('productMinStock').value) || 0,
     description: document.getElementById('productDescription').value || null,
+    imageUrl: document.getElementById('productImageUrl').value || null,
     isActive: true,
     // Extended fields
     productCode: document.getElementById('productCode').value || `PRD${Date.now()}`,
     hsnCode: document.getElementById('productHSN').value || null,
     partGroup: document.getElementById('productPart').value || null,
+    unitCategory: document.getElementById('productUnitCategory').value || null,
     salesDiscount: parseFloat(document.getElementById('productSalesDiscount').value) || 0,
     purchaseUnit: document.getElementById('productPurchaseUnit').value || null,
     salesUnit: document.getElementById('productSalesUnit').value || null,
@@ -532,7 +576,10 @@ async function editProduct(id) {
     document.getElementById('productId').value = product.id;
     document.getElementById('productCode').value = product.productCode || '';
     document.getElementById('productName').value = product.name;
+    document.getElementById('productHindi').value = product.nameHindi || '';
+    document.getElementById('productConvertLatin').value = product.nameConvertLatin || '';
     document.getElementById('productBrand').value = product.brand || '';
+    document.getElementById('productBrand2').value = product.sizeBrand || '';
     document.getElementById('productModel').value = product.model || '';
     document.getElementById('productCategory').value = product.category;
     document.getElementById('productIMEI').value = product.imeiNumber || '';
@@ -544,10 +591,12 @@ async function editProduct(id) {
     document.getElementById('productStock').value = product.stockQuantity;
     document.getElementById('productMinStock').value = product.minStockLevel || 0;
     document.getElementById('productDescription').value = product.description || '';
+    document.getElementById('productImageUrl').value = product.imageUrl || '';
     
     // Extended fields
     document.getElementById('productHSN').value = product.hsnCode || '';
     document.getElementById('productPart').value = product.partGroup || '';
+    document.getElementById('productUnitCategory').value = product.unitCategory || '';
     document.getElementById('productSalesDiscount').value = product.salesDiscount || 0;
     document.getElementById('productPurchaseUnit').value = product.purchaseUnit || '';
     document.getElementById('productSalesUnit').value = product.salesUnit || '';
@@ -563,6 +612,11 @@ async function editProduct(id) {
     document.getElementById('productTaxTypeSale').value = product.taxTypeSale || 'inclusive';
     document.getElementById('productTaxTypePurchase').value = product.taxTypePurchase || 'inclusive';
     document.getElementById('productOrderPrintHeading').value = product.orderPrintHeading || '';
+    
+    // Update image preview
+    if (product.imageUrl) {
+      updateImagePreview();
+    }
     
     document.getElementById('productModal').classList.remove('hidden');
   } catch (error) {
@@ -617,5 +671,42 @@ function updateProductsTable() {
   const tbody = document.getElementById('productsTableBody');
   if (tbody) {
     tbody.innerHTML = renderProductRows();
+  }
+}
+
+function handleImageSelect(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const imagePreview = document.getElementById('imagePreview');
+      imagePreview.innerHTML = `
+        <img src="${e.target.result}" alt="Product preview" style="max-width: 100%; max-height: 200px; border-radius: 4px;" />
+      `;
+      document.getElementById('productImageUrl').value = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function updateImagePreview() {
+  const imageUrl = document.getElementById('productImageUrl').value;
+  const imagePreview = document.getElementById('imagePreview');
+  
+  if (imageUrl) {
+    imagePreview.innerHTML = `
+      <img src="${imageUrl}" alt="Product preview" style="max-width: 100%; max-height: 200px; border-radius: 4px;" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'text-align: center; color: var(--text-secondary);\\'>Invalid image URL</div>';" />
+    `;
+  } else {
+    imagePreview.innerHTML = `
+      <div style="text-align: center; color: var(--text-secondary);">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin: 0 auto 8px; opacity: 0.5;">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+        <div style="font-size: 0.875rem; font-weight: 600;">NO IMAGE AVAILABLE</div>
+      </div>
+    `;
   }
 }

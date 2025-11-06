@@ -42,7 +42,10 @@ export const products = sqliteTable("products", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   productCode: text("product_code", { length: 50 }),
   name: text("name", { length: 100 }).notNull(),
+  nameHindi: text("name_hindi", { length: 100 }),
+  nameConvertLatin: text("name_convert_latin", { length: 100 }),
   brand: text("brand", { length: 50 }),
+  sizeBrand: text("size_brand", { length: 50 }),
   model: text("model", { length: 50 }),
   category: text("category", { length: 50 }).notNull(), // 'smartphone', 'feature_phone', 'accessory', 'spare_part'
   imeiNumber: text("imei_number", { length: 15 }).unique(),
@@ -60,6 +63,7 @@ export const products = sqliteTable("products", {
   // Extended fields
   hsnCode: text("hsn_code", { length: 20 }),
   partGroup: text("part_group", { length: 50 }),
+  unitCategory: text("unit_category", { length: 100 }),
   salesDiscount: real("sales_discount").default(0),
   purchaseUnit: text("purchase_unit", { length: 20 }),
   salesUnit: text("sales_unit", { length: 20 }),
