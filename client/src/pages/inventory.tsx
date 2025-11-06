@@ -17,11 +17,15 @@ import { apiRequest } from "@/lib/queryClient";
 interface Product {
   id: number;
   name: string;
-  brand: string;
-  model: string;
+  brand?: string;
+  model?: string;
+  category: string;
   price: number;
-  stock: number;
-  imei?: string;
+  stockQuantity: number;
+  imeiNumber?: string;
+  color?: string;
+  storage?: string;
+  ram?: string;
 }
 
 export default function Inventory() {
@@ -40,9 +44,13 @@ export default function Inventory() {
       name: "",
       brand: "",
       model: "",
+      category: "smartphone",
       price: 0,
-      stock: 0,
-      imei: "",
+      stockQuantity: 0,
+      imeiNumber: "",
+      color: "",
+      storage: "",
+      ram: "",
     },
   });
 
@@ -62,8 +70,8 @@ export default function Inventory() {
 
   const filteredProducts = products.filter((p) =>
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.model.toLowerCase().includes(searchQuery.toLowerCase())
+    (p.brand && p.brand.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (p.model && p.model.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const onSubmit = (data: any) => {
@@ -160,7 +168,7 @@ export default function Inventory() {
                 />
                 <FormField
                   control={form.control}
-                  name="stock"
+                  name="stockQuantity"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Stock Quantity</FormLabel>
@@ -173,7 +181,7 @@ export default function Inventory() {
                 />
                 <FormField
                   control={form.control}
-                  name="imei"
+                  name="imeiNumber"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>IMEI (Optional)</FormLabel>
@@ -216,7 +224,7 @@ export default function Inventory() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold font-mono">
-              {products.reduce((sum, p) => sum + p.stock, 0)}
+              {products.reduce((sum, p) => sum + (p.stockQuantity || 0), 0)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
               {products.length} products
@@ -253,14 +261,14 @@ export default function Inventory() {
               </TableHeader>
               <TableBody>
                 {filteredProducts.map((product) => (
-                  <TableRow key={product.id}>
-                    <TableCell className="font-medium">{product.name}</TableCell>
-                    <TableCell>{product.brand}</TableCell>
-                    <TableCell className="font-mono text-sm">{product.model}</TableCell>
-                    <TableCell className="text-right font-mono">₹{product.price.toLocaleString()}</TableCell>
-                    <TableCell className="text-right">
-                      <Badge variant={product.stock < 5 ? "destructive" : product.stock < 10 ? "secondary" : "default"}>
-                        {product.stock}
+                  <TableRow key={product.id} data-testid={`row-product-${product.id}`}>
+                    <TableCell className="font-medium" data-testid={`text-name-${product.id}`}>{product.name}</TableCell>
+                    <TableCell data-testid={`text-brand-${product.id}`}>{product.brand || '-'}</TableCell>
+                    <TableCell className="font-mono text-sm" data-testid={`text-model-${product.id}`}>{product.model || '-'}</TableCell>
+                    <TableCell className="text-right font-mono" data-testid={`text-price-${product.id}`}>₹{product.price.toLocaleString()}</TableCell>
+                    <TableCell className="text-right" data-testid={`text-stock-${product.id}`}>
+                      <Badge variant={product.stockQuantity < 5 ? "destructive" : product.stockQuantity < 10 ? "secondary" : "default"}>
+                        {product.stockQuantity}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
@@ -269,6 +277,7 @@ export default function Inventory() {
                           variant="ghost"
                           size="icon"
                           onClick={() => openEditDialog(product)}
+                          data-testid={`button-edit-${product.id}`}
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
