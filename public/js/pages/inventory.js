@@ -176,7 +176,7 @@ export function render(app) {
               <div style="grid-column: span 1;">
                 <div class="form-group">
                   <label for="productCostPrice" class="form-label">Purchase Price*</label>
-                  <input type="number" id="productCostPrice" class="form-input" step="0.01" required data-testid="input-product-cost-price" />
+                  <input type="number" id="productCostPrice" class="form-input" step="0.01" required data-testid="input-product-cost-price" oninput="recalculateAllPrices()" />
                 </div>
 
                 <div class="form-group">
@@ -510,6 +510,7 @@ export async function init(app) {
   window.setFilter = setFilter;
   window.updateModelOptions = updateModelOptions;
   window.calculatePriceFromMargin = calculatePriceFromMargin;
+  window.recalculateAllPrices = recalculateAllPrices;
   // window.handleImageSelect = handleImageSelect; // Removed
   // window.updateImagePreview = updateImagePreview; // Removed
 }
@@ -545,6 +546,12 @@ function calculatePriceFromMargin(priceType) {
     priceField.value = roundedPrice.toFixed(2);
     hiddenField.value = roundedPrice;
   }
+}
+
+function recalculateAllPrices() {
+  calculatePriceFromMargin('mrp');
+  calculatePriceFromMargin('retail');
+  calculatePriceFromMargin('wholesale');
 }
 
 function loadBrandsAndModels() {
