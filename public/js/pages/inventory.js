@@ -117,19 +117,18 @@ export function render(app) {
             <div style="display: grid; grid-template-columns: 1fr 250px; gap: 24px;">
               <!-- Left side: Form fields -->
               <div class="grid grid-cols-3 gap-4">
-              <!-- Product Code -->
+              <!-- Row 1: Product Code, Product Name (span 2) -->
               <div class="form-group">
-                <label for="productCode" class="form-label">Product Code*</label>
+                <label for="productCode" class="form-label">Product Code</label>
                 <input type="text" id="productCode" class="form-input" data-testid="input-product-code" />
               </div>
               
-              <!-- Product Name -->
               <div class="form-group" style="grid-column: span 2;">
-                <label for="productName" class="form-label">Product Name (Dual Language)*</label>
+                <label for="productName" class="form-label">Product Name*</label>
                 <input type="text" id="productName" class="form-input" required data-testid="input-product-name" />
               </div>
               
-              <!-- Category -->
+              <!-- Row 2: Category, Product Name (Dual Language), Hindi -->
               <div class="form-group">
                 <label for="productCategory" class="form-label">Category*</label>
                 <select id="productCategory" class="form-select" required data-testid="select-product-category">
@@ -141,162 +140,154 @@ export function render(app) {
                 </select>
               </div>
               
-              <!-- Brand -->
               <div class="form-group">
-                <label for="productBrand" class="form-label">Brand*</label>
-                <input type="text" id="productBrand" class="form-input" required data-testid="input-product-brand" />
+                <label for="productBrand" class="form-label">Product Name (Dual Language)</label>
+                <input type="text" id="productBrand" class="form-input" data-testid="input-product-brand" />
               </div>
               
-              <!-- Model -->
-              <div class="form-group">
-                <label for="productModel" class="form-label">Model</label>
-                <input type="text" id="productModel" class="form-input" data-testid="input-product-model" />
-              </div>
-              
-              <!-- Size / Brand -->
-              <div class="form-group">
-                <label for="productBrand2" class="form-label">Size / Brand</label>
-                <input type="text" id="productBrand2" class="form-input" data-testid="input-product-brand2" />
-              </div>
-              
-              <!-- Hindi -->
               <div class="form-group">
                 <label for="productHindi" class="form-label">Hindi</label>
                 <input type="text" id="productHindi" class="form-input" data-testid="input-product-hindi" />
               </div>
               
-              <!-- Convert Latin -->
+              <!-- Row 3: Size/Brand, (empty), Convert Latin -->
+              <div class="form-group">
+                <label for="productBrand2" class="form-label">Size / Brand</label>
+                <input type="text" id="productBrand2" class="form-input" data-testid="input-product-brand2" />
+              </div>
+              
+              <div class="form-group"></div>
+              
               <div class="form-group">
                 <label for="productConvertLatin" class="form-label">Convert Latin</label>
                 <input type="text" id="productConvertLatin" class="form-input" data-testid="input-product-convert-latin" />
               </div>
               
-              <!-- HSN Code -->
+              <!-- Row 4: HSN Code, Check HSN Online button, Part/Group -->
               <div class="form-group">
                 <label for="productHSN" class="form-label">HSN Code</label>
                 <input type="text" id="productHSN" class="form-input" data-testid="input-product-hsn" />
               </div>
               
-              <!-- Check HSN Online -->
               <div class="form-group">
                 <button type="button" class="btn btn-outline" style="margin-top: 24px;">Check HSN Online</button>
               </div>
               
-              <!-- Part/Group -->
               <div class="form-group">
                 <label for="productPart" class="form-label">Part/Group</label>
                 <input type="text" id="productPart" class="form-input" data-testid="input-product-part" />
               </div>
               
-              <!-- Save into Unit Categories -->
-              <div class="form-group" style="grid-column: span 2;">
-                <label for="productUnitCategory" class="form-label">Save into Unit Categories</label>
-                <input type="text" id="productUnitCategory" class="form-input" placeholder="(Optional)" data-testid="input-product-unit-category" />
+              <!-- Row 5: Save into Unit Categories (span 3) -->
+              <div class="form-group" style="grid-column: span 3;">
+                <label for="productUnitCategory" class="form-label">Save into Unit Categories (Optional)</label>
+                <input type="text" id="productUnitCategory" class="form-input" data-testid="input-product-unit-category" />
               </div>
               
-              <!-- Purchase Price -->
+              <!-- Row 6: Purchase Price, Min Stock, Sales Discount % -->
               <div class="form-group">
                 <label for="productCostPrice" class="form-label">Purchase Price*</label>
                 <input type="number" id="productCostPrice" class="form-input" step="0.01" required data-testid="input-product-cost-price" />
               </div>
               
-              <!-- Min Stock -->
               <div class="form-group">
                 <label for="productMinStock" class="form-label">Min Stock</label>
                 <input type="number" id="productMinStock" class="form-input" value="0" data-testid="input-product-min-stock" />
               </div>
               
-              <!-- Sales Discount % -->
               <div class="form-group">
                 <label for="productSalesDiscount" class="form-label">Sales Discount %</label>
                 <input type="number" id="productSalesDiscount" class="form-input" step="0.01" value="0.00" data-testid="input-product-sales-discount" />
               </div>
               
-              <!-- Purchase Main Unit -->
+              <!-- Row 7: Purchase Main Unit, Sales Main Unit, Alter Unit -->
               <div class="form-group">
                 <label for="productPurchaseUnit" class="form-label">Purchase Main Unit</label>
                 <input type="text" id="productPurchaseUnit" class="form-input" placeholder="GST %" data-testid="input-product-purchase-unit" />
               </div>
               
-              <!-- Sales Main Unit -->
               <div class="form-group">
                 <label for="productSalesUnit" class="form-label">Sales Main Unit</label>
                 <input type="text" id="productSalesUnit" class="form-input" placeholder="LOT NO" data-testid="input-product-sales-unit" />
               </div>
               
-              <!-- Alter Unit -->
               <div class="form-group">
                 <label for="productAlterUnit" class="form-label">Alter Unit</label>
                 <input type="text" id="productAlterUnit" class="form-input" data-testid="input-product-alter-unit" />
               </div>
               
-              <!-- MRP -->
+              <!-- Row 8: (empty row for spacing) -->
+              <div class="form-group"></div>
+              <div class="form-group"></div>
+              <div class="form-group"></div>
+              
+              <!-- Row 9: MRP, Retail Sale Price, Wholesale Price -->
               <div class="form-group">
                 <label for="productMRP" class="form-label">MRP</label>
                 <input type="number" id="productMRP" class="form-input" step="0.01" value="0.00" data-testid="input-product-mrp" />
               </div>
               
-              <!-- Retail Sale Price -->
               <div class="form-group">
                 <label for="productPrice" class="form-label">Retail Sale Price*</label>
                 <input type="number" id="productPrice" class="form-input" step="0.01" required data-testid="input-product-price" />
               </div>
               
-              <!-- Wholesale Price -->
               <div class="form-group">
                 <label for="productWholesalePrice" class="form-label">Wholesale Price</label>
                 <input type="number" id="productWholesalePrice" class="form-input" step="0.01" value="0.00" data-testid="input-product-wholesale-price" />
               </div>
               
-              <!-- GST % -->
+              <!-- Row 10: GST %, SGST (IGST) %, CESS % -->
               <div class="form-group">
                 <label for="productGST" class="form-label">GST %</label>
                 <input type="number" id="productGST" class="form-input" step="0.01" value="0.00" data-testid="input-product-gst" />
               </div>
               
-              <!-- SGST (IGST) % -->
               <div class="form-group">
                 <label for="productSGST" class="form-label">SGST (IGST) %</label>
                 <input type="number" id="productSGST" class="form-input" step="0.01" value="0.00" data-testid="input-product-sgst" />
               </div>
               
-              <!-- CESS % -->
               <div class="form-group">
                 <label for="productCESS" class="form-label">CESS %</label>
                 <input type="number" id="productCESS" class="form-input" step="0.01" value="0.00" data-testid="input-product-cess" />
               </div>
               
-              <!-- Opening Stock -->
+              <!-- Row 11: (empty row for spacing) -->
+              <div class="form-group"></div>
+              <div class="form-group"></div>
+              <div class="form-group"></div>
+              
+              <!-- Row 12: Opening Stock (Optional Exceed Barcode), Quantity, Barcode -->
               <div class="form-group">
-                <label for="productStock" class="form-label">Opening Stock*</label>
+                <label for="productStock" class="form-label">Opening Stock (Optional Exceed Barcode)*</label>
                 <input type="number" id="productStock" class="form-input" required value="0" data-testid="input-product-stock" />
               </div>
               
-              <!-- Barcode -->
+              <div class="form-group">
+                <label for="productDefaultQty" class="form-label">Quantity</label>
+                <input type="number" id="productDefaultQty" class="form-input" value="1" data-testid="input-product-default-qty" />
+              </div>
+              
               <div class="form-group">
                 <label for="productBarcode" class="form-label">Barcode</label>
                 <input type="text" id="productBarcode" class="form-input" data-testid="input-product-barcode" />
               </div>
               
-              <!-- Storage / Godown -->
+              <!-- Row 13: Storage/Godown, Rack/Location, (empty) -->
               <div class="form-group">
                 <label for="productStorage" class="form-label">Storage / Godown</label>
                 <input type="text" id="productStorage" class="form-input" data-testid="input-product-storage" />
               </div>
               
-              <!-- Rack / Location -->
               <div class="form-group">
                 <label for="productRack" class="form-label">Rack / Location</label>
                 <input type="text" id="productRack" class="form-input" data-testid="input-product-rack" />
               </div>
               
-              <!-- Default Sale Qty -->
-              <div class="form-group">
-                <label for="productDefaultQty" class="form-label">Default Sale Qty</label>
-                <input type="number" id="productDefaultQty" class="form-input" value="1" data-testid="input-product-default-qty" />
-              </div>
+              <div class="form-group"></div>
               
-              <!-- Tax Type on Sale -->
+              <!-- Row 14: Tax Type on Sale, Tax Type on Purchase, Default Sale Qty -->
               <div class="form-group">
                 <label for="productTaxTypeSale" class="form-label">Tax Type on Sale</label>
                 <select id="productTaxTypeSale" class="form-select" data-testid="select-product-tax-type-sale">
@@ -305,7 +296,6 @@ export function render(app) {
                 </select>
               </div>
               
-              <!-- Tax Type on Purchase -->
               <div class="form-group">
                 <label for="productTaxTypePurchase" class="form-label">Tax Type on Purchase</label>
                 <select id="productTaxTypePurchase" class="form-select" data-testid="select-product-tax-type-purchase">
@@ -314,25 +304,30 @@ export function render(app) {
                 </select>
               </div>
               
-              <!-- Order Print Heading -->
+              <div class="form-group">
+                <label for="productModel" class="form-label">Default Sale Qty</label>
+                <input type="text" id="productModel" class="form-input" data-testid="input-product-model" />
+              </div>
+              
+              <!-- Row 15: Order Print Heading (span 2), (empty) -->
               <div class="form-group" style="grid-column: span 2;">
                 <label for="productOrderPrintHeading" class="form-label">Order Print Heading (Optional)</label>
                 <input type="text" id="productOrderPrintHeading" class="form-input" data-testid="input-product-order-print-heading" />
               </div>
               
-              <!-- Color -->
+              <div class="form-group"></div>
+              
+              <!-- Row 16: Color, RAM, IMEI Number -->
               <div class="form-group">
                 <label for="productColor" class="form-label">Color</label>
                 <input type="text" id="productColor" class="form-input" data-testid="input-product-color" />
               </div>
               
-              <!-- RAM -->
               <div class="form-group">
                 <label for="productRAM" class="form-label">RAM</label>
-                <input type="text" id="productRAM" class="form-input" placeholder="e.g., 8GB" data-testid="input-product-ram" />
+                <input type="text" id="productRAM" class="form-input" data-testid="input-product-ram" />
               </div>
               
-              <!-- IMEI Number -->
               <div class="form-group">
                 <label for="productIMEI" class="form-label">IMEI Number</label>
                 <input type="text" id="productIMEI" class="form-input" maxlength="15" data-testid="input-product-imei" />
