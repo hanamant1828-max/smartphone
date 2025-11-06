@@ -114,22 +114,20 @@ export function render(app) {
           <form id="productForm">
             <input type="hidden" id="productId" />
             
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-3 gap-4">
+              <!-- Product Code -->
               <div class="form-group">
+                <label for="productCode" class="form-label">Product Code*</label>
+                <input type="text" id="productCode" class="form-input" required data-testid="input-product-code" />
+              </div>
+              
+              <!-- Product Name -->
+              <div class="form-group" style="grid-column: span 2;">
                 <label for="productName" class="form-label">Product Name*</label>
                 <input type="text" id="productName" class="form-input" required data-testid="input-product-name" />
               </div>
               
-              <div class="form-group">
-                <label for="productBrand" class="form-label">Brand*</label>
-                <input type="text" id="productBrand" class="form-input" required data-testid="input-product-brand" />
-              </div>
-              
-              <div class="form-group">
-                <label for="productModel" class="form-label">Model</label>
-                <input type="text" id="productModel" class="form-input" data-testid="input-product-model" />
-              </div>
-              
+              <!-- Category -->
               <div class="form-group">
                 <label for="productCategory" class="form-label">Category*</label>
                 <select id="productCategory" class="form-select" required data-testid="select-product-category">
@@ -141,44 +139,172 @@ export function render(app) {
                 </select>
               </div>
               
+              <!-- Brand -->
               <div class="form-group">
-                <label for="productIMEI" class="form-label">IMEI Number</label>
-                <input type="text" id="productIMEI" class="form-input" maxlength="15" data-testid="input-product-imei" />
+                <label for="productBrand" class="form-label">Brand*</label>
+                <input type="text" id="productBrand" class="form-input" required data-testid="input-product-brand" />
               </div>
               
+              <!-- Model -->
+              <div class="form-group">
+                <label for="productModel" class="form-label">Model</label>
+                <input type="text" id="productModel" class="form-input" data-testid="input-product-model" />
+              </div>
+              
+              <!-- HSN Code -->
+              <div class="form-group">
+                <label for="productHSN" class="form-label">HSN Code</label>
+                <input type="text" id="productHSN" class="form-input" data-testid="input-product-hsn" />
+              </div>
+              
+              <!-- Part/Group -->
+              <div class="form-group">
+                <label for="productPart" class="form-label">Part/Group</label>
+                <input type="text" id="productPart" class="form-input" data-testid="input-product-part" />
+              </div>
+              
+              <!-- Purchase Price -->
+              <div class="form-group">
+                <label for="productCostPrice" class="form-label">Purchase Price*</label>
+                <input type="number" id="productCostPrice" class="form-input" step="0.01" required data-testid="input-product-cost-price" />
+              </div>
+              
+              <!-- Min Stock -->
+              <div class="form-group">
+                <label for="productMinStock" class="form-label">Min Stock</label>
+                <input type="number" id="productMinStock" class="form-input" value="0" data-testid="input-product-min-stock" />
+              </div>
+              
+              <!-- Sales Discount % -->
+              <div class="form-group">
+                <label for="productSalesDiscount" class="form-label">Sales Discount %</label>
+                <input type="number" id="productSalesDiscount" class="form-input" step="0.01" value="0.00" data-testid="input-product-sales-discount" />
+              </div>
+              
+              <!-- Purchase Main Unit -->
+              <div class="form-group">
+                <label for="productPurchaseUnit" class="form-label">Purchase Main Unit</label>
+                <input type="text" id="productPurchaseUnit" class="form-input" placeholder="GST %" data-testid="input-product-purchase-unit" />
+              </div>
+              
+              <!-- Sales Main Unit -->
+              <div class="form-group">
+                <label for="productSalesUnit" class="form-label">Sales Main Unit</label>
+                <input type="text" id="productSalesUnit" class="form-input" placeholder="LOT NO" data-testid="input-product-sales-unit" />
+              </div>
+              
+              <!-- Alter Unit -->
+              <div class="form-group">
+                <label for="productAlterUnit" class="form-label">Alter Unit</label>
+                <input type="text" id="productAlterUnit" class="form-input" data-testid="input-product-alter-unit" />
+              </div>
+              
+              <!-- MRP -->
+              <div class="form-group">
+                <label for="productMRP" class="form-label">MRP</label>
+                <input type="number" id="productMRP" class="form-input" step="0.01" value="0.00" data-testid="input-product-mrp" />
+              </div>
+              
+              <!-- Retail Sale Price -->
+              <div class="form-group">
+                <label for="productPrice" class="form-label">Retail Sale Price*</label>
+                <input type="number" id="productPrice" class="form-input" step="0.01" required data-testid="input-product-price" />
+              </div>
+              
+              <!-- Wholesale Price -->
+              <div class="form-group">
+                <label for="productWholesalePrice" class="form-label">Wholesale Price</label>
+                <input type="number" id="productWholesalePrice" class="form-input" step="0.01" value="0.00" data-testid="input-product-wholesale-price" />
+              </div>
+              
+              <!-- GST % -->
+              <div class="form-group">
+                <label for="productGST" class="form-label">GST %</label>
+                <input type="number" id="productGST" class="form-input" step="0.01" value="0.00" data-testid="input-product-gst" />
+              </div>
+              
+              <!-- SGST (IGST) % -->
+              <div class="form-group">
+                <label for="productSGST" class="form-label">SGST (IGST) %</label>
+                <input type="number" id="productSGST" class="form-input" step="0.01" value="0.00" data-testid="input-product-sgst" />
+              </div>
+              
+              <!-- CESS % -->
+              <div class="form-group">
+                <label for="productCESS" class="form-label">CESS %</label>
+                <input type="number" id="productCESS" class="form-input" step="0.01" value="0.00" data-testid="input-product-cess" />
+              </div>
+              
+              <!-- Opening Stock -->
+              <div class="form-group">
+                <label for="productStock" class="form-label">Opening Stock*</label>
+                <input type="number" id="productStock" class="form-input" required value="0" data-testid="input-product-stock" />
+              </div>
+              
+              <!-- Barcode -->
+              <div class="form-group">
+                <label for="productBarcode" class="form-label">Barcode</label>
+                <input type="text" id="productBarcode" class="form-input" data-testid="input-product-barcode" />
+              </div>
+              
+              <!-- Storage / Godown -->
+              <div class="form-group">
+                <label for="productStorage" class="form-label">Storage / Godown</label>
+                <input type="text" id="productStorage" class="form-input" data-testid="input-product-storage" />
+              </div>
+              
+              <!-- Rack / Location -->
+              <div class="form-group">
+                <label for="productRack" class="form-label">Rack / Location</label>
+                <input type="text" id="productRack" class="form-input" data-testid="input-product-rack" />
+              </div>
+              
+              <!-- Default Sale Qty -->
+              <div class="form-group">
+                <label for="productDefaultQty" class="form-label">Default Sale Qty</label>
+                <input type="number" id="productDefaultQty" class="form-input" value="1" data-testid="input-product-default-qty" />
+              </div>
+              
+              <!-- Tax Type on Sale -->
+              <div class="form-group">
+                <label for="productTaxTypeSale" class="form-label">Tax Type on Sale</label>
+                <select id="productTaxTypeSale" class="form-select" data-testid="select-product-tax-type-sale">
+                  <option value="inclusive">Inclusive</option>
+                  <option value="exclusive">Exclusive</option>
+                </select>
+              </div>
+              
+              <!-- Tax Type on Purchase -->
+              <div class="form-group">
+                <label for="productTaxTypePurchase" class="form-label">Tax Type on Purchase</label>
+                <select id="productTaxTypePurchase" class="form-select" data-testid="select-product-tax-type-purchase">
+                  <option value="inclusive">Inclusive</option>
+                  <option value="exclusive">Exclusive</option>
+                </select>
+              </div>
+              
+              <!-- Order Print Heading -->
+              <div class="form-group" style="grid-column: span 2;">
+                <label for="productOrderPrintHeading" class="form-label">Order Print Heading (Optional)</label>
+                <input type="text" id="productOrderPrintHeading" class="form-input" data-testid="input-product-order-print-heading" />
+              </div>
+              
+              <!-- Color -->
               <div class="form-group">
                 <label for="productColor" class="form-label">Color</label>
                 <input type="text" id="productColor" class="form-input" data-testid="input-product-color" />
               </div>
               
-              <div class="form-group">
-                <label for="productStorage" class="form-label">Storage</label>
-                <input type="text" id="productStorage" class="form-input" placeholder="e.g., 128GB" data-testid="input-product-storage" />
-              </div>
-              
+              <!-- RAM -->
               <div class="form-group">
                 <label for="productRAM" class="form-label">RAM</label>
                 <input type="text" id="productRAM" class="form-input" placeholder="e.g., 8GB" data-testid="input-product-ram" />
               </div>
               
+              <!-- IMEI Number -->
               <div class="form-group">
-                <label for="productCostPrice" class="form-label">Cost Price*</label>
-                <input type="number" id="productCostPrice" class="form-input" step="0.01" required data-testid="input-product-cost-price" />
-              </div>
-              
-              <div class="form-group">
-                <label for="productPrice" class="form-label">Selling Price*</label>
-                <input type="number" id="productPrice" class="form-input" step="0.01" required data-testid="input-product-price" />
-              </div>
-              
-              <div class="form-group">
-                <label for="productStock" class="form-label">Stock Quantity*</label>
-                <input type="number" id="productStock" class="form-input" required data-testid="input-product-stock" />
-              </div>
-              
-              <div class="form-group">
-                <label for="productMinStock" class="form-label">Min Stock Level</label>
-                <input type="number" id="productMinStock" class="form-input" value="5" data-testid="input-product-min-stock" />
+                <label for="productIMEI" class="form-label">IMEI Number</label>
+                <input type="text" id="productIMEI" class="form-input" maxlength="15" data-testid="input-product-imei" />
               </div>
             </div>
             
@@ -327,9 +453,28 @@ async function saveProduct() {
     costPrice: parseFloat(document.getElementById('productCostPrice').value),
     price: parseFloat(document.getElementById('productPrice').value),
     stockQuantity: parseInt(document.getElementById('productStock').value),
-    minStockLevel: parseInt(document.getElementById('productMinStock').value) || 5,
+    minStockLevel: parseInt(document.getElementById('productMinStock').value) || 0,
     description: document.getElementById('productDescription').value || null,
     isActive: true,
+    // Extended fields
+    productCode: document.getElementById('productCode').value || null,
+    hsnCode: document.getElementById('productHSN').value || null,
+    partGroup: document.getElementById('productPart').value || null,
+    salesDiscount: parseFloat(document.getElementById('productSalesDiscount').value) || 0,
+    purchaseUnit: document.getElementById('productPurchaseUnit').value || null,
+    salesUnit: document.getElementById('productSalesUnit').value || null,
+    alterUnit: document.getElementById('productAlterUnit').value || null,
+    mrp: parseFloat(document.getElementById('productMRP').value) || 0,
+    wholesalePrice: parseFloat(document.getElementById('productWholesalePrice').value) || 0,
+    gst: parseFloat(document.getElementById('productGST').value) || 0,
+    sgst: parseFloat(document.getElementById('productSGST').value) || 0,
+    cess: parseFloat(document.getElementById('productCESS').value) || 0,
+    barcode: document.getElementById('productBarcode').value || null,
+    rack: document.getElementById('productRack').value || null,
+    defaultQty: parseInt(document.getElementById('productDefaultQty').value) || 1,
+    taxTypeSale: document.getElementById('productTaxTypeSale').value || 'inclusive',
+    taxTypePurchase: document.getElementById('productTaxTypePurchase').value || 'inclusive',
+    orderPrintHeading: document.getElementById('productOrderPrintHeading').value || null,
   };
   
   try {
@@ -356,6 +501,7 @@ async function editProduct(id) {
     
     document.getElementById('modalTitle').textContent = 'Edit Product';
     document.getElementById('productId').value = product.id;
+    document.getElementById('productCode').value = product.productCode || '';
     document.getElementById('productName').value = product.name;
     document.getElementById('productBrand').value = product.brand || '';
     document.getElementById('productModel').value = product.model || '';
@@ -367,8 +513,27 @@ async function editProduct(id) {
     document.getElementById('productCostPrice').value = product.costPrice;
     document.getElementById('productPrice').value = product.price;
     document.getElementById('productStock').value = product.stockQuantity;
-    document.getElementById('productMinStock').value = product.minStockLevel;
+    document.getElementById('productMinStock').value = product.minStockLevel || 0;
     document.getElementById('productDescription').value = product.description || '';
+    
+    // Extended fields
+    document.getElementById('productHSN').value = product.hsnCode || '';
+    document.getElementById('productPart').value = product.partGroup || '';
+    document.getElementById('productSalesDiscount').value = product.salesDiscount || 0;
+    document.getElementById('productPurchaseUnit').value = product.purchaseUnit || '';
+    document.getElementById('productSalesUnit').value = product.salesUnit || '';
+    document.getElementById('productAlterUnit').value = product.alterUnit || '';
+    document.getElementById('productMRP').value = product.mrp || 0;
+    document.getElementById('productWholesalePrice').value = product.wholesalePrice || 0;
+    document.getElementById('productGST').value = product.gst || 0;
+    document.getElementById('productSGST').value = product.sgst || 0;
+    document.getElementById('productCESS').value = product.cess || 0;
+    document.getElementById('productBarcode').value = product.barcode || '';
+    document.getElementById('productRack').value = product.rack || '';
+    document.getElementById('productDefaultQty').value = product.defaultQty || 1;
+    document.getElementById('productTaxTypeSale').value = product.taxTypeSale || 'inclusive';
+    document.getElementById('productTaxTypePurchase').value = product.taxTypePurchase || 'inclusive';
+    document.getElementById('productOrderPrintHeading').value = product.orderPrintHeading || '';
     
     document.getElementById('productModal').classList.remove('hidden');
   } catch (error) {

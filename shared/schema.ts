@@ -40,6 +40,7 @@ export const users = sqliteTable("users", {
 // Products table for inventory management
 export const products = sqliteTable("products", {
   id: integer("id").primaryKey({ autoIncrement: true }),
+  productCode: text("product_code", { length: 50 }),
   name: text("name", { length: 100 }).notNull(),
   brand: text("brand", { length: 50 }),
   model: text("model", { length: 50 }),
@@ -56,6 +57,24 @@ export const products = sqliteTable("products", {
   imageUrl: text("image_url", { length: 255 }),
   warrantyMonths: integer("warranty_months").default(12),
   isActive: integer("is_active", { mode: 'boolean' }).default(true),
+  // Extended fields
+  hsnCode: text("hsn_code", { length: 20 }),
+  partGroup: text("part_group", { length: 50 }),
+  salesDiscount: real("sales_discount").default(0),
+  purchaseUnit: text("purchase_unit", { length: 20 }),
+  salesUnit: text("sales_unit", { length: 20 }),
+  alterUnit: text("alter_unit", { length: 20 }),
+  mrp: real("mrp").default(0),
+  wholesalePrice: real("wholesale_price").default(0),
+  gst: real("gst").default(0),
+  sgst: real("sgst").default(0),
+  cess: real("cess").default(0),
+  barcode: text("barcode", { length: 50 }),
+  rack: text("rack", { length: 50 }),
+  defaultQty: integer("default_qty").default(1),
+  taxTypeSale: text("tax_type_sale", { length: 20 }).default('inclusive'),
+  taxTypePurchase: text("tax_type_purchase", { length: 20 }).default('inclusive'),
+  orderPrintHeading: text("order_print_heading", { length: 100 }),
   createdAt: integer("created_at", { mode: 'timestamp' }).default(sql`(strftime('%s','now') * 1000)`),
   updatedAt: integer("updated_at", { mode: 'timestamp' }).default(sql`(strftime('%s','now') * 1000)`),
 });
