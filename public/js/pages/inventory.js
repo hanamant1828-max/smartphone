@@ -724,12 +724,29 @@ function loadBrandsAndModels() {
   const brandSelect = document.getElementById('productBrand');
   brandSelect.innerHTML = '<option value="">Select brand</option>';
   
-  brands.filter(b => b.active).forEach(brand => {
-    const option = document.createElement('option');
-    option.value = brand.name;
-    option.textContent = brand.name;
-    brandSelect.appendChild(option);
-  });
+  // If brands exist in localStorage, use them
+  if (brands.length > 0) {
+    brands.filter(b => b.active).forEach(brand => {
+      const option = document.createElement('option');
+      option.value = brand.name;
+      option.textContent = brand.name;
+      brandSelect.appendChild(option);
+    });
+  } else {
+    // If no brands in localStorage, show some default popular brands
+    const defaultBrands = [
+      'Apple', 'Samsung', 'OnePlus', 'Xiaomi', 'Realme', 
+      'Oppo', 'Vivo', 'Motorola', 'Nokia', 'Google',
+      'Asus', 'Nothing', 'Poco', 'Infinix', 'Tecno'
+    ];
+    
+    defaultBrands.forEach(brandName => {
+      const option = document.createElement('option');
+      option.value = brandName;
+      option.textContent = brandName;
+      brandSelect.appendChild(option);
+    });
+  }
   
   return { brands, brandModels };
 }
