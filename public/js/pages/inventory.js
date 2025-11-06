@@ -143,6 +143,22 @@ export function render(app) {
                 </select>
               </div>
 
+              <!-- Row 1b: Type -->
+              <div class="form-group">
+                <label for="productType" class="form-label">Type:</label>
+                <select id="productType" class="form-select" data-testid="select-product-type">
+                  <option value="">Select type</option>
+                  <option value="flagship">Flagship</option>
+                  <option value="mid-range">Mid-Range</option>
+                  <option value="budget">Budget</option>
+                  <option value="entry-level">Entry Level</option>
+                  <option value="premium">Premium</option>
+                </select>
+              </div>
+
+              <div class="form-group"></div>
+              <div class="form-group"></div>
+
               <!-- Row 2: Product Code, Product Name (span 2) -->
               <div class="form-group">
                 <label for="productCode" class="form-label">Product Code</label>
@@ -724,6 +740,25 @@ function loadBrandsAndModels() {
   const brandSelect = document.getElementById('productBrand');
   brandSelect.innerHTML = '<option value="">Select brand</option>';
   
+  // Default models for each brand
+  const defaultBrandModels = {
+    'Apple': ['iPhone 15 Pro Max', 'iPhone 15 Pro', 'iPhone 15 Plus', 'iPhone 15', 'iPhone 14 Pro Max', 'iPhone 14 Pro', 'iPhone 14', 'iPhone 13', 'iPhone SE'],
+    'Samsung': ['Galaxy S24 Ultra', 'Galaxy S24+', 'Galaxy S24', 'Galaxy S23 Ultra', 'Galaxy A54', 'Galaxy A34', 'Galaxy M34', 'Galaxy F54', 'Galaxy Z Fold 5', 'Galaxy Z Flip 5'],
+    'OnePlus': ['OnePlus 12', 'OnePlus 11', 'OnePlus Nord 3', 'OnePlus Nord CE 3', 'OnePlus 11R', 'OnePlus 10 Pro', 'OnePlus 10T'],
+    'Xiaomi': ['Xiaomi 14 Pro', 'Xiaomi 14', 'Xiaomi 13 Pro', 'Redmi Note 13 Pro+', 'Redmi Note 13 Pro', 'Redmi Note 13', 'Redmi 13C', 'Redmi A3'],
+    'Realme': ['Realme 12 Pro+', 'Realme 12 Pro', 'Realme 12', 'Realme 11 Pro+', 'Realme 11 Pro', 'Realme Narzo 60 Pro', 'Realme C67'],
+    'Oppo': ['Oppo Reno 11 Pro', 'Oppo Reno 11', 'Oppo F25 Pro', 'Oppo A79', 'Oppo A59', 'Oppo Find N3'],
+    'Vivo': ['Vivo V30 Pro', 'Vivo V30', 'Vivo V29 Pro', 'Vivo Y100', 'Vivo Y56', 'Vivo Y27', 'Vivo T2 Pro'],
+    'Motorola': ['Moto Edge 50 Pro', 'Moto Edge 40 Neo', 'Moto G84', 'Moto G54', 'Moto G34', 'Moto E13'],
+    'Nokia': ['Nokia G42', 'Nokia G22', 'Nokia C32', 'Nokia C22', 'Nokia 105', 'Nokia 110'],
+    'Google': ['Pixel 8 Pro', 'Pixel 8', 'Pixel 7a', 'Pixel 7 Pro', 'Pixel 7', 'Pixel Fold'],
+    'Asus': ['ROG Phone 8 Pro', 'ROG Phone 7', 'Zenfone 10', 'Zenfone 11 Ultra'],
+    'Nothing': ['Nothing Phone 2', 'Nothing Phone 2a', 'Nothing Phone 1'],
+    'Poco': ['Poco X6 Pro', 'Poco X6', 'Poco M6 Pro', 'Poco C65', 'Poco F5'],
+    'Infinix': ['Infinix Note 30 Pro', 'Infinix Note 30', 'Infinix Hot 40 Pro', 'Infinix Smart 8'],
+    'Tecno': ['Tecno Phantom X2 Pro', 'Tecno Camon 20 Pro', 'Tecno Spark 10 Pro', 'Tecno Pop 8']
+  };
+  
   // If brands exist in localStorage, use them
   if (brands.length > 0) {
     brands.filter(b => b.active).forEach(brand => {
@@ -734,11 +769,7 @@ function loadBrandsAndModels() {
     });
   } else {
     // If no brands in localStorage, show some default popular brands
-    const defaultBrands = [
-      'Apple', 'Samsung', 'OnePlus', 'Xiaomi', 'Realme', 
-      'Oppo', 'Vivo', 'Motorola', 'Nokia', 'Google',
-      'Asus', 'Nothing', 'Poco', 'Infinix', 'Tecno'
-    ];
+    const defaultBrands = Object.keys(defaultBrandModels);
     
     defaultBrands.forEach(brandName => {
       const option = document.createElement('option');
@@ -748,7 +779,7 @@ function loadBrandsAndModels() {
     });
   }
   
-  return { brands, brandModels };
+  return { brands, brandModels, defaultBrandModels };
 }
 
 function updateModelOptions() {
@@ -756,21 +787,50 @@ function updateModelOptions() {
   const brands = JSON.parse(localStorage.getItem('brands') || '[]');
   const brandModels = JSON.parse(localStorage.getItem('brandModels') || '[]');
   
+  const defaultBrandModels = {
+    'Apple': ['iPhone 15 Pro Max', 'iPhone 15 Pro', 'iPhone 15 Plus', 'iPhone 15', 'iPhone 14 Pro Max', 'iPhone 14 Pro', 'iPhone 14', 'iPhone 13', 'iPhone SE'],
+    'Samsung': ['Galaxy S24 Ultra', 'Galaxy S24+', 'Galaxy S24', 'Galaxy S23 Ultra', 'Galaxy A54', 'Galaxy A34', 'Galaxy M34', 'Galaxy F54', 'Galaxy Z Fold 5', 'Galaxy Z Flip 5'],
+    'OnePlus': ['OnePlus 12', 'OnePlus 11', 'OnePlus Nord 3', 'OnePlus Nord CE 3', 'OnePlus 11R', 'OnePlus 10 Pro', 'OnePlus 10T'],
+    'Xiaomi': ['Xiaomi 14 Pro', 'Xiaomi 14', 'Xiaomi 13 Pro', 'Redmi Note 13 Pro+', 'Redmi Note 13 Pro', 'Redmi Note 13', 'Redmi 13C', 'Redmi A3'],
+    'Realme': ['Realme 12 Pro+', 'Realme 12 Pro', 'Realme 12', 'Realme 11 Pro+', 'Realme 11 Pro', 'Realme Narzo 60 Pro', 'Realme C67'],
+    'Oppo': ['Oppo Reno 11 Pro', 'Oppo Reno 11', 'Oppo F25 Pro', 'Oppo A79', 'Oppo A59', 'Oppo Find N3'],
+    'Vivo': ['Vivo V30 Pro', 'Vivo V30', 'Vivo V29 Pro', 'Vivo Y100', 'Vivo Y56', 'Vivo Y27', 'Vivo T2 Pro'],
+    'Motorola': ['Moto Edge 50 Pro', 'Moto Edge 40 Neo', 'Moto G84', 'Moto G54', 'Moto G34', 'Moto E13'],
+    'Nokia': ['Nokia G42', 'Nokia G22', 'Nokia C32', 'Nokia C22', 'Nokia 105', 'Nokia 110'],
+    'Google': ['Pixel 8 Pro', 'Pixel 8', 'Pixel 7a', 'Pixel 7 Pro', 'Pixel 7', 'Pixel Fold'],
+    'Asus': ['ROG Phone 8 Pro', 'ROG Phone 7', 'Zenfone 10', 'Zenfone 11 Ultra'],
+    'Nothing': ['Nothing Phone 2', 'Nothing Phone 2a', 'Nothing Phone 1'],
+    'Poco': ['Poco X6 Pro', 'Poco X6', 'Poco M6 Pro', 'Poco C65', 'Poco F5'],
+    'Infinix': ['Infinix Note 30 Pro', 'Infinix Note 30', 'Infinix Hot 40 Pro', 'Infinix Smart 8'],
+    'Tecno': ['Tecno Phantom X2 Pro', 'Tecno Camon 20 Pro', 'Tecno Spark 10 Pro', 'Tecno Pop 8']
+  };
+  
   const modelSelect = document.getElementById('productModel');
   modelSelect.innerHTML = '<option value="">Select model</option>';
   
   if (!selectedBrandName) return;
   
+  // First, try to find brand in localStorage
   const selectedBrand = brands.find(b => b.name === selectedBrandName);
-  if (!selectedBrand) return;
   
-  const models = brandModels.filter(m => m.brandId === selectedBrand.id && m.active);
-  models.forEach(model => {
-    const option = document.createElement('option');
-    option.value = model.name;
-    option.textContent = model.name;
-    modelSelect.appendChild(option);
-  });
+  if (selectedBrand) {
+    // Use models from localStorage
+    const models = brandModels.filter(m => m.brandId === selectedBrand.id && m.active);
+    models.forEach(model => {
+      const option = document.createElement('option');
+      option.value = model.name;
+      option.textContent = model.name;
+      modelSelect.appendChild(option);
+    });
+  } else if (defaultBrandModels[selectedBrandName]) {
+    // Use default models for the brand
+    defaultBrandModels[selectedBrandName].forEach(modelName => {
+      const option = document.createElement('option');
+      option.value = modelName;
+      option.textContent = modelName;
+      modelSelect.appendChild(option);
+    });
+  }
 }
 
 function openAddProductModal() {
@@ -810,7 +870,7 @@ async function saveProduct() {
     nameHindi: null,
     nameConvertLatin: null,
     brand: document.getElementById('productBrand').value || null,
-    sizeBrand: null,
+    sizeBrand: document.getElementById('productType').value || null,
     model: document.getElementById('productModel').value || null,
     category: document.getElementById('productCategory').value,
     imeiNumber: document.getElementById('productIMEI').value || null,
@@ -882,6 +942,7 @@ async function editProduct(id) {
     document.getElementById('productBrand').value = product.brand || '';
     updateModelOptions();
     document.getElementById('productModel').value = product.model || '';
+    document.getElementById('productType').value = product.sizeBrand || '';
     
     document.getElementById('productCategory').value = product.category;
     document.getElementById('productIMEI').value = product.imeiNumber || '';
