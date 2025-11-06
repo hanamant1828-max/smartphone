@@ -128,8 +128,8 @@ export function render(app) {
                 <input type="text" id="productName" class="form-input" required data-testid="input-product-name" />
               </div>
               
-              <!-- Row 2: Category, Product Name (Dual Language), Hindi -->
-              <div class="form-group">
+              <!-- Row 2: Category (span 3) -->
+              <div class="form-group" style="grid-column: span 3;">
                 <label for="productCategory" class="form-label">Category*</label>
                 <select id="productCategory" class="form-select" required data-testid="select-product-category">
                   <option value="">Select category</option>
@@ -138,29 +138,6 @@ export function render(app) {
                   <option value="accessory">Accessory</option>
                   <option value="spare_part">Spare Part</option>
                 </select>
-              </div>
-              
-              <div class="form-group">
-                <label for="productBrand" class="form-label">Product Name (Dual Language)</label>
-                <input type="text" id="productBrand" class="form-input" data-testid="input-product-brand" />
-              </div>
-              
-              <div class="form-group">
-                <label for="productHindi" class="form-label">Hindi</label>
-                <input type="text" id="productHindi" class="form-input" data-testid="input-product-hindi" />
-              </div>
-              
-              <!-- Row 3: Size/Brand, (empty), Convert Latin -->
-              <div class="form-group">
-                <label for="productBrand2" class="form-label">Size / Brand</label>
-                <input type="text" id="productBrand2" class="form-input" data-testid="input-product-brand2" />
-              </div>
-              
-              <div class="form-group"></div>
-              
-              <div class="form-group">
-                <label for="productConvertLatin" class="form-label">Convert Latin</label>
-                <input type="text" id="productConvertLatin" class="form-input" data-testid="input-product-convert-latin" />
               </div>
               
               <!-- Row 4: HSN Code, Check HSN Online button, Part/Group -->
@@ -506,10 +483,10 @@ async function saveProduct() {
   const productId = document.getElementById('productId').value;
   const productData = {
     name: document.getElementById('productName').value,
-    nameHindi: document.getElementById('productHindi').value || null,
-    nameConvertLatin: document.getElementById('productConvertLatin').value || null,
-    brand: document.getElementById('productBrand').value || null,
-    sizeBrand: document.getElementById('productBrand2').value || null,
+    nameHindi: null,
+    nameConvertLatin: null,
+    brand: null,
+    sizeBrand: null,
     model: document.getElementById('productModel').value || null,
     category: document.getElementById('productCategory').value,
     imeiNumber: document.getElementById('productIMEI').value || null,
@@ -571,10 +548,6 @@ async function editProduct(id) {
     document.getElementById('productId').value = product.id;
     document.getElementById('productCode').value = product.productCode || '';
     document.getElementById('productName').value = product.name;
-    document.getElementById('productHindi').value = product.nameHindi || '';
-    document.getElementById('productConvertLatin').value = product.nameConvertLatin || '';
-    document.getElementById('productBrand').value = product.brand || '';
-    document.getElementById('productBrand2').value = product.sizeBrand || '';
     document.getElementById('productModel').value = product.model || '';
     document.getElementById('productCategory').value = product.category;
     document.getElementById('productIMEI').value = product.imeiNumber || '';
