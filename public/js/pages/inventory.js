@@ -128,8 +128,22 @@ export function render(app) {
                 <input type="text" id="productName" class="form-input" required data-testid="input-product-name" />
               </div>
 
-              <!-- Row 2: Category (span 3) -->
-              <div class="form-group" style="grid-column: span 3;">
+              <!-- Row 2: Brand, Model, Category -->
+              <div class="form-group">
+                <label for="productBrand" class="form-label">Brand*</label>
+                <select id="productBrand" class="form-select" required data-testid="select-product-brand" onchange="updateModelOptions()">
+                  <option value="">Select brand</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="productModel" class="form-label">Model*</label>
+                <select id="productModel" class="form-select" required data-testid="select-product-model">
+                  <option value="">Select model</option>
+                </select>
+              </div>
+
+              <div class="form-group">
                 <label for="productCategory" class="form-label">Category*</label>
                 <select id="productCategory" class="form-select" required data-testid="select-product-category">
                   <option value="">Select category</option>
@@ -494,14 +508,55 @@ export async function init(app) {
   window.deleteProduct = deleteProduct;
   window.filterProducts = filterProducts;
   window.setFilter = setFilter;
+  window.updateModelOptions = updateModelOptions;
   // window.handleImageSelect = handleImageSelect; // Removed
   // window.updateImagePreview = updateImagePreview; // Removed
+}
+
+function loadBrandsAndModels() {
+  const brands = JSON.parse(localStorage.getItem('brands') || '[]');
+  const brandModels = JSON.parse(localStorage.getItem('brandModels') || '[]');
+  
+  const brandSelect = document.getElementById('productBrand');
+  brandSelect.innerHTML = '<option value="">Select brand</option>';
+  
+  brands.filter(b => b.active).forEach(brand => {
+    const option = document.createElement('option');
+    option.value = brand.name;
+    option.textContent = brand.name;
+    brandSelect.appendChild(option);
+  });
+  
+  return { brands, brandModels };
+}
+
+function updateModelOptions() {
+  const selectedBrandName = document.getElementById('productBrand').value;
+  const brands = JSON.parse(localStorage.getItem('brands') || '[]');
+  const brandModels = JSON.parse(localStorage.getItem('brandModels') || '[]');
+  
+  const modelSelect = document.getElementById('productModel');
+  modelSelect.innerHTML = '<option value="">Select model</option>';
+  
+  if (!selectedBrandName) return;
+  
+  const selectedBrand = brands.find(b => b.name === selectedBrandName);
+  if (!selectedBrand) return;
+  
+  const models = brandModels.filter(m => m.brandId === selectedBrand.id && m.active);
+  models.forEach(model => {
+    const option = document.createElement('option');
+    option.value = model.name;
+    option.textContent = model.name;
+    modelSelect.appendChild(option);
+  });
 }
 
 function openAddProductModal() {
   document.getElementById('modalTitle').textContent = 'Add New Product';
   document.getElementById('productForm').reset();
   document.getElementById('productId').value = '';
+  loadBrandsAndModels();
   document.getElementById('productModal').classList.remove('hidden');
 }
 
@@ -521,7 +576,7 @@ async function saveProduct() {
     name: document.getElementById('productName').value,
     nameHindi: null,
     nameConvertLatin: null,
-    brand: null, // This field is not present in the form, so it's null
+    brand: document.getElementById('productBrand').value || null,
     sizeBrand: null,
     model: document.getElementById('productModel').value || null,
     category: document.getElementById('productCategory').value,
@@ -588,7 +643,13 @@ async function editProduct(id) {
     document.getElementById('productId').value = product.id;
     document.getElementById('productCode').value = product.productCode || '';
     document.getElementById('productName').value = product.name;
+    
+    // Populate brand and model dropdowns first
+    await loadBrandsAndModels();
+    document.getElementById('productBrand').value = product.brand || '';
+    updateModelOptions();
     document.getElementById('productModel').value = product.model || '';
+    
     document.getElementById('productCategory').value = product.category;
     document.getElementById('productIMEI').value = product.imeiNumber || '';
     document.getElementById('productColor').value = product.color || '';
