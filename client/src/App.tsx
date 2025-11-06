@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Inventory from "@/pages/inventory";
+import AddProduct from "@/pages/add-product";
 import AppLayout from "@/components/layout/app-layout";
 import { useEffect, useState } from "react";
 
@@ -24,6 +25,7 @@ function Router() {
         <Route path="/" component={Dashboard} />
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/inventory" component={Inventory} />
+        <Route path="/add-product" component={AddProduct} />
         {/* Fallback to 404 */}
         <Route component={NotFound} />
       </Switch>

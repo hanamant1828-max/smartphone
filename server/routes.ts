@@ -168,7 +168,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const productData = req.body;
       const product = await storage.createProduct(productData);
       res.status(201).json(product);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Create product error:', error);
       res.status(500).json({ message: 'Failed to create product', error: error.message });
     }
@@ -185,7 +185,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       res.json(product);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Update product error:', error);
       res.status(500).json({ message: 'Failed to update product', error: error.message });
     }
