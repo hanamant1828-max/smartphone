@@ -153,79 +153,117 @@ export function render(app) {
               
               <div class="form-group"></div>
               
-              <!-- Vertical layout: Purchase Price through Alter Unit -->
-              <div class="form-group" style="grid-column: span 1;">
-                <label for="productCostPrice" class="form-label">Purchase Price*</label>
-                <input type="number" id="productCostPrice" class="form-input" step="0.01" required data-testid="input-product-cost-price" />
+              <!-- Price Info Section (2-column layout) -->
+              <div style="grid-column: span 3; margin-top: 16px; margin-bottom: 8px;">
+                <h4 style="font-weight: 600; color: var(--text-primary); font-size: 0.95rem;">Price Info (Fill Compulsory):</h4>
               </div>
               
-              <div class="form-group" style="grid-column: span 2;"></div>
-              
-              <div class="form-group" style="grid-column: span 1;">
-                <label for="productMinStock" class="form-label">Min Stock</label>
-                <input type="number" id="productMinStock" class="form-input" value="0" data-testid="input-product-min-stock" />
+              <!-- Left Column -->
+              <div style="grid-column: span 1;">
+                <div class="form-group">
+                  <label for="productCostPrice" class="form-label">Purchase Price*</label>
+                  <input type="number" id="productCostPrice" class="form-input" step="0.01" required data-testid="input-product-cost-price" />
+                </div>
+                
+                <div class="form-group">
+                  <label for="productMinStock" class="form-label">Min Stock</label>
+                  <input type="number" id="productMinStock" class="form-input" value="0" data-testid="input-product-min-stock" />
+                </div>
+                
+                <div class="form-group">
+                  <label for="productSalesDiscount" class="form-label">Sales Discount %</label>
+                  <input type="number" id="productSalesDiscount" class="form-input" step="0.01" value="0.00" data-testid="input-product-sales-discount" />
+                </div>
+                
+                <div class="form-group">
+                  <label for="productPurchaseUnit" class="form-label">Purchase Main Unit</label>
+                  <input type="text" id="productPurchaseUnit" class="form-input" placeholder="GST %" data-testid="input-product-purchase-unit" />
+                </div>
+                
+                <div class="form-group">
+                  <label for="productSalesUnit" class="form-label">Sales Main Unit</label>
+                  <input type="text" id="productSalesUnit" class="form-input" placeholder="LOT NO" data-testid="input-product-sales-unit" />
+                </div>
+                
+                <div class="form-group">
+                  <label for="productAlterUnit" class="form-label">Alter Unit</label>
+                  <input type="text" id="productAlterUnit" class="form-input" data-testid="input-product-alter-unit" />
+                </div>
               </div>
               
-              <div class="form-group" style="grid-column: span 2;"></div>
-              
-              <div class="form-group" style="grid-column: span 1;">
-                <label for="productSalesDiscount" class="form-label">Sales Discount %</label>
-                <input type="number" id="productSalesDiscount" class="form-input" step="0.01" value="0.00" data-testid="input-product-sales-discount" />
-              </div>
-              
-              <div class="form-group" style="grid-column: span 2;"></div>
-              
-              <div class="form-group" style="grid-column: span 1;">
-                <label for="productPurchaseUnit" class="form-label">Purchase Main Unit</label>
-                <input type="text" id="productPurchaseUnit" class="form-input" placeholder="GST %" data-testid="input-product-purchase-unit" />
-              </div>
-              
-              <div class="form-group" style="grid-column: span 2;"></div>
-              
-              <div class="form-group" style="grid-column: span 1;">
-                <label for="productSalesUnit" class="form-label">Sales Main Unit</label>
-                <input type="text" id="productSalesUnit" class="form-input" placeholder="LOT NO" data-testid="input-product-sales-unit" />
-              </div>
-              
-              <div class="form-group" style="grid-column: span 2;"></div>
-              
-              <div class="form-group" style="grid-column: span 1;">
-                <label for="productAlterUnit" class="form-label">Alter Unit</label>
-                <input type="text" id="productAlterUnit" class="form-input" data-testid="input-product-alter-unit" />
-              </div>
-              
-              <div class="form-group" style="grid-column: span 2;"></div>
-              
-              <!-- Row 9: MRP, Retail Sale Price, Wholesale Price -->
-              <div class="form-group">
-                <label for="productMRP" class="form-label">MRP</label>
-                <input type="number" id="productMRP" class="form-input" step="0.01" value="0.00" data-testid="input-product-mrp" />
-              </div>
-              
-              <div class="form-group">
-                <label for="productPrice" class="form-label">Retail Sale Price*</label>
-                <input type="number" id="productPrice" class="form-input" step="0.01" required data-testid="input-product-price" />
-              </div>
-              
-              <div class="form-group">
-                <label for="productWholesalePrice" class="form-label">Wholesale Price</label>
-                <input type="number" id="productWholesalePrice" class="form-input" step="0.01" value="0.00" data-testid="input-product-wholesale-price" />
-              </div>
-              
-              <!-- Row 10: GST %, SGST (IGST) %, CESS % -->
-              <div class="form-group">
-                <label for="productGST" class="form-label">GST %</label>
-                <input type="number" id="productGST" class="form-input" step="0.01" value="0.00" data-testid="input-product-gst" />
-              </div>
-              
-              <div class="form-group">
-                <label for="productSGST" class="form-label">SGST (IGST) %</label>
-                <input type="number" id="productSGST" class="form-input" step="0.01" value="0.00" data-testid="input-product-sgst" />
-              </div>
-              
-              <div class="form-group">
-                <label for="productCESS" class="form-label">CESS %</label>
-                <input type="number" id="productCESS" class="form-input" step="0.01" value="0.00" data-testid="input-product-cess" />
+              <!-- Right Column -->
+              <div style="grid-column: span 2;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 8px;">
+                  <div style="text-align: right; padding-top: 8px;">
+                    <label class="form-label" style="margin-bottom: 0;">Margin %:</label>
+                  </div>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" />
+                    <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" />
+                  </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                  <div class="form-group" style="margin: 0;">
+                    <label for="productMRP" class="form-label">MRP</label>
+                    <input type="number" id="productMRP" class="form-input" step="0.01" value="0.00" data-testid="input-product-mrp" />
+                  </div>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" />
+                    <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" />
+                  </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                  <div class="form-group" style="margin: 0;">
+                    <label for="productPrice" class="form-label">Retail Sale Price*</label>
+                    <input type="number" id="productPrice" class="form-input" step="0.01" required data-testid="input-product-price" />
+                  </div>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" />
+                    <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" />
+                  </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                  <div class="form-group" style="margin: 0;">
+                    <label for="productWholesalePrice" class="form-label">Wholesale Price</label>
+                    <input type="number" id="productWholesalePrice" class="form-input" step="0.01" value="0.00" data-testid="input-product-wholesale-price" />
+                  </div>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" />
+                    <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" />
+                  </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                  <div class="form-group" style="margin: 0;">
+                    <label for="productGST" class="form-label">GST %</label>
+                    <input type="number" id="productGST" class="form-input" step="0.01" value="0.00" data-testid="input-product-gst" />
+                  </div>
+                  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                    <div style="text-align: center;">
+                      <label style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">CGST %:</label>
+                      <input type="number" class="form-input" step="0.01" value="0.00" style="text-align: center;" readonly />
+                    </div>
+                    <div style="text-align: center;">
+                      <label style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">SGST/UTGST %:</label>
+                      <input type="number" id="productSGST" class="form-input" step="0.01" value="0.00" data-testid="input-product-sgst" style="text-align: center;" readonly />
+                    </div>
+                    <div style="text-align: center;">
+                      <label style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">IGST %:</label>
+                      <input type="number" class="form-input" step="0.01" value="0.00" style="text-align: center;" readonly />
+                    </div>
+                  </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                  <div></div>
+                  <div class="form-group" style="margin: 0;">
+                    <label for="productCESS" class="form-label">CESS %</label>
+                    <input type="number" id="productCESS" class="form-input" step="0.01" value="0.00" data-testid="input-product-cess" />
+                  </div>
+                </div>
               </div>
               
               <!-- Row 11: (empty row for spacing) -->
