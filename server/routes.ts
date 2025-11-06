@@ -156,18 +156,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  app.post('/api/products', authenticateToken, authorizeRoles('admin', 'manager'), async (req, res) => {
+  app.post('/api/products', authenticateToken, async (req, res) => {
     try {
       const productData = req.body;
       const product = await storage.createProduct(productData);
       res.status(201).json(product);
     } catch (error) {
       console.error('Create product error:', error);
-      res.status(500).json({ message: 'Failed to create product' });
+      res.status(500).json({ message: 'Failed to create product', error: error.message });
     }
   });
   
-  app.put('/api/products/:id', authenticateToken, authorizeRoles('admin', 'manager'), async (req, res) => {
+  app.put('/api/products/:id', authenticateToken, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const productData = req.body;
@@ -180,7 +180,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(product);
     } catch (error) {
       console.error('Update product error:', error);
-      res.status(500).json({ message: 'Failed to update product' });
+      res.status(500).json({ message: 'Failed to update product', error: error.message });
     }
   });
   

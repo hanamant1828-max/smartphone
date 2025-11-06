@@ -118,12 +118,12 @@ export function render(app) {
               <!-- Product Code -->
               <div class="form-group">
                 <label for="productCode" class="form-label">Product Code*</label>
-                <input type="text" id="productCode" class="form-input" required data-testid="input-product-code" />
+                <input type="text" id="productCode" class="form-input" data-testid="input-product-code" />
               </div>
               
               <!-- Product Name -->
               <div class="form-group" style="grid-column: span 2;">
-                <label for="productName" class="form-label">Product Name*</label>
+                <label for="productName" class="form-label">Product Name (Dual Language)*</label>
                 <input type="text" id="productName" class="form-input" required data-testid="input-product-name" />
               </div>
               
@@ -151,16 +151,45 @@ export function render(app) {
                 <input type="text" id="productModel" class="form-input" data-testid="input-product-model" />
               </div>
               
+              <!-- Size / Brand -->
+              <div class="form-group">
+                <label for="productBrand2" class="form-label">Size / Brand</label>
+                <input type="text" id="productBrand2" class="form-input" data-testid="input-product-brand2" />
+              </div>
+              
+              <!-- Hindi -->
+              <div class="form-group">
+                <label for="productHindi" class="form-label">Hindi</label>
+                <input type="text" id="productHindi" class="form-input" data-testid="input-product-hindi" />
+              </div>
+              
+              <!-- Convert Latin -->
+              <div class="form-group">
+                <label for="productConvertLatin" class="form-label">Convert Latin</label>
+                <input type="text" id="productConvertLatin" class="form-input" data-testid="input-product-convert-latin" />
+              </div>
+              
               <!-- HSN Code -->
               <div class="form-group">
                 <label for="productHSN" class="form-label">HSN Code</label>
                 <input type="text" id="productHSN" class="form-input" data-testid="input-product-hsn" />
               </div>
               
+              <!-- Check HSN Online -->
+              <div class="form-group">
+                <button type="button" class="btn btn-outline" style="margin-top: 24px;">Check HSN Online</button>
+              </div>
+              
               <!-- Part/Group -->
               <div class="form-group">
                 <label for="productPart" class="form-label">Part/Group</label>
                 <input type="text" id="productPart" class="form-input" data-testid="input-product-part" />
+              </div>
+              
+              <!-- Save into Unit Categories -->
+              <div class="form-group" style="grid-column: span 2;">
+                <label for="productUnitCategory" class="form-label">Save into Unit Categories</label>
+                <input type="text" id="productUnitCategory" class="form-input" placeholder="(Optional)" data-testid="input-product-unit-category" />
               </div>
               
               <!-- Purchase Price -->
@@ -443,21 +472,21 @@ async function saveProduct() {
   const productId = document.getElementById('productId').value;
   const productData = {
     name: document.getElementById('productName').value,
-    brand: document.getElementById('productBrand').value,
-    model: document.getElementById('productModel').value,
+    brand: document.getElementById('productBrand').value || null,
+    model: document.getElementById('productModel').value || null,
     category: document.getElementById('productCategory').value,
     imeiNumber: document.getElementById('productIMEI').value || null,
     color: document.getElementById('productColor').value || null,
     storage: document.getElementById('productStorage').value || null,
     ram: document.getElementById('productRAM').value || null,
-    costPrice: parseFloat(document.getElementById('productCostPrice').value),
-    price: parseFloat(document.getElementById('productPrice').value),
-    stockQuantity: parseInt(document.getElementById('productStock').value),
+    costPrice: parseFloat(document.getElementById('productCostPrice').value) || 0,
+    price: parseFloat(document.getElementById('productPrice').value) || 0,
+    stockQuantity: parseInt(document.getElementById('productStock').value) || 0,
     minStockLevel: parseInt(document.getElementById('productMinStock').value) || 0,
     description: document.getElementById('productDescription').value || null,
     isActive: true,
     // Extended fields
-    productCode: document.getElementById('productCode').value || null,
+    productCode: document.getElementById('productCode').value || `PRD${Date.now()}`,
     hsnCode: document.getElementById('productHSN').value || null,
     partGroup: document.getElementById('productPart').value || null,
     salesDiscount: parseFloat(document.getElementById('productSalesDiscount').value) || 0,
