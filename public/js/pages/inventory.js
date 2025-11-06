@@ -277,12 +277,28 @@ export function render(app) {
               <!-- Row 13: Storage/Godown, Rack/Location, (empty) -->
               <div class="form-group">
                 <label for="productStorage" class="form-label">Storage / Godown</label>
-                <input type="text" id="productStorage" class="form-input" data-testid="input-product-storage" />
+                <select id="productStorage" class="form-select" data-testid="select-product-storage" style="background-color: #ffffcc;">
+                  <option value="">Select Storage/Godown</option>
+                  <option value="main_warehouse">Main Warehouse</option>
+                  <option value="godown_a">Godown A</option>
+                  <option value="godown_b">Godown B</option>
+                  <option value="shop_floor">Shop Floor</option>
+                  <option value="back_store">Back Store</option>
+                </select>
               </div>
 
               <div class="form-group">
                 <label for="productRack" class="form-label">Rack / Location</label>
-                <input type="text" id="productRack" class="form-input" data-testid="input-product-rack" />
+                <select id="productRack" class="form-select" data-testid="select-product-rack" style="background-color: #ffffcc;">
+                  <option value="">Select Rack/Location</option>
+                  <option value="rack_a1">Rack A1</option>
+                  <option value="rack_a2">Rack A2</option>
+                  <option value="rack_b1">Rack B1</option>
+                  <option value="rack_b2">Rack B2</option>
+                  <option value="rack_c1">Rack C1</option>
+                  <option value="shelf_1">Shelf 1</option>
+                  <option value="shelf_2">Shelf 2</option>
+                </select>
               </div>
 
               <div class="form-group"></div>
@@ -305,14 +321,21 @@ export function render(app) {
               </div>
 
               <div class="form-group">
-                <label for="productModel" class="form-label">Default Sale Qty</label>
-                <input type="text" id="productModel" class="form-input" data-testid="input-product-model" />
+                <label for="productDefaultSaleQty" class="form-label">Default Sale Qty</label>
+                <input type="number" id="productDefaultSaleQty" class="form-input" value="1" data-testid="input-product-default-sale-qty" style="background-color: #ffffcc;" />
               </div>
 
-              <!-- Row 15: Order Print Heading (span 2), (empty) -->
+              <!-- Row 15: Order Print Section (span 2), (empty) -->
               <div class="form-group" style="grid-column: span 2;">
-                <label for="productOrderPrintHeading" class="form-label">Order Print Heading (Optional)</label>
-                <input type="text" id="productOrderPrintHeading" class="form-input" data-testid="input-product-order-print-heading" />
+                <label for="productOrderPrintSection" class="form-label">Order Print Section (Optional)</label>
+                <select id="productOrderPrintSection" class="form-select" data-testid="select-product-order-print-section">
+                  <option value="">Select Print Section</option>
+                  <option value="header">Header Section</option>
+                  <option value="body">Body Section</option>
+                  <option value="footer">Footer Section</option>
+                  <option value="terms">Terms & Conditions</option>
+                  <option value="custom">Custom Section</option>
+                </select>
               </div>
 
               <div class="form-group"></div>
@@ -511,7 +534,8 @@ async function saveProduct() {
     defaultQty: parseInt(document.getElementById('productDefaultQty').value) || 1,
     taxTypeSale: document.getElementById('productTaxTypeSale').value || 'inclusive',
     taxTypePurchase: document.getElementById('productTaxTypePurchase').value || 'inclusive',
-    orderPrintHeading: document.getElementById('productOrderPrintHeading').value || null,
+    defaultSaleQty: parseInt(document.getElementById('productDefaultSaleQty').value) || 1,
+    orderPrintSection: document.getElementById('productOrderPrintSection').value || null,
   };
 
   try {
@@ -571,7 +595,8 @@ async function editProduct(id) {
     document.getElementById('productDefaultQty').value = product.defaultQty || 1;
     document.getElementById('productTaxTypeSale').value = product.taxTypeSale || 'inclusive';
     document.getElementById('productTaxTypePurchase').value = product.taxTypePurchase || 'inclusive';
-    document.getElementById('productOrderPrintHeading').value = product.orderPrintHeading || '';
+    document.getElementById('productDefaultSaleQty').value = product.defaultSaleQty || 1;
+    document.getElementById('productOrderPrintSection').value = product.orderPrintSection || '';
 
     // Image preview update logic removed as the feature is removed.
     // if (product.imageUrl) {

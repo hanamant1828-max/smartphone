@@ -78,7 +78,8 @@ export const products = sqliteTable("products", {
   defaultQty: integer("default_qty").default(1),
   taxTypeSale: text("tax_type_sale", { length: 20 }).default('inclusive'),
   taxTypePurchase: text("tax_type_purchase", { length: 20 }).default('inclusive'),
-  orderPrintHeading: text("order_print_heading", { length: 100 }),
+  defaultSaleQty: integer("default_sale_qty").default(1),
+  orderPrintSection: text("order_print_section", { length: 50 }),
   createdAt: integer("created_at", { mode: 'timestamp' }).default(sql`(strftime('%s','now') * 1000)`),
   updatedAt: integer("updated_at", { mode: 'timestamp' }).default(sql`(strftime('%s','now') * 1000)`),
 });
