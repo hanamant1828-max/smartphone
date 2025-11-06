@@ -24,6 +24,7 @@ export function render() {
               class="form-input" 
               placeholder="Enter your username" 
               required
+              autocomplete="username"
               data-testid="input-username"
             />
           </div>
@@ -36,6 +37,7 @@ export function render() {
               class="form-input" 
               placeholder="Enter your password" 
               required
+              autocomplete="current-password"
               data-testid="input-password"
             />
           </div>
