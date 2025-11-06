@@ -193,39 +193,34 @@ export function render(app) {
 
               <!-- Right Column -->
               <div style="grid-column: span 2;">
-                <div style="display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start; margin-bottom: 16px;">
-                  <div style="padding-top: 32px;">
-                    <label class="form-label" style="margin-bottom: 0; white-space: nowrap;">Margin %:</label>
-                  </div>
-                  <div style="display: flex; flex-direction: column; gap: 16px;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                      <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" />
-                      <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" />
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                      <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" />
-                      <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" />
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                      <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" />
-                      <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" />
-                    </div>
-                  </div>
+                <div style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 16px; align-items: center; margin-bottom: 16px;">
+                  <label class="form-label" style="margin: 0; white-space: nowrap;"></label>
+                  <div style="text-align: center; font-weight: 500; color: var(--text-secondary); font-size: 0.9rem;">Margin %:</div>
+                  <div></div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; margin-bottom: 16px;">
-                  <label for="productMRP" class="form-label" style="margin: 0;">MRP:</label>
-                  <input type="number" id="productMRP" class="form-input" step="0.01" value="0.00" data-testid="input-product-mrp" style="margin: 0;" />
+                <div style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 16px; align-items: center; margin-bottom: 16px;">
+                  <label for="productMRP" class="form-label" style="margin: 0; white-space: nowrap;">MRP:</label>
+                  <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" data-testid="input-margin-mrp-1" />
+                  <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" data-testid="input-margin-mrp-2" />
                 </div>
 
-                <div style="display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; margin-bottom: 16px;">
-                  <label for="productPrice" class="form-label" style="margin: 0;">Retail Sale Price*:</label>
-                  <input type="number" id="productPrice" class="form-input" step="0.01" required data-testid="input-product-price" style="margin: 0;" />
+                <div style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 16px; align-items: center; margin-bottom: 16px;">
+                  <label for="productPrice" class="form-label" style="margin: 0; white-space: nowrap;">Retail Sale Price*:</label>
+                  <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" data-testid="input-margin-retail-1" />
+                  <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" data-testid="input-margin-retail-2" />
                 </div>
 
-                <div style="display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; margin-bottom: 16px;">
-                  <label for="productWholesalePrice" class="form-label" style="margin: 0;">Wholesale Price:</label>
-                  <input type="number" id="productWholesalePrice" class="form-input" step="0.01" value="0.00" data-testid="input-product-wholesale-price" style="margin: 0;" />
+                <div style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 16px; align-items: center; margin-bottom: 16px;">
+                  <label for="productWholesalePrice" class="form-label" style="margin: 0; white-space: nowrap;">Wholesale Price:</label>
+                  <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" data-testid="input-margin-wholesale-1" />
+                  <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" data-testid="input-margin-wholesale-2" />
+                </div>
+
+                <div style="margin-top: 24px; margin-bottom: 16px;">
+                  <input type="number" id="productMRP" class="form-input" step="0.01" value="0.00" data-testid="input-product-mrp" style="display: none;" />
+                  <input type="number" id="productPrice" class="form-input" step="0.01" required data-testid="input-product-price" style="display: none;" />
+                  <input type="number" id="productWholesalePrice" class="form-input" step="0.01" value="0.00" data-testid="input-product-wholesale-price" style="display: none;" />
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
