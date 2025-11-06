@@ -21,6 +21,7 @@ let paymentMethods = [
 
 let currentTab = 'categories';
 let selectedBrandForModels = null;
+let batches = [];
 
 export function render(app) {
   return wrapWithLayout(`
@@ -52,6 +53,13 @@ export function render(app) {
           data-testid="tab-models"
         >
           Models
+        </button>
+        <button 
+          class="tab-button ${currentTab === 'batches' ? 'active' : ''}" 
+          onclick="switchTab('batches')"
+          data-testid="tab-batches"
+        >
+          Batch Management
         </button>
         <button 
           class="tab-button ${currentTab === 'payment' ? 'active' : ''}" 
@@ -154,6 +162,69 @@ export function render(app) {
       </div>
     </div>
     
+    <!-- Batch Modal -->
+    <div id="batchModal" class="modal-backdrop hidden">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title" id="batchModalTitle">Add Batch</h3>
+          <button class="modal-close" onclick="closeBatchModal()" data-testid="button-close-batch-modal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <form id="batchForm">
+            <input type="hidden" id="batchId" />
+            
+            <div class="form-group">
+              <label for="batchNumber" class="form-label">Batch/Serial Number*</label>
+              <input type="text" id="batchNumber" class="form-input" required data-testid="input-batch-number" />
+            </div>
+            
+            <div class="form-group">
+              <label for="batchProductName" class="form-label">Product Name</label>
+              <input type="text" id="batchProductName" class="form-input" placeholder="Optional" data-testid="input-batch-product" />
+            </div>
+            
+            <div class="form-group">
+              <label for="batchMfgDate" class="form-label">Manufacturing Date</label>
+              <input type="date" id="batchMfgDate" class="form-input" data-testid="input-batch-mfg-date" />
+            </div>
+            
+            <div class="form-group">
+              <label for="batchExpiryDate" class="form-label">Expiry Date</label>
+              <input type="date" id="batchExpiryDate" class="form-input" data-testid="input-batch-expiry-date" />
+            </div>
+            
+            <div class="form-group">
+              <label for="batchQuantity" class="form-label">Quantity</label>
+              <input type="number" id="batchQuantity" class="form-input" min="0" value="0" data-testid="input-batch-quantity" />
+            </div>
+            
+            <div class="form-group">
+              <label for="batchNotes" class="form-label">Notes</label>
+              <textarea id="batchNotes" class="form-textarea" rows="2" data-testid="textarea-batch-notes"></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label class="flex items-center gap-2">
+                <input type="checkbox" id="batchActive" checked data-testid="checkbox-batch-active" />
+                <span>Active</span>
+              </label>
+            </div>
+          </form>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn btn-outline" onclick="closeBatchModal()" data-testid="button-cancel-batch">Cancel</button>
+          <button class="btn btn-primary" onclick="saveBatch()" data-testid="button-save-batch">Save Batch</button>
+        </div>
+      </div>
+    </div>
+    
     <!-- Brand Model Modal -->
     <div id="brandModelModal" class="modal-backdrop hidden">
       <div class="modal">
@@ -215,6 +286,8 @@ function renderTabContent() {
       return renderBrandsTab();
     case 'models':
       return renderModelsTab();
+    case 'batches':
+      return renderBatchesTab();
     case 'payment':
       return renderPaymentTab();
     case 'settings':
@@ -632,6 +705,114 @@ function renderBrandModelsPanel() {
   `;
 }
 
+function renderBatchesTab() {
+  return `
+    <div class="card">
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h3 style="font-size: 1.125rem; font-weight: 500; margin-bottom: 4px;">Batch Management</h3>
+          <p style="color: var(--text-secondary); font-size: 0.875rem;">Track product batches with serial numbers, manufacturing and expiry dates</p>
+        </div>
+        <button class="btn btn-primary" onclick="openAddBatchModal()" data-testid="button-add-batch">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Add Batch
+        </button>
+      </div>
+      
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Batch Number</th>
+              <th>Product Name</th>
+              <th>Mfg. Date</th>
+              <th>Expiry Date</th>
+              <th>Quantity</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${batches.length === 0 ? `
+              <tr>
+                <td colspan="7" class="text-center" style="padding: 48px;">
+                  <div style="color: var(--text-secondary);">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin: 0 auto 16px; opacity: 0.3;">
+                      <rect x="3" y="3" width="18" height="18" rx="2"/>
+                      <path d="M9 3v18"/>
+                      <path d="M15 3v18"/>
+                      <path d="M3 9h18"/>
+                      <path d="M3 15h18"/>
+                    </svg>
+                    <h4 style="margin-bottom: 8px;">No batches added yet</h4>
+                    <p style="margin-bottom: 16px;">Start by adding your first product batch</p>
+                    <button class="btn btn-primary" onclick="openAddBatchModal()">Add Your First Batch</button>
+                  </div>
+                </td>
+              </tr>
+            ` : batches.map((batch, index) => {
+              const isExpired = batch.expiryDate && new Date(batch.expiryDate) < new Date();
+              const isExpiringSoon = batch.expiryDate && new Date(batch.expiryDate) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+              
+              return `
+              <tr data-testid="row-batch-${batch.id}">
+                <td><strong>${batch.batchNumber}</strong></td>
+                <td>${batch.productName || '-'}</td>
+                <td>${batch.mfgDate ? new Date(batch.mfgDate).toLocaleDateString() : '-'}</td>
+                <td>
+                  ${batch.expiryDate ? `
+                    <span style="color: ${isExpired ? 'var(--error-color)' : isExpiringSoon ? 'var(--warning-color)' : 'inherit'}">
+                      ${new Date(batch.expiryDate).toLocaleDateString()}
+                    </span>
+                  ` : '-'}
+                </td>
+                <td><span class="badge badge-primary">${batch.quantity || 0}</span></td>
+                <td>
+                  <span class="badge badge-${batch.active ? 'success' : 'secondary'}">
+                    ${batch.active ? 'Active' : 'Inactive'}
+                  </span>
+                  ${isExpired ? '<span class="badge badge-error ml-2">Expired</span>' : ''}
+                  ${isExpiringSoon && !isExpired ? '<span class="badge badge-warning ml-2">Expiring Soon</span>' : ''}
+                </td>
+                <td>
+                  <div class="flex gap-2">
+                    <button 
+                      class="btn btn-outline btn-sm btn-icon" 
+                      onclick="editBatch(${index})"
+                      data-testid="button-edit-batch-${batch.id}"
+                      title="Edit"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                      </svg>
+                    </button>
+                    <button 
+                      class="btn btn-error btn-sm btn-icon" 
+                      onclick="deleteBatch(${index})"
+                      data-testid="button-delete-batch-${batch.id}"
+                      title="Delete"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
 function renderPaymentTab() {
   return `
     <div class="card">
@@ -781,6 +962,11 @@ export async function init(app) {
   window.saveLoyaltySettings = saveLoyaltySettings;
   window.saveInvoiceSettings = saveInvoiceSettings;
   window.saveStockSettings = saveStockSettings;
+  window.openAddBatchModal = openAddBatchModal;
+  window.closeBatchModal = closeBatchModal;
+  window.saveBatch = saveBatch;
+  window.editBatch = editBatch;
+  window.deleteBatch = deleteBatch;
 }
 
 function loadMasterData() {
@@ -813,6 +999,12 @@ function loadMasterData() {
       { id: 4, brandId: 2, name: 'S24 Ultra', description: 'Latest flagship', active: true }
     ];
     localStorage.setItem('brandModels', JSON.stringify(brandModels));
+  }
+  
+  // Load batches from localStorage
+  const savedBatches = localStorage.getItem('batches');
+  if (savedBatches) {
+    batches = JSON.parse(savedBatches);
   }
 }
 
@@ -970,6 +1162,76 @@ function saveStockSettings() {
   const emailAlerts = document.getElementById('emailAlerts').checked;
   localStorage.setItem('stockSettings', JSON.stringify({ lowStockThreshold, emailAlerts }));
   showToast('Stock settings saved successfully', 'success');
+}
+
+function openAddBatchModal() {
+  document.getElementById('batchModalTitle').textContent = 'Add Batch';
+  document.getElementById('batchForm').reset();
+  document.getElementById('batchId').value = '';
+  document.getElementById('batchActive').checked = true;
+  document.getElementById('batchModal').classList.remove('hidden');
+}
+
+function closeBatchModal() {
+  document.getElementById('batchModal').classList.add('hidden');
+}
+
+function saveBatch() {
+  const form = document.getElementById('batchForm');
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+  
+  const batchId = document.getElementById('batchId').value;
+  const batchData = {
+    id: batchId ? parseInt(batchId) : Date.now(),
+    batchNumber: document.getElementById('batchNumber').value,
+    productName: document.getElementById('batchProductName').value || null,
+    mfgDate: document.getElementById('batchMfgDate').value || null,
+    expiryDate: document.getElementById('batchExpiryDate').value || null,
+    quantity: parseInt(document.getElementById('batchQuantity').value) || 0,
+    notes: document.getElementById('batchNotes').value || null,
+    active: document.getElementById('batchActive').checked,
+    createdAt: batchId ? batches.find(b => b.id === parseInt(batchId)).createdAt : new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  
+  if (batchId) {
+    const index = batches.findIndex(b => b.id === parseInt(batchId));
+    batches[index] = batchData;
+    showToast('Batch updated successfully', 'success');
+  } else {
+    batches.push(batchData);
+    showToast('Batch added successfully', 'success');
+  }
+  
+  localStorage.setItem('batches', JSON.stringify(batches));
+  closeBatchModal();
+  switchTab('batches');
+}
+
+function editBatch(index) {
+  const batch = batches[index];
+  document.getElementById('batchModalTitle').textContent = 'Edit Batch';
+  document.getElementById('batchId').value = batch.id;
+  document.getElementById('batchNumber').value = batch.batchNumber;
+  document.getElementById('batchProductName').value = batch.productName || '';
+  document.getElementById('batchMfgDate').value = batch.mfgDate || '';
+  document.getElementById('batchExpiryDate').value = batch.expiryDate || '';
+  document.getElementById('batchQuantity').value = batch.quantity || 0;
+  document.getElementById('batchNotes').value = batch.notes || '';
+  document.getElementById('batchActive').checked = batch.active;
+  document.getElementById('batchModal').classList.remove('hidden');
+}
+
+function deleteBatch(index) {
+  if (confirm('Are you sure you want to delete this batch?')) {
+    batches.splice(index, 1);
+    localStorage.setItem('batches', JSON.stringify(batches));
+    showToast('Batch deleted successfully', 'success');
+    switchTab('batches');
+  }
 }
 
 function toggleBrandAccordion(brandId) {
