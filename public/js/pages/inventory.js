@@ -394,6 +394,62 @@ export function render(app) {
 
               <!-- Right side: Action buttons column -->
               <div style="display: flex; flex-direction: column; gap: 12px; align-self: start; position: sticky; top: 20px;">
+                <!-- Photo Upload Section -->
+                <div style="border: 2px solid #e0e0e0; border-radius: 8px; overflow: hidden; background: white;">
+                  <div style="background: linear-gradient(180deg, #9B59B6 0%, #8E44AD 100%); color: white; padding: 12px; text-align: center; font-weight: 600; font-size: 16px;">
+                    Photo
+                  </div>
+                  <div style="position: relative; background: #f5f5f5; height: 280px; display: flex; align-items: center; justify-content: center;">
+                    <img id="productImagePreview" src="" alt="" style="display: none; max-width: 100%; max-height: 100%; object-fit: contain;" />
+                    <div id="noImagePlaceholder" style="text-align: center; color: #999;">
+                      <div style="font-size: 80px; font-weight: bold; line-height: 1;">NO</div>
+                      <div style="font-size: 48px; font-weight: bold; line-height: 1;">IMAGE</div>
+                      <div style="font-size: 32px; font-weight: bold; line-height: 1;">AVAILABLE</div>
+                    </div>
+                    <button type="button" onclick="document.getElementById('productImageInput').click()" style="position: absolute; bottom: 10px; right: 10px; width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(180deg, #A4D65E 0%, #8BC34A 100%); border: 3px solid white; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                        <line x1="12" y1="5" x2="12" y2="19" stroke="white" stroke-width="3"/>
+                        <line x1="5" y1="12" x2="19" y2="12" stroke="white" stroke-width="3"/>
+                      </svg>
+                    </button>
+                    <button type="button" onclick="clearProductImage()" style="position: absolute; bottom: 10px; right: 70px; width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(180deg, #BDBDBD 0%, #9E9E9E 100%); border: 3px solid white; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                        <line x1="18" y1="6" x2="6" y2="18" stroke="white" stroke-width="3"/>
+                        <line x1="6" y1="6" x2="18" y2="18" stroke="white" stroke-width="3"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <div style="padding: 12px; background: white;">
+                    <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 8px;">
+                      <button type="button" onclick="document.getElementById('productImageInput').click()" style="flex: 1; padding: 8px; background: linear-gradient(180deg, #FFE082 0%, #FFD54F 100%); border: 2px solid #FFC107; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="#795548">
+                          <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+                        </svg>
+                      </button>
+                      <button type="button" onclick="showImageLibrary()" style="flex: 1; padding: 8px; background: linear-gradient(180deg, #EF9A9A 0%, #E57373 100%); border: 2px solid #E53935; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
+                          <path d="M9 13h6c.55 0 1-.45 1-1V8c0-.55-.45-1-1-1H9c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1zm0 0"/>
+                          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" stroke="white" stroke-width="1" fill="none"/>
+                        </svg>
+                      </button>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #666;">
+                      <a href="#" onclick="showImageLibrary(); return false;" style="color: #1976D2; text-decoration: underline; flex: 1;">Online Image Library</a>
+                      <div style="display: flex; align-items: center; gap: 4px;">
+                        <span>Image Limit:</span>
+                        <input type="number" value="10" min="1" max="50" style="width: 50px; padding: 4px; border: 1px solid #ddd; border-radius: 4px; text-align: center;" />
+                        <div style="display: flex; flex-direction: column;">
+                          <button type="button" style="padding: 0; width: 20px; height: 12px; border: 1px solid #ddd; background: #f5f5f5; cursor: pointer; border-radius: 2px 2px 0 0;">▲</button>
+                          <button type="button" style="padding: 0; width: 20px; height: 12px; border: 1px solid #ddd; background: #f5f5f5; cursor: pointer; border-radius: 0 0 2px 2px;">▼</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <input type="file" id="productImageInput" accept="image/*" style="display: none;" onchange="handleProductImageSelect(event)" />
+                <input type="text" id="productImageUrl" style="display: none;" />
+                
                 <button type="button" class="btn" style="width: 100%; padding: 16px; background: linear-gradient(180deg, #6B9BD1 0%, #4A7AB8 100%); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" onclick="openAddProductModal()" data-testid="button-new">
                   New
                 </button>
@@ -539,6 +595,9 @@ export async function init(app) {
   window.deleteProductAction = deleteProductAction;
   window.getProductData = getProductData;
   window.generateBarcode = generateBarcode;
+  window.handleProductImageSelect = handleProductImageSelect;
+  window.clearProductImage = clearProductImage;
+  window.showImageLibrary = showImageLibrary;
   // window.handleImageSelect = handleImageSelect; // Removed
   // window.updateImagePreview = updateImagePreview; // Removed
 }
@@ -578,6 +637,45 @@ function generateBarcode() {
   const productCode = document.getElementById('productCode').value || `PRD${Date.now()}`;
   document.getElementById('productBarcode').value = productCode;
   showToast('Barcode generated', 'success');
+}
+
+function handleProductImageSelect(event) {
+  const file = event.target.files[0];
+  if (file) {
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('Image size should be less than 5MB', 'error');
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const preview = document.getElementById('productImagePreview');
+      const placeholder = document.getElementById('noImagePlaceholder');
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+      placeholder.style.display = 'none';
+      document.getElementById('productImageUrl').value = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function clearProductImage() {
+  const preview = document.getElementById('productImagePreview');
+  const placeholder = document.getElementById('noImagePlaceholder');
+  const input = document.getElementById('productImageInput');
+  
+  preview.src = '';
+  preview.style.display = 'none';
+  placeholder.style.display = 'block';
+  input.value = '';
+  document.getElementById('productImageUrl').value = '';
+  
+  showToast('Image cleared', 'info');
+}
+
+function showImageLibrary() {
+  showToast('Online image library feature coming soon', 'info');
 }
 
 function calculatePriceFromMargin(priceType) {
@@ -670,6 +768,9 @@ function openAddProductModal() {
   document.getElementById('priceMRP').value = '0.00';
   document.getElementById('priceRetail').value = '0.00';
   document.getElementById('priceWholesale').value = '0.00';
+  
+  // Reset image preview
+  clearProductImage();
   
   loadBrandsAndModels();
   document.getElementById('productModal').classList.remove('hidden');
@@ -817,10 +918,17 @@ async function editProduct(id) {
     document.getElementById('productMfgDate').value = product.mfgDate ? new Date(product.mfgDate).toISOString().split('T')[0] : '';
     document.getElementById('productExpiryDate').value = product.expiryDate ? new Date(product.expiryDate).toISOString().split('T')[0] : '';
 
-    // Image preview update logic removed as the feature is removed.
-    // if (product.imageUrl) {
-    //   updateImagePreview(); // This function is no longer available
-    // }
+    // Update image preview if product has an image
+    if (product.imageUrl) {
+      const preview = document.getElementById('productImagePreview');
+      const placeholder = document.getElementById('noImagePlaceholder');
+      preview.src = product.imageUrl;
+      preview.style.display = 'block';
+      placeholder.style.display = 'none';
+      document.getElementById('productImageUrl').value = product.imageUrl;
+    } else {
+      clearProductImage();
+    }
 
     document.getElementById('productModal').classList.remove('hidden');
   } catch (error) {
