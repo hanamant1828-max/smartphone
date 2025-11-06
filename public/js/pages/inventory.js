@@ -153,42 +153,48 @@ export function render(app) {
               
               <div class="form-group"></div>
               
-              <!-- Row 6: Purchase Price, Min Stock, Sales Discount % -->
-              <div class="form-group">
+              <!-- Vertical layout: Purchase Price through Alter Unit -->
+              <div class="form-group" style="grid-column: span 1;">
                 <label for="productCostPrice" class="form-label">Purchase Price*</label>
                 <input type="number" id="productCostPrice" class="form-input" step="0.01" required data-testid="input-product-cost-price" />
               </div>
               
-              <div class="form-group">
+              <div class="form-group" style="grid-column: span 2;"></div>
+              
+              <div class="form-group" style="grid-column: span 1;">
                 <label for="productMinStock" class="form-label">Min Stock</label>
                 <input type="number" id="productMinStock" class="form-input" value="0" data-testid="input-product-min-stock" />
               </div>
               
-              <div class="form-group">
+              <div class="form-group" style="grid-column: span 2;"></div>
+              
+              <div class="form-group" style="grid-column: span 1;">
                 <label for="productSalesDiscount" class="form-label">Sales Discount %</label>
                 <input type="number" id="productSalesDiscount" class="form-input" step="0.01" value="0.00" data-testid="input-product-sales-discount" />
               </div>
               
-              <!-- Row 7: Purchase Main Unit, Sales Main Unit, Alter Unit -->
-              <div class="form-group">
+              <div class="form-group" style="grid-column: span 2;"></div>
+              
+              <div class="form-group" style="grid-column: span 1;">
                 <label for="productPurchaseUnit" class="form-label">Purchase Main Unit</label>
                 <input type="text" id="productPurchaseUnit" class="form-input" placeholder="GST %" data-testid="input-product-purchase-unit" />
               </div>
               
-              <div class="form-group">
+              <div class="form-group" style="grid-column: span 2;"></div>
+              
+              <div class="form-group" style="grid-column: span 1;">
                 <label for="productSalesUnit" class="form-label">Sales Main Unit</label>
                 <input type="text" id="productSalesUnit" class="form-input" placeholder="LOT NO" data-testid="input-product-sales-unit" />
               </div>
               
-              <div class="form-group">
+              <div class="form-group" style="grid-column: span 2;"></div>
+              
+              <div class="form-group" style="grid-column: span 1;">
                 <label for="productAlterUnit" class="form-label">Alter Unit</label>
                 <input type="text" id="productAlterUnit" class="form-input" data-testid="input-product-alter-unit" />
               </div>
               
-              <!-- Row 8: (empty row for spacing) -->
-              <div class="form-group"></div>
-              <div class="form-group"></div>
-              <div class="form-group"></div>
+              <div class="form-group" style="grid-column: span 2;"></div>
               
               <!-- Row 9: MRP, Retail Sale Price, Wholesale Price -->
               <div class="form-group">
