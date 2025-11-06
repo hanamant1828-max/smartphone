@@ -1,0 +1,4438 @@
+New chat
+iam having a mobile shop so i want to develope a softeare using replit agent so please give me requiement document
+
+Mobile Shop Management Software - Requirements Document
+1. Project Overview
+Project Name: Mobile Shop Management System
+Platform: Web-based application (deployable on Replit)
+Purpose: To manage inventory, sales, customers, and business operations for a mobile phone retail shop
+
+2. System Requirements
+2.1 Technical Stack (Replit Compatible)
+Frontend: HTML, CSS, JavaScript (React.js recommended)
+Backend: Node.js with Express.js
+Database: SQLite or PostgreSQL (Replit supports both)
+Authentication: JWT (JSON Web Tokens)
+Deployment: Replit hosting
+2.2 User Roles
+Admin/Owner - Full system access
+Sales Staff - Limited to sales and customer management
+Inventory Manager - Manage stock and suppliers
+3. Core Functional Requirements
+3.1 Inventory Management
+Product Catalog
+Add/Edit/Delete mobile phones
+Fields: Brand, Model, IMEI Number, Color, Storage, Price, Cost Price
+Stock quantity tracking
+Low stock alerts (configurable threshold)
+Product images upload
+Accessories Management
+Manage phone accessories (cases, chargers, screen protectors, etc.)
+Stock tracking for accessories
+Categories
+Smartphones
+Feature phones
+Accessories
+Spare parts
+3.2 Sales Management
+Point of Sale (POS)
+Quick product search (by name, model, IMEI)
+Shopping cart functionality
+Multiple payment methods (Cash, Card, UPI, EMI)
+Generate invoice/bill
+Print receipt
+SMS/Email receipt option
+Sales Records
+View all sales transactions
+Filter by date, customer, product
+Daily/Monthly/Yearly sales reports
+Profit calculation (selling price - cost price)
+3.3 Customer Management
+Customer Database
+Name, Phone Number, Email, Address
+Purchase history
+Warranty information tracking
+Customer search functionality
+Loyalty Program (Optional)
+Points system
+Customer discounts
+3.4 Supplier Management
+Add/Edit supplier details
+Purchase orders tracking
+Payment records to suppliers
+Supplier contact information
+3.5 Financial Management
+Revenue Tracking
+Daily sales total
+Monthly/Yearly revenue
+Profit margins
+Expenses
+Rent, utilities, salaries
+Purchase costs
+Reports
+Profit & Loss statement
+Sales summary
+Best-selling products
+Stock value report
+3.6 Repair/Service Management (Optional)
+Track repair requests
+Service status (Pending, In Progress, Completed)
+Spare parts used
+Service charges
+3.7 User Management
+Add/Edit/Delete users
+Role-based access control
+Activity logs
+4. Dashboard Requirements
+4.1 Admin Dashboard
+Today's sales overview
+Total revenue (daily/monthly)
+Low stock alerts
+Pending repairs
+Quick actions (New Sale, Add Product)
+Sales charts and graphs
+4.2 Sales Staff Dashboard
+Quick POS access
+Today's sales
+Customer search
+Recent transactions
+5. Reports & Analytics
+5.1 Required Reports
+Sales Report
+Date range filter
+Product-wise sales
+Payment method breakdown
+Inventory Report
+Current stock levels
+Stock value
+Products to reorder
+Customer Report
+Top customers
+Customer purchase frequency
+Financial Report
+Profit/Loss statement
+Tax calculations (GST)
+Product Performance
+Best sellers
+Slow-moving items
+6. Non-Functional Requirements
+6.1 Security
+Secure login with password encryption
+Session management
+Data backup functionality
+Role-based access control
+6.2 Performance
+Fast product search (<2 seconds)
+Quick POS checkout process
+Handle up to 1000 products
+Support 50+ concurrent users
+6.3 Usability
+Intuitive user interface
+Mobile-responsive design
+Simple navigation
+Minimal training required
+6.4 Data Management
+Regular automated backups
+Data export (CSV/Excel)
+Data import for bulk products
+7. Integration Requirements (Optional)
+SMS gateway for customer notifications
+Email service for invoices
+GST billing compliance
+Payment gateway integration (Razorpay/Paytm)
+Barcode/QR code scanner support
+8. Database Schema (Key Tables)
+Users - id, username, password, role, email, created_at
+Products - id, name, brand, model, imei, price, cost_price, stock, category, image
+Sales - id, customer_id, total_amount, payment_method, sale_date, user_id
+Sale_Items - id, sale_id, product_id, quantity, price
+Customers - id, name, phone, email, address, created_at
+Suppliers - id, name, phone, email, address
+Expenses - id, description, amount, date, category
+Repairs - id, customer_id, device, issue, status, cost, date
+9. Development Phases
+Phase 1 (MVP - Minimum Viable Product)
+User authentication
+Basic inventory management
+Simple POS system
+Basic sales reporting
+Phase 2
+Customer management
+Supplier management
+Advanced reports
+Dashboard enhancements
+Phase 3
+Repair management
+SMS/Email notifications
+Advanced analytics
+Payment gateway integration
+10. Replit Agent Instructions
+When using Replit Agent to develop this software, provide these instructions:
+
+Create a mobile shop management system with:
+1. Node.js backend with Express
+2. React frontend
+3. SQLite database
+4. Features: Inventory management, POS system, sales tracking, customer management
+5. Admin dashboard with sales analytics
+6. User authentication with JWT
+7. Responsive design for mobile and desktop
+11. Future Enhancements
+Mobile app (Android/iOS)
+Multi-store management
+Advanced analytics with AI predictions
+WhatsApp integration for order updates
+Online store integration
+CRM features
+12. Support & Maintenance
+Bug fixes and updates
+Regular backups
+Performance monitoring
+User training materials
+Document Version: 1.0
+Last Updated: November 4, 2025
+
+Would you like me to help you with:
+
+Breaking this down into specific Replit Agent prompts?
+Creating a database schema diagram?
+Designing wireframes for key screens?
+Prioritizing features for your MVP?
+front end use react expo and backend python database postgreys
+
+Mobile Shop Management Software - Requirements Document
+(React + Expo Frontend | Python Backend | PostgreSQL Database)
+1. Project Overview
+Project Name: Mobile Shop Management System
+Platform:
+
+Frontend: React with Expo (Web + Mobile support)
+Backend: Python (Flask/FastAPI)
+Database: PostgreSQL Purpose: Comprehensive mobile phone retail shop management with cross-platform support
+2. System Architecture
+2.1 Technology Stack
+Frontend (React + Expo)
+Framework: React with Expo (enables web and mobile deployment)
+UI Library: React Native Paper / NativeBase
+State Management: Redux Toolkit / Context API
+Navigation: React Navigation
+HTTP Client: Axios
+Form Handling: React Hook Form
+Charts: Victory Native / Recharts
+Backend (Python)
+Framework: FastAPI (recommended) or Flask
+ORM: SQLAlchemy
+Authentication: JWT (PyJWT)
+Validation: Pydantic (FastAPI) / Marshmallow (Flask)
+API Documentation: Auto-generated Swagger/OpenAPI
+CORS: FastAPI CORS middleware / Flask-CORS
+Database (PostgreSQL)
+Database: PostgreSQL 14+
+Migration Tool: Alembic
+Connection Pooling: SQLAlchemy pool
+Deployment (Replit)
+Backend: Python Repl
+Database: PostgreSQL Repl database
+Frontend: Can be deployed separately or served via backend
+3. Project Structure
+3.1 Frontend Structure (React + Expo)
+mobile-shop-frontend/
+├── App.js
+├── app.json
+├── package.json
+├── src/
+│   ├── screens/
+│   │   ├── auth/
+│   │   │   ├── LoginScreen.js
+│   │   │   └── RegisterScreen.js
+│   │   ├── dashboard/
+│   │   │   ├── AdminDashboard.js
+│   │   │   └── SalesDashboard.js
+│   │   ├── inventory/
+│   │   │   ├── ProductListScreen.js
+│   │   │   ├── AddProductScreen.js
+│   │   │   └── EditProductScreen.js
+│   │   ├── sales/
+│   │   │   ├── POSScreen.js
+│   │   │   ├── SalesHistoryScreen.js
+│   │   │   └── InvoiceScreen.js
+│   │   ├── customers/
+│   │   │   ├── CustomerListScreen.js
+│   │   │   └── CustomerDetailScreen.js
+│   │   ├── reports/
+│   │   │   └── ReportsScreen.js
+│   │   └── settings/
+│   │       └── SettingsScreen.js
+│   ├── components/
+│   │   ├── common/
+│   │   ├── products/
+│   │   ├── sales/
+│   │   └── charts/
+│   ├── navigation/
+│   │   ├── AppNavigator.js
+│   │   └── AuthNavigator.js
+│   ├── services/
+│   │   ├── api.js
+│   │   ├── authService.js
+│   │   ├── productService.js
+│   │   └── salesService.js
+│   ├── store/
+│   │   ├── index.js
+│   │   ├── slices/
+│   │   └── actions/
+│   ├── utils/
+│   │   ├── constants.js
+│   │   └── helpers.js
+│   └── assets/
+│       ├── images/
+│       └── fonts/
+3.2 Backend Structure (Python)
+mobile-shop-backend/
+├── main.py
+├── requirements.txt
+├── .env
+├── app/
+│   ├── __init__.py
+│   ├── config.py
+│   ├── database.py
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── user.py
+│   │   ├── product.py
+│   │   ├── sale.py
+│   │   ├── customer.py
+│   │   ├── supplier.py
+│   │   └── repair.py
+│   ├── schemas/
+│   │   ├── __init__.py
+│   │   ├── user_schema.py
+│   │   ├── product_schema.py
+│   │   ├── sale_schema.py
+│   │   └── customer_schema.py
+│   ├── routers/
+│   │   ├── __init__.py
+│   │   ├── auth.py
+│   │   ├── products.py
+│   │   ├── sales.py
+│   │   ├── customers.py
+│   │   ├── suppliers.py
+│   │   ├── reports.py
+│   │   └── users.py
+│   ├── services/
+│   │   ├── __init__.py
+│   │   ├── auth_service.py
+│   │   ├── product_service.py
+│   │   └── sales_service.py
+│   ├── utils/
+│   │   ├── __init__.py
+│   │   ├── security.py
+│   │   ├── email.py
+│   │   └── sms.py
+│   └── middleware/
+│       └── auth_middleware.py
+├── alembic/
+│   └── versions/
+└── tests/
+4. Database Schema (PostgreSQL)
+4.1 Tables Structure
+sql
+-- Users Table
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    full_name VARCHAR(100),
+    role VARCHAR(20) NOT NULL, -- 'admin', 'sales_staff', 'inventory_manager'
+    phone VARCHAR(15),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Products Table
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    brand VARCHAR(50),
+    model VARCHAR(50),
+    category VARCHAR(50), -- 'smartphone', 'feature_phone', 'accessory', 'spare_part'
+    imei_number VARCHAR(15) UNIQUE,
+    color VARCHAR(30),
+    storage VARCHAR(20),
+    ram VARCHAR(20),
+    price DECIMAL(10, 2) NOT NULL,
+    cost_price DECIMAL(10, 2) NOT NULL,
+    stock_quantity INTEGER DEFAULT 0,
+    min_stock_level INTEGER DEFAULT 5,
+    description TEXT,
+    image_url VARCHAR(255),
+    warranty_months INTEGER DEFAULT 12,
+    supplier_id INTEGER REFERENCES suppliers(id),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Customers Table
+CREATE TABLE customers (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    phone VARCHAR(15) NOT NULL UNIQUE,
+    email VARCHAR(100),
+    address TEXT,
+    city VARCHAR(50),
+    pincode VARCHAR(10),
+    date_of_birth DATE,
+    loyalty_points INTEGER DEFAULT 0,
+    total_purchases DECIMAL(12, 2) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Sales Table
+CREATE TABLE sales (
+    id SERIAL PRIMARY KEY,
+    invoice_number VARCHAR(50) UNIQUE NOT NULL,
+    customer_id INTEGER REFERENCES customers(id),
+    user_id INTEGER REFERENCES users(id) NOT NULL,
+    subtotal DECIMAL(10, 2) NOT NULL,
+    discount DECIMAL(10, 2) DEFAULT 0,
+    tax_amount DECIMAL(10, 2) DEFAULT 0,
+    total_amount DECIMAL(10, 2) NOT NULL,
+    payment_method VARCHAR(20), -- 'cash', 'card', 'upi', 'emi'
+    payment_status VARCHAR(20) DEFAULT 'completed', -- 'completed', 'pending', 'refunded'
+    notes TEXT,
+    sale_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Sale Items Table
+CREATE TABLE sale_items (
+    id SERIAL PRIMARY KEY,
+    sale_id INTEGER REFERENCES sales(id) ON DELETE CASCADE,
+    product_id INTEGER REFERENCES products(id),
+    product_name VARCHAR(100),
+    quantity INTEGER NOT NULL,
+    unit_price DECIMAL(10, 2) NOT NULL,
+    unit_cost DECIMAL(10, 2),
+    total_price DECIMAL(10, 2) NOT NULL,
+    imei_number VARCHAR(15),
+    warranty_until DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Suppliers Table
+CREATE TABLE suppliers (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    contact_person VARCHAR(100),
+    phone VARCHAR(15) NOT NULL,
+    email VARCHAR(100),
+    address TEXT,
+    city VARCHAR(50),
+    gst_number VARCHAR(20),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Purchase Orders Table
+CREATE TABLE purchase_orders (
+    id SERIAL PRIMARY KEY,
+    po_number VARCHAR(50) UNIQUE NOT NULL,
+    supplier_id INTEGER REFERENCES suppliers(id),
+    total_amount DECIMAL(12, 2) NOT NULL,
+    status VARCHAR(20) DEFAULT 'pending', -- 'pending', 'received', 'cancelled'
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    received_date TIMESTAMP,
+    notes TEXT,
+    created_by INTEGER REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Purchase Order Items Table
+CREATE TABLE purchase_order_items (
+    id SERIAL PRIMARY KEY,
+    po_id INTEGER REFERENCES purchase_orders(id) ON DELETE CASCADE,
+    product_id INTEGER REFERENCES products(id),
+    quantity INTEGER NOT NULL,
+    unit_cost DECIMAL(10, 2) NOT NULL,
+    total_cost DECIMAL(10, 2) NOT NULL,
+    received_quantity INTEGER DEFAULT 0
+);
+
+-- Repairs Table
+CREATE TABLE repairs (
+    id SERIAL PRIMARY KEY,
+    repair_number VARCHAR(50) UNIQUE NOT NULL,
+    customer_id INTEGER REFERENCES customers(id),
+    device_brand VARCHAR(50),
+    device_model VARCHAR(50),
+    imei_number VARCHAR(15),
+    issue_description TEXT NOT NULL,
+    estimated_cost DECIMAL(10, 2),
+    actual_cost DECIMAL(10, 2),
+    status VARCHAR(20) DEFAULT 'pending', -- 'pending', 'in_progress', 'completed', 'delivered'
+    assigned_to INTEGER REFERENCES users(id),
+    received_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completion_date TIMESTAMP,
+    delivery_date TIMESTAMP,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Expenses Table
+CREATE TABLE expenses (
+    id SERIAL PRIMARY KEY,
+    category VARCHAR(50) NOT NULL, -- 'rent', 'utilities', 'salaries', 'marketing', 'other'
+    description TEXT NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    expense_date DATE NOT NULL,
+    payment_method VARCHAR(20),
+    receipt_url VARCHAR(255),
+    created_by INTEGER REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Stock History Table
+CREATE TABLE stock_history (
+    id SERIAL PRIMARY KEY,
+    product_id INTEGER REFERENCES products(id),
+    quantity_change INTEGER NOT NULL,
+    type VARCHAR(20) NOT NULL, -- 'purchase', 'sale', 'adjustment', 'return'
+    reference_id INTEGER,
+    reference_type VARCHAR(50),
+    notes TEXT,
+    created_by INTEGER REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Notifications Table
+CREATE TABLE notifications (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    title VARCHAR(100) NOT NULL,
+    message TEXT NOT NULL,
+    type VARCHAR(20), -- 'low_stock', 'sale', 'repair', 'general'
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Settings Table
+CREATE TABLE settings (
+    id SERIAL PRIMARY KEY,
+    key VARCHAR(50) UNIQUE NOT NULL,
+    value TEXT,
+    description TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+4.2 Indexes for Performance
+sql
+CREATE INDEX idx_products_brand ON products(brand);
+CREATE INDEX idx_products_category ON products(category);
+CREATE INDEX idx_sales_date ON sales(sale_date);
+CREATE INDEX idx_sales_customer ON sales(customer_id);
+CREATE INDEX idx_sale_items_sale ON sale_items(sale_id);
+CREATE INDEX idx_customers_phone ON customers(phone);
+```
+
+---
+
+## 5. API Endpoints (RESTful)
+
+### 5.1 Authentication
+```
+POST   /api/auth/register          - Register new user
+POST   /api/auth/login             - User login
+POST   /api/auth/refresh           - Refresh access token
+POST   /api/auth/logout            - User logout
+GET    /api/auth/me                - Get current user info
+PUT    /api/auth/change-password   - Change password
+```
+
+### 5.2 Products
+```
+GET    /api/products               - Get all products (with filters)
+GET    /api/products/{id}          - Get product by ID
+POST   /api/products               - Create new product
+PUT    /api/products/{id}          - Update product
+DELETE /api/products/{id}          - Delete product
+GET    /api/products/low-stock     - Get low stock products
+GET    /api/products/search        - Search products
+POST   /api/products/bulk          - Bulk upload products
+```
+
+### 5.3 Sales
+```
+GET    /api/sales                  - Get all sales
+GET    /api/sales/{id}             - Get sale by ID
+POST   /api/sales                  - Create new sale
+GET    /api/sales/today            - Get today's sales
+GET    /api/sales/invoice/{id}     - Get invoice details
+POST   /api/sales/refund/{id}      - Process refund
+```
+
+### 5.4 Customers
+```
+GET    /api/customers              - Get all customers
+GET    /api/customers/{id}         - Get customer by ID
+POST   /api/customers              - Create new customer
+PUT    /api/customers/{id}         - Update customer
+DELETE /api/customers/{id}         - Delete customer
+GET    /api/customers/{id}/history - Get customer purchase history
+```
+
+### 5.5 Suppliers
+```
+GET    /api/suppliers              - Get all suppliers
+GET    /api/suppliers/{id}         - Get supplier by ID
+POST   /api/suppliers              - Create new supplier
+PUT    /api/suppliers/{id}         - Update supplier
+DELETE /api/suppliers/{id}         - Delete supplier
+```
+
+### 5.6 Reports
+```
+GET    /api/reports/sales          - Sales report (date range)
+GET    /api/reports/inventory      - Inventory report
+GET    /api/reports/profit-loss    - Profit & Loss report
+GET    /api/reports/top-products   - Best selling products
+GET    /api/reports/customer-stats - Customer statistics
+GET    /api/reports/dashboard      - Dashboard summary
+```
+
+### 5.7 Repairs
+```
+GET    /api/repairs                - Get all repairs
+GET    /api/repairs/{id}           - Get repair by ID
+POST   /api/repairs                - Create new repair
+PUT    /api/repairs/{id}           - Update repair status
+DELETE /api/repairs/{id}           - Delete repair
+```
+
+### 5.8 Users & Settings
+```
+GET    /api/users                  - Get all users (admin)
+POST   /api/users                  - Create user (admin)
+PUT    /api/users/{id}             - Update user
+GET    /api/settings               - Get settings
+PUT    /api/settings               - Update settings
+6. Core Features Implementation
+6.1 Dashboard (React Expo)
+javascript
+// Key metrics to display
+- Today's Sales Total
+- Total Revenue (Month)
+- Products Sold Today
+- Low Stock Alerts Count
+- Pending Repairs
+- Top Selling Products Chart
+- Sales Trend Graph (Last 7 days)
+- Quick Actions (New Sale, Add Product)
+6.2 POS Screen (Point of Sale)
+javascript
+// Features
+- Product search (barcode/name/IMEI)
+- Shopping cart
+- Customer selection/creation
+- Apply discounts
+- Multiple payment methods
+- Calculate tax (GST)
+- Generate invoice
+- Print/Share receipt
+- Quick checkout
+6.3 Inventory Management
+javascript
+// Features
+- Add/Edit products with image upload
+- Stock level tracking
+- Low stock alerts
+- Product categories
+- Bulk import (CSV/Excel)
+- Stock adjustments
+- Product variants (color, storage)
+6.4 Sales Management
+javascript
+// Features
+- Sales history with filters
+- Invoice generation
+- Refund processing
+- Payment tracking
+- Sales analytics
+- Export sales data
+7. Python Backend Code Structure
+7.1 Main Application (FastAPI)
+python
+# main.py
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from app.database import engine, Base
+from app.routers import auth, products, sales, customers, reports
+
+# Create tables
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI(
+    title="Mobile Shop Management API",
+    version="1.0.0",
+    description="API for Mobile Shop Management System"
+)
+
+# CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include routers
+app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
+app.include_router(products.router, prefix="/api/products", tags=["Products"])
+app.include_router(sales.router, prefix="/api/sales", tags=["Sales"])
+app.include_router(customers.router, prefix="/api/customers", tags=["Customers"])
+app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])
+
+@app.get("/")
+def read_root():
+    return {"message": "Mobile Shop Management API"}
+7.2 Database Configuration
+python
+# app/database.py
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+import os
+
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@localhost/mobileshop")
+
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+7.3 Sample Model
+python
+# app/models/product.py
+from sqlalchemy import Column, Integer, String, Numeric, Boolean, DateTime, ForeignKey
+from sqlalchemy.sql import func
+from app.database import Base
+
+class Product(Base):
+    __tablename__ = "products"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), nullable=False)
+    brand = Column(String(50))
+    model = Column(String(50))
+    category = Column(String(50))
+    imei_number = Column(String(15), unique=True)
+    color = Column(String(30))
+    storage = Column(String(20))
+    ram = Column(String(20))
+    price = Column(Numeric(10, 2), nullable=False)
+    cost_price = Column(Numeric(10, 2), nullable=False)
+    stock_quantity = Column(Integer, default=0)
+    min_stock_level = Column(Integer, default=5)
+    description = Column(String)
+    image_url = Column(String(255))
+    warranty_months = Column(Integer, default=12)
+    supplier_id = Column(Integer, ForeignKey("suppliers.id"))
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+7.4 Sample Schema (Pydantic)
+python
+# app/schemas/product_schema.py
+from pydantic import BaseModel
+from typing import Optional
+from datetime import datetime
+
+class ProductBase(BaseModel):
+    name: str
+    brand: Optional[str]
+    model: Optional[str]
+    category: str
+    price: float
+    cost_price: float
+    stock_quantity: int = 0
+
+class ProductCreate(ProductBase):
+    imei_number: Optional[str]
+    color: Optional[str]
+    storage: Optional[str]
+
+class ProductResponse(ProductBase):
+    id: int
+    created_at: datetime
+    
+    class Config:
+        orm_mode = True
+7.5 Sample Router
+python
+# app/routers/products.py
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from typing import List
+from app.database import get_db
+from app.models.product import Product
+from app.schemas.product_schema import ProductCreate, ProductResponse
+
+router = APIRouter()
+
+@router.get("/", response_model=List[ProductResponse])
+def get_products(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db)
+):
+    products = db.query(Product).offset(skip).limit(limit).all()
+    return products
+
+@router.post("/", response_model=ProductResponse)
+def create_product(
+    product: ProductCreate,
+    db: Session = Depends(get_db)
+):
+    db_product = Product(**product.dict())
+    db.add(db_product)
+    db.commit()
+    db.refresh(db_product)
+    return db_product
+
+@router.get("/{product_id}", response_model=ProductResponse)
+def get_product(product_id: int, db: Session = Depends(get_db)):
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return product
+8. React Expo Frontend Implementation
+8.1 API Service Setup
+javascript
+// src/services/api.js
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const API_BASE_URL = 'http://your-replit-url.repl.co/api';
+
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Add token to requests
+api.interceptors.request.use(
+  async (config) => {
+    const token = await AsyncStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+export default api;
+8.2 Sample Screen Component
+javascript
+// src/screens/inventory/ProductListScreen.js
+import React, { useState, useEffect } from 'react';
+import { View, FlatList, StyleSheet } from 'react-native';
+import { Card, Title, Button, Searchbar } from 'react-native-paper';
+import api from '../../services/api';
+
+const ProductListScreen = ({ navigation }) => {
+  const [products, setProducts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get('/products');
+      setProducts(response.data);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderProduct = ({ item }) => (
+    <Card style={styles.card}>
+      <Card.Content>
+        <Title>{item.name}</Title>
+        <Text>Brand: {item.brand}</Text>
+        <Text>Price: ₹{item.price}</Text>
+        <Text>Stock: {item.stock_quantity}</Text>
+      </Card.Content>
+      <Card.Actions>
+        <Button onPress={() => navigation.navigate('EditProduct', { id: item.id })}>
+          Edit
+        </Button>
+      </Card.Actions>
+    </Card>
+  );
+
+  return (
+    <View style={styles.container}>
+      <Searchbar
+        placeholder="Search products"
+        onChangeText={setSearchQuery}
+        value={searchQuery}
+      />
+      <FlatList
+        data={products}
+        renderItem={renderProduct}
+        keyExtractor={(item) => item.id.toString()}
+        refreshing={loading}
+        onRefresh={fetchProducts}
+      />
+      <Button
+        mode="contained"
+        onPress={() => navigation.navigate('AddProduct')}
+        style={styles.fab}
+      >
+        Add Product
+      </Button>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 10 },
+  card: { marginVertical: 8 },
+  fab: { margin: 16 }
+});
+
+export default ProductListScreen;
+9. Requirements.txt (Python)
+txt
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+sqlalchemy==2.0.23
+psycopg2-binary==2.9.9
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+pydantic==2.5.0
+pydantic-settings==2.1.0
+python-dotenv==1.0.0
+alembic==1.12.1
+10. Package.json (React Expo)
+json
+{
+  "name": "mobile-shop-app",
+  "version": "1.0.0",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "expo": "~49.0.0",
+    "react": "18.2.0",
+    "react-native": "0.72.6",
+    "react-native-paper": "^5.11.1",
+    "react-navigation": "^4.4.4",
+    "@react-navigation/native": "^6.1.9",
+    "@react-navigation/stack": "^6.3.20",
+    "axios": "^1.6.0",
+    "@react-native-async-storage/async-storage": "^1.19.5",
+    "react-native-chart-kit": "^6.12.0",
+    "react-native-vector-icons": "^10.0.2",
+    "formik": "^2.4.5",
+    "yup": "^1.3.3"
+  }
+}
+11. Replit Setup Instructions
+Step 1: Create Backend Repl
+bash
+1. Create new Repl → Choose Python
+2. Name: mobile-shop-backend
+3. Add PostgreSQL database from Replit
+4. Copy database URL from Replit secrets
+Step 2: Backend .env Configuration
+env
+DATABASE_URL=postgresql://user:password@db.replit.com:5432/mobileshop
+SECRET_KEY=your-secret-key-here
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+Step 3: Run Backend
+bash
+pip install -r requirements.txt
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+Step 4: Create Frontend Repl
+bash
+1. Create new Repl → Choose Node.js
+2. Name: mobile-shop-frontend
+3. Install Expo CLI
+Step 5: Frontend Configuration
+javascript
+// Update API_BASE_URL in src/services/api.js
+const API_BASE_URL = 'https://mobile-shop-backend.your-username.repl.co/api';
+Step 6: Run Frontend
+bash
+npm install
+npx expo start --web
+```
+
+---
+
+## 12. Replit Agent Prompts
+
+### Prompt 1: Backend Setup
+```
+Create a Python FastAPI backend for a mobile shop management system with:
+1. PostgreSQL database connection
+2. User authentication with JWT
+3. CRUD operations for products, sales, customers
+4. SQLAlchemy ORM models for: users, products, sales, customers, suppliers
+5. Pydantic schemas for validation
+6. CORS middleware enabled
+7. File structure as specified in the requirements document
+```
+
+### Prompt 2: Database Models
+```
+Create SQLAlchemy models for mobile shop with these tables:
+- users (id, username, email, password_hash, role, phone, is_active)
+- products (id, name, brand, model, imei, price, cost_price, stock_quantity)
+- sales (id, invoice_number, customer_id, total_amount, payment_method)
+- sale_items (id, sale_id, product_id, quantity, unit_price)
+- customers (id, name, phone, email, address, loyalty_points)
+Include proper relationships and indexes
+```
+
+### Prompt 3: Frontend Setup
+```
+Create a React Expo mobile app for mobile shop with:
+1. React Navigation with Stack Navigator
+2. Authentication screens (Login, Register)
+3. Dashboard with sales summary
+4. Product list screen with search
+5. POS screen for sales
+6. React Native Paper UI components
+7. Axios API integration
+8. AsyncStorage for token management
+```
+
+### Prompt 4: POS Screen
+```
+Create a POS (Point of Sale) screen in React Expo with:
+1. Product search bar
+2. Shopping cart display
+3. Add/remove items from cart
+4. Customer selection dropdown
+5. Payment method selection (Cash, Card, UPI)
+6. Calculate total with tax
+7. Process sale button
+8. Generate invoice
+Use React Native Paper components
+```
+
+### Prompt 5: Dashboard & Reports
+```
+Create an admin dashboard in React Expo showing:
+1. Today's sales total card
+2. Monthly revenue card
+3. Low stock alerts
+4. Best selling products chart
+5. Sales trend line chart (last 7 days)
+6. Quick action buttons
+Use react-native-chart-kit for charts
+13. Testing Requirements
+Backend Testing
+Unit tests for API endpoints
+Integration tests for database operations
+Authentication flow testing
+Test with pytest
+Frontend Testing
+Component testing with Jest
+Navigation testing
+API integration testing
+User flow testing
+14. Security Requirements
+Password Security
+Bcrypt hashing
+Minimum 8 characters
+Password strength validation
+JWT Authentication
+Access tokens (30 min expiry)
+Refresh tokens
+Secure token storage
+API Security
+Rate limiting
+Input validation
+SQL injection prevention
+CORS configuration
+Data Protection
+Encrypted database connections
+Environment variables for secrets
+Regular backups
+15. Deployment Checklist
+ PostgreSQL database configured
+ Environment variables set
+ Backend API running
+ Database migrations applied
+ Frontend connected to backend
+ Authentication working
+ All CRUD operations tested
+ Mobile responsiveness verified
+ Error handling
+use html css and jacascript
+
+in categorry  sub categery like vivo is one ..and ionsed that some sub cateheryr like vivo y15 y 14 like that also need to manaint so foirst  ggive me project requirements
+
+Mobile Shop Management Software - Requirements Document
+(HTML + CSS + JavaScript Frontend | Python Backend | PostgreSQL Database)
+1. Project Overview
+Project Name: Mobile Shop Management System
+Platform:
+
+Frontend: HTML, CSS, JavaScript (Vanilla JS)
+Backend: Python (FastAPI)
+Database: PostgreSQL Purpose: Comprehensive mobile phone retail shop management with hierarchical category system (Brand → Model)
+2. System Architecture
+2.1 Technology Stack
+Frontend (HTML + CSS + JavaScript)
+HTML5: Semantic markup
+CSS3: Modern styling with Flexbox/Grid
+Vanilla JavaScript: No frameworks, pure JS
+Libraries:
+Chart.js: For charts and graphs
+DataTables.js: For advanced table features
+Select2: For advanced dropdowns
+SweetAlert2: For beautiful alerts
+Axios: For HTTP requests
+Bootstrap 5: For responsive UI (optional)
+Font Awesome: For icons
+Backend (Python)
+Framework: FastAPI
+ORM: SQLAlchemy
+Authentication: JWT (PyJWT)
+Validation: Pydantic
+CORS: FastAPI CORS middleware
+Database (PostgreSQL)
+Database: PostgreSQL 14+
+Migration Tool: Alembic
+Connection Pooling: SQLAlchemy pool
+3. Hierarchical Category System
+3.1 Category Structure
+Mobile Phones
+├── Vivo (Brand/Category)
+│   ├── Vivo Y15 (Sub-Category/Model)
+│   ├── Vivo Y16
+│   ├── Vivo Y20
+│   ├── Vivo V27
+│   └── Vivo V29
+├── Samsung
+│   ├── Samsung Galaxy A14
+│   ├── Samsung Galaxy A24
+│   ├── Samsung Galaxy S23
+│   └── Samsung Galaxy M34
+├── Xiaomi
+│   ├── Redmi Note 12
+│   ├── Redmi 13C
+│   ├── Poco X5
+│   └── Mi 11X
+├── Oppo
+│   ├── Oppo A78
+│   ├── Oppo F23
+│   └── Oppo Reno 10
+├── Realme
+│   ├── Realme 11
+│   ├── Realme Narzo 60
+│   └── Realme C55
+└── Apple
+    ├── iPhone 14
+    ├── iPhone 15
+    └── iPhone 15 Pro
+
+Accessories
+├── Cases & Covers
+│   ├── Silicone Cases
+│   ├── Leather Cases
+│   └── Hard Cases
+├── Chargers
+│   ├── Fast Chargers
+│   ├── Wireless Chargers
+│   └── Power Banks
+├── Screen Protectors
+│   ├── Tempered Glass
+│   └── Plastic Film
+├── Earphones & Headphones
+│   ├── Wired Earphones
+│   ├── Wireless Earbuds
+│   └── Bluetooth Headphones
+└── Cables
+    ├── USB Type-C
+    ├── Lightning Cable
+    └── Micro USB
+
+Spare Parts
+├── Displays
+│   ├── LCD Displays
+│   └── AMOLED Displays
+├── Batteries
+├── Back Panels
+└── Charging Ports
+3.2 Category Management Features
+Two-Level Hierarchy: Category → Sub-Category
+Dynamic Category Creation: Add new brands/categories
+Dynamic Sub-Category Creation: Add new models under brands
+Category-wise Product Management
+Category-based Filtering & Search
+Category-wise Sales Reports
+Stock Management by Category & Sub-Category
+4. Project Structure
+4.1 Frontend Structure (HTML + CSS + JS)
+mobile-shop-frontend/
+├── index.html                          # Landing/Login page
+├── dashboard.html                      # Main dashboard
+├── css/
+│   ├── style.css                       # Main styles
+│   ├── dashboard.css                   # Dashboard styles
+│   ├── pos.css                         # POS screen styles
+│   ├── responsive.css                  # Mobile responsive
+│   └── print.css                       # Print invoice styles
+├── js/
+│   ├── config.js                       # API configuration
+│   ├── auth.js                         # Authentication logic
+│   ├── utils.js                        # Utility functions
+│   ├── api.js                          # API calls wrapper
+│   ├── dashboard.js                    # Dashboard functionality
+│   ├── categories.js                   # Category management
+│   ├── subcategories.js                # Sub-category management
+│   ├── products.js                     # Product management
+│   ├── pos.js                          # POS functionality
+│   ├── sales.js                        # Sales management
+│   ├── customers.js                    # Customer management
+│   ├── suppliers.js                    # Supplier management
+│   ├── reports.js                      # Reports generation
+│   ├── charts.js                       # Chart rendering
+│   └── notifications.js                # Notification system
+├── pages/
+│   ├── categories/
+│   │   ├── category-list.html          # List all categories
+│   │   ├── add-category.html           # Add new category
+│   │   ├── edit-category.html          # Edit category
+│   │   ├── subcategory-list.html       # List sub-categories
+│   │   ├── add-subcategory.html        # Add sub-category
+│   │   └── manage-hierarchy.html       # Manage category tree
+│   ├── inventory/
+│   │   ├── product-list.html           # All products
+│   │   ├── add-product.html            # Add new product
+│   │   ├── edit-product.html           # Edit product
+│   │   ├── low-stock.html              # Low stock alerts
+│   │   └── stock-adjustment.html       # Stock adjustment
+│   ├── sales/
+│   │   ├── pos.html                    # Point of Sale
+│   │   ├── sales-history.html          # Sales history
+│   │   ├── invoice.html                # Invoice view/print
+│   │   └── refund.html                 # Process refunds
+│   ├── customers/
+│   │   ├── customer-list.html          # Customer list
+│   │   ├── add-customer.html           # Add customer
+│   │   ├── customer-detail.html        # Customer details
+│   │   └── loyalty.html                # Loyalty program
+│   ├── suppliers/
+│   │   ├── supplier-list.html          # Supplier list
+│   │   ├── add-supplier.html           # Add supplier
+│   │   └── purchase-orders.html        # Purchase orders
+│   ├── repairs/
+│   │   ├── repair-list.html            # Repair jobs
+│   │   ├── add-repair.html             # Create repair
+│   │   └── repair-status.html          # Update status
+│   ├── reports/
+│   │   ├── sales-report.html           # Sales reports
+│   │   ├── inventory-report.html       # Inventory reports
+│   │   ├── profit-loss.html            # P&L statement
+│   │   ├── category-report.html        # Category-wise report
+│   │   └── customer-report.html        # Customer analytics
+│   ├── settings/
+│   │   ├── profile.html                # User profile
+│   │   ├── users.html                  # User management
+│   │   ├── shop-settings.html          # Shop settings
+│   │   └── backup.html                 # Backup & restore
+│   └── auth/
+│       ├── login.html                  # Login page
+│       ├── register.html               # Registration
+│       └── forgot-password.html        # Password reset
+├── assets/
+│   ├── images/
+│   │   ├── logo.png
+│   │   ├── default-product.png
+│   │   └── icons/
+│   ├── fonts/
+│   └── uploads/                        # Product images
+└── lib/
+    ├── axios.min.js
+    ├── chart.min.js
+    ├── datatables.min.js
+    ├── select2.min.js
+    ├── sweetalert2.min.js
+    └── html2pdf.js                     # For PDF generation
+4.2 Backend Structure (Python)
+mobile-shop-backend/
+├── main.py
+├── requirements.txt
+├── .env
+├── app/
+│   ├── __init__.py
+│   ├── config.py
+│   ├── database.py
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── user.py
+│   │   ├── category.py                 # NEW: Category model
+│   │   ├── subcategory.py              # NEW: Sub-category model
+│   │   ├── product.py                  # Updated with category links
+│   │   ├── sale.py
+│   │   ├── customer.py
+│   │   ├── supplier.py
+│   │   └── repair.py
+│   ├── schemas/
+│   │   ├── __init__.py
+│   │   ├── user_schema.py
+│   │   ├── category_schema.py          # NEW
+│   │   ├── subcategory_schema.py       # NEW
+│   │   ├── product_schema.py
+│   │   ├── sale_schema.py
+│   │   └── customer_schema.py
+│   ├── routers/
+│   │   ├── __init__.py
+│   │   ├── auth.py
+│   │   ├── categories.py               # NEW: Category routes
+│   │   ├── subcategories.py            # NEW: Sub-category routes
+│   │   ├── products.py
+│   │   ├── sales.py
+│   │   ├── customers.py
+│   │   ├── suppliers.py
+│   │   ├── reports.py
+│   │   └── users.py
+│   ├── services/
+│   │   ├── __init__.py
+│   │   ├── auth_service.py
+│   │   ├── category_service.py         # NEW
+│   │   ├── product_service.py
+│   │   └── sales_service.py
+│   └── utils/
+│       ├── __init__.py
+│       ├── security.py
+│       └── helpers.py
+└── alembic/
+    └── versions/
+5. Enhanced Database Schema (PostgreSQL)
+5.1 Tables Structure
+sql
+-- Categories Table (Brands like Vivo, Samsung, etc.)
+CREATE TABLE categories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) UNIQUE NOT NULL,              -- e.g., "Vivo", "Samsung"
+    slug VARCHAR(100) UNIQUE NOT NULL,              -- e.g., "vivo", "samsung"
+    description TEXT,
+    icon_url VARCHAR(255),                          -- Category icon
+    display_order INTEGER DEFAULT 0,                -- For sorting
+    is_active BOOLEAN DEFAULT TRUE,
+    parent_type VARCHAR(50),                        -- 'mobiles', 'accessories', 'spare_parts'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Sub-Categories Table (Models like Vivo Y15, Vivo Y16, etc.)
+CREATE TABLE subcategories (
+    id SERIAL PRIMARY KEY,
+    category_id INTEGER REFERENCES categories(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL,                     -- e.g., "Y15", "Y16"
+    full_name VARCHAR(150) NOT NULL,                -- e.g., "Vivo Y15", "Vivo Y16"
+    slug VARCHAR(150) UNIQUE NOT NULL,              -- e.g., "vivo-y15"
+    description TEXT,
+    image_url VARCHAR(255),
+    display_order INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    specifications JSONB,                           -- Store model specs
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(category_id, name)
+);
+
+-- Updated Products Table (Now linked to categories and sub-categories)
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    category_id INTEGER REFERENCES categories(id),
+    subcategory_id INTEGER REFERENCES subcategories(id),
+    
+    -- Product Details
+    sku VARCHAR(50) UNIQUE,                         -- Stock Keeping Unit
+    barcode VARCHAR(50) UNIQUE,
+    imei_number VARCHAR(15) UNIQUE,
+    
+    -- Specifications
+    color VARCHAR(30),
+    storage VARCHAR(20),                            -- e.g., "128GB", "256GB"
+    ram VARCHAR(20),                                -- e.g., "4GB", "8GB"
+    battery VARCHAR(20),                            -- e.g., "5000mAh"
+    screen_size VARCHAR(20),                        -- e.g., "6.5 inch"
+    processor VARCHAR(100),
+    camera_specs VARCHAR(100),
+    
+    -- Pricing
+    mrp DECIMAL(10, 2),                             -- Maximum Retail Price
+    price DECIMAL(10, 2) NOT NULL,                  -- Selling Price
+    cost_price DECIMAL(10, 2) NOT NULL,             -- Purchase Price
+    discount_percentage DECIMAL(5, 2) DEFAULT 0,
+    
+    -- Stock Management
+    stock_quantity INTEGER DEFAULT 0,
+    min_stock_level INTEGER DEFAULT 5,
+    max_stock_level INTEGER DEFAULT 100,
+    reorder_point INTEGER DEFAULT 10,
+    
+    -- Additional Info
+    description TEXT,
+    features TEXT[],                                -- Array of features
+    image_url VARCHAR(255),
+    images JSONB,                                   -- Multiple images
+    warranty_months INTEGER DEFAULT 12,
+    condition VARCHAR(20) DEFAULT 'new',            -- 'new', 'refurbished', 'used'
+    
+    -- References
+    supplier_id INTEGER REFERENCES suppliers(id),
+    
+    -- Status
+    is_active BOOLEAN DEFAULT TRUE,
+    is_featured BOOLEAN DEFAULT FALSE,
+    
+    -- Timestamps
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Indexes for performance
+    CONSTRAINT chk_price_positive CHECK (price > 0),
+    CONSTRAINT chk_stock_positive CHECK (stock_quantity >= 0)
+);
+
+-- Create indexes for better query performance
+CREATE INDEX idx_products_category ON products(category_id);
+CREATE INDEX idx_products_subcategory ON products(subcategory_id);
+CREATE INDEX idx_products_sku ON products(sku);
+CREATE INDEX idx_products_barcode ON products(barcode);
+CREATE INDEX idx_subcategories_category ON subcategories(category_id);
+CREATE INDEX idx_categories_parent_type ON categories(parent_type);
+CREATE INDEX idx_products_name_search ON products USING gin(to_tsvector('english', name));
+
+-- Users Table (Same as before)
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    full_name VARCHAR(100),
+    role VARCHAR(20) NOT NULL,                      -- 'admin', 'sales_staff', 'inventory_manager'
+    phone VARCHAR(15),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Customers Table
+CREATE TABLE customers (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    phone VARCHAR(15) NOT NULL UNIQUE,
+    email VARCHAR(100),
+    address TEXT,
+    city VARCHAR(50),
+    state VARCHAR(50),
+    pincode VARCHAR(10),
+    gst_number VARCHAR(20),                         -- For business customers
+    date_of_birth DATE,
+    loyalty_points INTEGER DEFAULT 0,
+    total_purchases DECIMAL(12, 2) DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Sales Table
+CREATE TABLE sales (
+    id SERIAL PRIMARY KEY,
+    invoice_number VARCHAR(50) UNIQUE NOT NULL,
+    customer_id INTEGER REFERENCES customers(id),
+    user_id INTEGER REFERENCES users(id) NOT NULL,
+    
+    -- Amounts
+    subtotal DECIMAL(10, 2) NOT NULL,
+    discount DECIMAL(10, 2) DEFAULT 0,
+    discount_percentage DECIMAL(5, 2) DEFAULT 0,
+    tax_amount DECIMAL(10, 2) DEFAULT 0,
+    tax_percentage DECIMAL(5, 2) DEFAULT 0,         -- GST percentage
+    total_amount DECIMAL(10, 2) NOT NULL,
+    
+    -- Payment
+    payment_method VARCHAR(20),                     -- 'cash', 'card', 'upi', 'emi', 'netbanking'
+    payment_status VARCHAR(20) DEFAULT 'completed', -- 'completed', 'pending', 'refunded', 'partial'
+    paid_amount DECIMAL(10, 2) DEFAULT 0,
+    balance_amount DECIMAL(10, 2) DEFAULT 0,
+    
+    -- Additional Info
+    notes TEXT,
+    sale_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Sale Items Table
+CREATE TABLE sale_items (
+    id SERIAL PRIMARY KEY,
+    sale_id INTEGER REFERENCES sales(id) ON DELETE CASCADE,
+    product_id INTEGER REFERENCES products(id),
+    
+    -- Product snapshot (in case product details change)
+    product_name VARCHAR(150),
+    category_name VARCHAR(100),
+    subcategory_name VARCHAR(100),
+    
+    quantity INTEGER NOT NULL,
+    unit_price DECIMAL(10, 2) NOT NULL,
+    unit_cost DECIMAL(10, 2),
+    discount DECIMAL(10, 2) DEFAULT 0,
+    tax_amount DECIMAL(10, 2) DEFAULT 0,
+    total_price DECIMAL(10, 2) NOT NULL,
+    
+    imei_number VARCHAR(15),
+    warranty_until DATE,
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Suppliers Table
+CREATE TABLE suppliers (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    contact_person VARCHAR(100),
+    phone VARCHAR(15) NOT NULL,
+    email VARCHAR(100),
+    address TEXT,
+    city VARCHAR(50),
+    state VARCHAR(50),
+    pincode VARCHAR(10),
+    gst_number VARCHAR(20),
+    pan_number VARCHAR(20),
+    bank_details JSONB,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Purchase Orders Table
+CREATE TABLE purchase_orders (
+    id SERIAL PRIMARY KEY,
+    po_number VARCHAR(50) UNIQUE NOT NULL,
+    supplier_id INTEGER REFERENCES suppliers(id),
+    total_amount DECIMAL(12, 2) NOT NULL,
+    paid_amount DECIMAL(12, 2) DEFAULT 0,
+    balance_amount DECIMAL(12, 2) DEFAULT 0,
+    status VARCHAR(20) DEFAULT 'pending',           -- 'pending', 'partial', 'received', 'cancelled'
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expected_date DATE,
+    received_date TIMESTAMP,
+    notes TEXT,
+    created_by INTEGER REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Purchase Order Items Table
+CREATE TABLE purchase_order_items (
+    id SERIAL PRIMARY KEY,
+    po_id INTEGER REFERENCES purchase_orders(id) ON DELETE CASCADE,
+    product_id INTEGER REFERENCES products(id),
+    category_id INTEGER REFERENCES categories(id),
+    subcategory_id INTEGER REFERENCES subcategories(id),
+    quantity INTEGER NOT NULL,
+    unit_cost DECIMAL(10, 2) NOT NULL,
+    total_cost DECIMAL(10, 2) NOT NULL,
+    received_quantity INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Repairs Table
+CREATE TABLE repairs (
+    id SERIAL PRIMARY KEY,
+    repair_number VARCHAR(50) UNIQUE NOT NULL,
+    customer_id INTEGER REFERENCES customers(id),
+    category_id INTEGER REFERENCES categories(id),     -- Brand
+    subcategory_id INTEGER REFERENCES subcategories(id), -- Model
+    
+    device_info JSONB,                                  -- Store device details
+    imei_number VARCHAR(15),
+    issue_description TEXT NOT NULL,
+    accessories_received TEXT[],                        -- What came with device
+    
+    estimated_cost DECIMAL(10, 2),
+    actual_cost DECIMAL(10, 2),
+    advance_paid DECIMAL(10, 2) DEFAULT 0,
+    balance_amount DECIMAL(10, 2) DEFAULT 0,
+    
+    status VARCHAR(20) DEFAULT 'pending',               -- 'pending', 'in_progress', 'completed', 'delivered', 'cancelled'
+    priority VARCHAR(20) DEFAULT 'normal',              -- 'low', 'normal', 'high', 'urgent'
+    
+    assigned_to INTEGER REFERENCES users(id),
+    received_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expected_completion_date TIMESTAMP,
+    completion_date TIMESTAMP,
+    delivery_date TIMESTAMP,
+    
+    notes TEXT,
+    technician_notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Repair Parts Used Table
+CREATE TABLE repair_parts (
+    id SERIAL PRIMARY KEY,
+    repair_id INTEGER REFERENCES repairs(id) ON DELETE CASCADE,
+    product_id INTEGER REFERENCES products(id),
+    part_name VARCHAR(100),
+    quantity INTEGER NOT NULL,
+    unit_price DECIMAL(10, 2) NOT NULL,
+    total_price DECIMAL(10, 2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Expenses Table
+CREATE TABLE expenses (
+    id SERIAL PRIMARY KEY,
+    category VARCHAR(50) NOT NULL,                      -- 'rent', 'utilities', 'salaries', 'marketing', 'transport', 'other'
+    description TEXT NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    expense_date DATE NOT NULL,
+    payment_method VARCHAR(20),
+    receipt_number VARCHAR(50),
+    receipt_url VARCHAR(255),
+    created_by INTEGER REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Stock History Table
+CREATE TABLE stock_history (
+    id SERIAL PRIMARY KEY,
+    product_id INTEGER REFERENCES products(id),
+    quantity_before INTEGER NOT NULL,
+    quantity_change INTEGER NOT NULL,
+    quantity_after INTEGER NOT NULL,
+    type VARCHAR(20) NOT NULL,                          -- 'purchase', 'sale', 'adjustment', 'return', 'damaged'
+    reference_id INTEGER,                               -- ID of related transaction
+    reference_type VARCHAR(50),                         -- 'sale', 'purchase_order', 'repair'
+    notes TEXT,
+    created_by INTEGER REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Category Stats Table (For analytics)
+CREATE TABLE category_stats (
+    id SERIAL PRIMARY KEY,
+    category_id INTEGER REFERENCES categories(id),
+    subcategory_id INTEGER REFERENCES subcategories(id),
+    total_products INTEGER DEFAULT 0,
+    total_stock INTEGER DEFAULT 0,
+    total_sales INTEGER DEFAULT 0,
+    total_revenue DECIMAL(12, 2) DEFAULT 0,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Notifications Table
+CREATE TABLE notifications (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    type VARCHAR(20),                                   -- 'low_stock', 'sale', 'repair', 'general'
+    title VARCHAR(100) NOT NULL,
+    message TEXT NOT NULL,
+    category_id INTEGER REFERENCES categories(id),
+    subcategory_id INTEGER REFERENCES subcategories(id),
+    reference_id INTEGER,
+    reference_type VARCHAR(50),
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Settings Table
+CREATE TABLE settings (
+    id SERIAL PRIMARY KEY,
+    key VARCHAR(50) UNIQUE NOT NULL,
+    value TEXT,
+    description TEXT,
+    category VARCHAR(50),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Wishlist / Customer Interests Table
+CREATE TABLE customer_interests (
+    id SERIAL PRIMARY KEY,
+    customer_id INTEGER REFERENCES customers(id),
+    category_id INTEGER REFERENCES categories(id),
+    subcategory_id INTEGER REFERENCES subcategories(id),
+    product_id INTEGER REFERENCES products(id),
+    status VARCHAR(20) DEFAULT 'interested',            -- 'interested', 'notified', 'purchased'
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+5.2 Sample Data Insertion
+sql
+-- Insert Sample Categories (Brands)
+INSERT INTO categories (name, slug, parent_type, display_order) VALUES
+('Vivo', 'vivo', 'mobiles', 1),
+('Samsung', 'samsung', 'mobiles', 2),
+('Xiaomi', 'xiaomi', 'mobiles', 3),
+('Oppo', 'oppo', 'mobiles', 4),
+('Realme', 'realme', 'mobiles', 5),
+('Apple', 'apple', 'mobiles', 6),
+('OnePlus', 'oneplus', 'mobiles', 7),
+('Motorola', 'motorola', 'mobiles', 8),
+('Nokia', 'nokia', 'mobiles', 9),
+('Cases & Covers', 'cases-covers', 'accessories', 10),
+('Chargers', 'chargers', 'accessories', 11),
+('Screen Protectors', 'screen-protectors', 'accessories', 12),
+('Earphones', 'earphones', 'accessories', 13),
+('Displays', 'displays', 'spare_parts', 14),
+('Batteries', 'batteries', 'spare_parts', 15);
+
+-- Insert Sample Sub-Categories (Models) for Vivo
+INSERT INTO subcategories (category_id, name, full_name, slug, display_order) VALUES
+(1, 'Y15', 'Vivo Y15', 'vivo-y15', 1),
+(1, 'Y16', 'Vivo Y16', 'vivo-y16', 2),
+(1, 'Y20', 'Vivo Y20', 'vivo-y20', 3),
+(1, 'Y27', 'Vivo Y27', 'vivo-y27', 4),
+(1, 'Y35', 'Vivo Y35', 'vivo-y35', 5),
+(1, 'V27', 'Vivo V27', 'vivo-v27', 6),
+(1, 'V29', 'Vivo V29', 'vivo-v29', 7),
+(1, 'T2', 'Vivo T2', 'vivo-t2', 8),
+(1, 'T2 Pro', 'Vivo T2 Pro', 'vivo-t2-pro', 9);
+
+-- Insert Sample Sub-Categories for Samsung
+INSERT INTO subcategories (category_id, name, full_name, slug, display_order) VALUES
+(2, 'Galaxy A14', 'Samsung Galaxy A14', 'samsung-galaxy-a14', 1),
+(2, 'Galaxy A24', 'Samsung Galaxy A24', 'samsung-galaxy-a24', 2),
+(2, 'Galaxy A34', 'Samsung Galaxy A34', 'samsung-galaxy-a34', 3),
+(2, 'Galaxy M14', 'Samsung Galaxy M14', 'samsung-galaxy-m14', 4),
+(2, 'Galaxy M34', 'Samsung Galaxy M34', 'samsung-galaxy-m34', 5),
+(2, 'Galaxy S23', 'Samsung Galaxy S23', 'samsung-galaxy-s23', 6),
+(2, 'Galaxy S23 FE', 'Samsung Galaxy S23 FE', 'samsung-galaxy-s23-fe', 7);
+
+-- Insert Sample Products
+INSERT INTO products (
+    name, category_id, subcategory_id, sku, 
+    color, storage, ram, price, cost_price, 
+    stock_quantity, description
+) VALUES
+('Vivo Y15 (Mystic Blue, 4GB+128GB)', 1, 1, 'VIV-Y15-BLU-4-128', 
+ 'Mystic Blue', '128GB', '4GB', 12999.00, 11500.00, 
+ 15, 'Vivo Y15 with 6.51" HD+ display, 5000mAh battery'),
+ 
+('Vivo Y16 (Drizzling Gold, 4GB+64GB)', 1, 2, 'VIV-Y16-GLD-4-64', 
+ 'Drizzling Gold', '64GB', '4GB', 10999.00, 9800.00, 
+ 20, 'Vivo Y16 with MediaTek Helio P35 processor'),
+ 
+('Samsung Galaxy A14 (Black, 6GB+128GB)', 2, 8, 'SAM-A14-BLK-6-128', 
+ 'Black', '128GB', '6GB', 15999.00, 14200.00, 
+ 12, 'Samsung Galaxy A14 5G with 50MP camera'),
+ 
+('Samsung Galaxy M34 (Midnight Blue, 8GB+128GB)', 2, 12, 'SAM-M34-BLU-8-128', 
+ 'Midnight Blue', '128GB', '8GB', 19999.00, 17800.00, 
+ 8, 'Samsung Galaxy M34 with 6000mAh battery and 120Hz display');
+```
+
+---
+
+## 6. Enhanced API Endpoints
+
+### 6.1 Category Management APIs
+```
+POST   /api/categories                      - Create new category (brand)
+GET    /api/categories                      - Get all categories
+GET    /api/categories/{id}                 - Get category by ID
+PUT    /api/categories/{id}                 - Update category
+DELETE /api/categories/{id}                 - Delete category
+GET    /api/categories/hierarchy            - Get full category tree
+GET    /api/categories/{id}/subcategories   - Get sub-categories of a category
+GET    /api/categories/stats                - Get category-wise statistics
+```
+
+### 6.2 Sub-Category Management APIs
+```
+POST   /api/subcategories                   - Create new sub-category (model)
+GET    /api/subcategories                   - Get all sub-categories
+GET    /api/subcategories/{id}              - Get sub-category by ID
+PUT    /api/subcategories/{id}              - Update sub-category
+DELETE /api/subcategories/{id}              - Delete sub-category
+GET    /api/subcategories/by-category/{category_id} - Get sub-categories by category
+GET    /api/subcategories/{id}/products     - Get products in sub-category
+6.3 Enhanced Product APIs
+GET    /api/products                        - Get all products (with category/subcategory filter)
+GET    /api/products/{id}                   - Get product by ID
+POST   /api/products                        - Create new product
+PUT    /api/products/{id}                   - Update product
+DELETE /api/products/{id}                   - Delete product
+GET    /api/products/by-category/{category_id} - Get products by category
+GET    /api/products/by-subcategory/{subcategory_id} - Get products by sub-category
+GET    /api/products/search?q=query         - Search products
+GET    /api/products/low-stock              - Get low stock products
+POST   /api/products/bulk-upload            - Bulk uploa
+Continue
+
+POST   /api/products/bulk-upload            - Bulk upload products (CSV)
+GET    /api/products/featured               - Get featured products
+PUT    /api/products/{id}/stock             - Update stock quantity
+GET    /api/products/barcode/{barcode}      - Get product by barcode
+GET    /api/products/imei/{imei}            - Get product by IMEI
+6.4 Sales APIs
+POST   /api/sales                           - Create new sale
+GET    /api/sales                           - Get all sales
+GET    /api/sales/{id}                      - Get sale by ID
+GET    /api/sales/invoice/{invoice_number}  - Get sale by invoice number
+GET    /api/sales/today                     - Get today's sales
+GET    /api/sales/by-date                   - Get sales by date range
+POST   /api/sales/{id}/refund               - Process refund
+GET    /api/sales/{id}/invoice-pdf          - Generate invoice PDF
+GET    /api/sales/category-wise             - Get category-wise sales
+6.5 Customer APIs
+POST   /api/customers                       - Create new customer
+GET    /api/customers                       - Get all customers
+GET    /api/customers/{id}                  - Get customer by ID
+PUT    /api/customers/{id}                  - Update customer
+DELETE /api/customers/{id}                  - Delete customer
+GET    /api/customers/search?phone=xxx      - Search customer by phone
+GET    /api/customers/{id}/purchase-history - Get customer purchase history
+PUT    /api/customers/{id}/loyalty-points   - Update loyalty points
+6.6 Supplier APIs
+POST   /api/suppliers                       - Create new supplier
+GET    /api/suppliers                       - Get all suppliers
+GET    /api/suppliers/{id}                  - Get supplier by ID
+PUT    /api/suppliers/{id}                  - Update supplier
+DELETE /api/suppliers/{id}                  - Delete supplier
+6.7 Purchase Order APIs
+POST   /api/purchase-orders                 - Create new purchase order
+GET    /api/purchase-orders                 - Get all purchase orders
+GET    /api/purchase-orders/{id}            - Get purchase order by ID
+PUT    /api/purchase-orders/{id}/status     - Update PO status
+POST   /api/purchase-orders/{id}/receive    - Mark items as received
+6.8 Repair APIs
+POST   /api/repairs                         - Create new repair job
+GET    /api/repairs                         - Get all repairs
+GET    /api/repairs/{id}                    - Get repair by ID
+PUT    /api/repairs/{id}                    - Update repair
+PUT    /api/repairs/{id}/status             - Update repair status
+GET    /api/repairs/pending                 - Get pending repairs
+GET    /api/repairs/completed               - Get completed repairs
+6.9 Reports APIs
+GET    /api/reports/dashboard               - Dashboard summary
+GET    /api/reports/sales                   - Sales report (with filters)
+GET    /api/reports/inventory               - Inventory report
+GET    /api/reports/profit-loss             - Profit & Loss statement
+GET    /api/reports/category-wise-sales     - Category-wise sales report
+GET    /api/reports/subcategory-wise-sales  - Sub-category-wise sales
+GET    /api/reports/top-products            - Best selling products
+GET    /api/reports/slow-moving             - Slow-moving inventory
+GET    /api/reports/customer-analytics      - Customer analytics
+GET    /api/reports/stock-value             - Current stock value
+GET    /api/reports/category-performance    - Category performance metrics
+6.10 Authentication APIs
+POST   /api/auth/register                   - Register new user
+POST   /api/auth/login                      - User login
+POST   /api/auth/refresh                    - Refresh access token
+POST   /api/auth/logout                     - User logout
+GET    /api/auth/me                         - Get current user
+PUT    /api/auth/change-password            - Change password
+POST   /api/auth/forgot-password            - Request password reset
+7. Frontend Pages - Detailed Requirements
+7.1 Category Management Pages
+category-list.html
+Features:
+
+Display all categories in a table/grid
+Show category name, slug, parent type, product count
+Actions: Edit, Delete, View Sub-categories
+Add new category button
+Filter by parent type (mobiles, accessories, spare_parts)
+Drag-and-drop to reorder display order
+Search functionality
+UI Components:
+
+html
+- DataTable with sorting and pagination
+- Action buttons (Edit, Delete, Manage Sub-categories)
+- Modal for quick add category
+- Confirmation dialog for delete
+- Category icons/images display
+add-category.html
+Form Fields:
+
+Category Name (required)
+Slug (auto-generated, editable)
+Parent Type (dropdown: mobiles, accessories, spare_parts)
+Description (textarea)
+Icon/Image upload
+Display Order (number)
+Is Active (checkbox)
+subcategory-list.html
+Features:
+
+Display sub-categories grouped by category
+Show: Sub-category name, category name, product count, stock level
+Filter by category
+Search sub-categories
+Bulk actions
+Expandable rows to show products
+add-subcategory.html
+Form Fields:
+
+Category Selection (dropdown - cascading)
+Sub-category Name (e.g., "Y15")
+Full Name (auto-generated: "Vivo Y15")
+Slug (auto-generated)
+Description
+Image upload
+Specifications (JSON editor or form fields)
+Screen Size
+Battery
+Camera
+Processor
+Display Order
+Is Active
+manage-hierarchy.html
+Features:
+
+Visual tree view of categories and sub-categories
+Drag-and-drop to reorganize
+Expand/collapse categories
+Quick add sub-category inline
+Bulk operations
+Export hierarchy as JSON/CSV
+7.2 Product Management Pages
+product-list.html
+Features:
+
+Advanced filtering:
+By Category (dropdown)
+By Sub-category (cascading dropdown)
+By Price range
+By Stock status (In Stock, Low Stock, Out of Stock)
+By Condition (New, Refurbished, Used)
+DataTable with columns:
+Image thumbnail
+SKU
+Product Name
+Category > Sub-category
+Price / MRP
+Stock Quantity
+Status
+Actions
+Multi-select for bulk operations
+Quick view modal
+Export to CSV/Excel
+JavaScript Features:
+
+javascript
+- Real-time search
+- AJAX pagination
+- Category filter cascade (Category → Sub-category)
+- Stock alert indicators (color-coded)
+- Quick edit inline
+add-product.html
+Form Sections:
+
+Section 1: Basic Information
+
+Product Name
+Category (dropdown)
+Sub-category (cascading dropdown based on category)
+SKU (auto-generated or manual)
+Barcode
+Condition (New/Refurbished/Used)
+Section 2: Specifications
+
+Color (with color picker)
+Storage options (128GB, 256GB, etc.)
+RAM
+Battery capacity
+Screen Size
+Processor
+Camera Specifications
+Additional features (multi-line text)
+Section 3: Pricing
+
+MRP (Maximum Retail Price)
+Selling Price
+Cost Price
+Discount Percentage (auto-calculate)
+Profit Margin (display only)
+Section 4: Stock Management
+
+Current Stock Quantity
+Minimum Stock Level (for alerts)
+Maximum Stock Level
+Reorder Point
+Section 5: Additional Details
+
+Description (rich text editor)
+Warranty Period (months)
+Supplier (dropdown)
+Multiple Image Upload (with preview)
+Is Active (checkbox)
+Is Featured (checkbox)
+JavaScript Validation:
+
+javascript
+- Category → Sub-category dependency
+- Price validations (Selling > Cost)
+- Required field checks
+- Image format validation
+- Duplicate SKU/Barcode check (AJAX)
+```
+
+#### **low-stock.html**
+**Features:**
+- List products below minimum stock level
+- Group by category and sub-category
+- Show: Product name, Current stock, Min level, Reorder point
+- Quick reorder button
+- Generate purchase order
+- Email/SMS alert to suppliers
+
+---
+
+### 7.3 POS (Point of Sale) Page
+
+#### **pos.html**
+**Layout: Two-Column Design**
+
+**Left Column - Product Selection:**
+```
+- Category tabs (Vivo, Samsung, Xiaomi, etc.)
+- Sub-category pills/chips (Y15, Y16, Y20, etc.)
+- Product grid with:
+  - Product image
+  - Name
+  - Price
+  - Stock availability
+- Search bar (search by name, SKU, IMEI, barcode)
+- Barcode scanner integration
+```
+
+**Right Column - Cart & Checkout:**
+```
+- Customer search/select
+- Add new customer (quick modal)
+- Cart items list:
+  - Product name (Category > Sub-category)
+  - Quantity (editable)
+  - Unit price
+  - Total
+  - Remove button
+- Cart summary:
+  - Subtotal
+  - Discount (% or fixed)
+  - Tax/GST (%)
+  - Total Amount
+- Payment section:
+  - Payment method (Cash, Card, UPI, EMI, Net Banking)
+  - Amount paid
+  - Balance/Change
+- Action buttons:
+  - Hold Sale
+  - Clear Cart
+  - Checkout & Print Invoice
+JavaScript Features:
+
+javascript
+// Category-based filtering
+function filterByCategory(categoryId) {
+    loadSubcategories(categoryId);
+    loadProducts({ category_id: categoryId });
+}
+
+// Sub-category filtering
+function filterBySubcategory(subcategoryId) {
+    loadProducts({ subcategory_id: subcategoryId });
+}
+
+// Add to cart
+function addToCart(productId) {
+    // Check stock
+    // Add to cart array
+    // Update cart display
+    // Calculate totals
+}
+
+// Barcode scan
+function onBarcodeScanned(barcode) {
+    // Search product by barcode
+    // Add to cart
+}
+
+// Checkout
+async function processCheckout() {
+    // Validate cart
+    // Validate customer
+    // Validate payment
+    // Create sale via API
+    // Print invoice
+    // Clear cart
+}
+```
+
+---
+
+### 7.4 Sales Management Pages
+
+#### **sales-history.html**
+**Features:**
+- Sales list with filters:
+  - Date range picker
+  - Category filter
+  - Sub-category filter
+  - Customer filter
+  - Payment method filter
+  - Payment status filter
+- Display columns:
+  - Invoice Number
+  - Date & Time
+  - Customer Name
+  - Items Count
+  - Total Amount
+  - Payment Method
+  - Status
+  - Actions (View, Print, Refund)
+- Export options (PDF, Excel, CSV)
+- Sales summary cards (Total Sales, Total Items, Revenue)
+
+#### **invoice.html**
+**Invoice Layout:**
+```
+- Shop header (Logo, Name, Address, GST, Phone)
+- Invoice details (Number, Date, Time)
+- Customer details
+- Items table:
+  - S.No
+  - Product Name (with Category > Sub-category)
+  - HSN Code
+  - Qty
+  - Rate
+  - Discount
+  - Tax
+  - Amount
+- Summary:
+  - Subtotal
+  - Discount
+  - CGST / SGST / IGST
+  - Total Amount
+  - Payment Method
+  - Paid Amount
+  - Balance
+- Terms & Conditions
+- Warranty information
+- Thank you note
+- Print and Share buttons
+JavaScript Print Function:
+
+javascript
+function printInvoice() {
+    window.print();
+}
+
+function shareInvoice() {
+    // Generate PDF
+    // Share via WhatsApp/Email
+}
+```
+
+---
+
+### 7.5 Dashboard Page
+
+#### **dashboard.html**
+
+**Top Row - Summary Cards:**
+```
+┌────────────────┬────────────────┬────────────────┬────────────────┐
+│ Today's Sales  │ Monthly Sales  │ Total Products │ Low Stock      │
+│ ₹45,500        │ ₹5,25,000      │ 1,245         │ 15 Items       │
+│ +12% vs yday   │ +8% vs last    │ 25 Categories  │ View Details   │
+└────────────────┴────────────────┴────────────────┴────────────────┘
+```
+
+**Second Row - Charts:**
+```
+┌─────────────────────────────────┬──────────────────────────────┐
+│ Sales Trend (Last 7 Days)       │ Category-wise Sales          │
+│ [Line Chart]                    │ [Pie Chart]                  │
+│                                 │ - Vivo: 35%                  │
+│                                 │ - Samsung: 28%               │
+│                                 │ - Xiaomi: 20%                │
+│                                 │ - Others: 17%                │
+└─────────────────────────────────┴──────────────────────────────┘
+```
+
+**Third Row - Tables:**
+```
+┌──────────────────────────────────────┬─────────────────────────────┐
+│ Best Selling Products                │ Recent Sales                │
+│ 1. Vivo Y15 (25 sold)               │ #INV-001 - ₹12,999         │
+│ 2. Samsung A14 (20 sold)            │ #INV-002 - ₹15,999         │
+│ 3. Xiaomi Redmi 12 (18 sold)        │ #INV-003 - ₹8,500          │
+│ [View All]                           │ [View All]                  │
+└──────────────────────────────────────┴─────────────────────────────┘
+```
+
+**Fourth Row - Alerts & Notifications:**
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ Low Stock Alerts (15)                                           │
+│ • Vivo Y15 (4GB+128GB) - Only 3 units left                     │
+│ • Samsung Galaxy M34 - Only 2 units left                        │
+│ • Redmi Note 12 - Out of stock                                 │
+│ [View All Alerts]                                               │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ Pending Repairs (5)                                             │
+│ • #REP-001 - Vivo V27 - Screen Replacement - Due: Tomorrow     │
+│ • #REP-002 - Samsung A14 - Battery Issue - Due: Today          │
+│ [View All Repairs]                                              │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Quick Actions Floating Button:**
+```
+[+] → New Sale
+    → Add Product
+    → Add Customer
+    → Create Repair Job
+```
+
+---
+
+### 7.6 Reports Pages
+
+#### **category-report.html**
+**Features:**
+- Category-wise performance table
+- Columns:
+  - Category Name
+  - Total Products
+  - Total Stock
+  - Stock Value
+  - Units Sold
+  - Revenue
+  - Profit
+  - Growth %
+- Drill-down to sub-category level
+- Date range filter
+- Visual charts (Bar chart, Pie chart)
+- Export options
+
+**Sub-category Drill-down Table:**
+```
+Category: Vivo
+┌──────────────┬──────────┬───────┬─────────┬────────┬─────────┐
+│ Sub-Category │ Products │ Stock │ Sold    │ Revenue│ Profit  │
+├──────────────┼──────────┼───────┼─────────┼────────┼─────────┤
+│ Y15          │ 5        │ 45    │ 125     │ 1.6L   │ 18,750  │
+│ Y16          │ 3        │ 32    │ 98      │ 1.1L   │ 12,500  │
+│ V27          │ 4        │ 28    │ 45      │ 1.2L   │ 15,000  │
+└──────────────┴──────────┴───────┴─────────┴────────┴─────────┘
+```
+
+#### **sales-report.html**
+**Filters:**
+- Date Range
+- Category
+- Sub-category
+- Payment Method
+- Customer
+- User (Salesperson)
+
+**Report Sections:**
+```
+1. Summary Cards:
+   - Total Sales
+   - Total Items Sold
+   - Average Order Value
+   - Total Customers
+
+2. Payment Method Breakdown:
+   - Cash: ₹2,50,000 (50%)
+   - UPI: ₹1,50,000 (30%)
+   - Card: ₹1,00,000 (20%)
+
+3. Category-wise Sales Table
+4. Sub-category-wise Sales Table
+5. Top 10 Products
+6. Hourly Sales Distribution (Chart)
+7. Day-wise Sales Comparison
+```
+
+#### **inventory-report.html**
+**Sections:**
+```
+1. Stock Summary:
+   - Total Products: 1,245
+   - Total Stock Value: ₹45,50,000
+   - Low Stock Items: 15
+   - Out of Stock Items: 5
+
+2. Category-wise Stock:
+   Table with columns:
+   - Category
+   - Total Products
+   - In Stock Qty
+   - Stock Value
+   - Low Stock Count
+   - Out of Stock Count
+
+3. Stock Age Analysis:
+   - 0-30 days: 450 items
+   - 31-60 days: 320 items
+   - 61-90 days: 200 items
+   - >90 days: 275 items (Slow Moving)
+
+4. Reorder Recommendations:
+   Products that need reordering based on:
+   - Current stock
+   - Average daily sales
+   - Reorder point
+```
+
+#### **profit-loss.html**
+**Profit & Loss Statement:**
+```
+Period: January 2025
+
+REVENUE:
+├─ Sales Revenue:              ₹12,50,000
+├─ Repair Revenue:             ₹50,000
+└─ Other Income:               ₹10,000
+   Total Revenue:              ₹13,10,000
+
+COST OF GOODS SOLD:
+├─ Product Cost:               ₹8,50,000
+├─ Spare Parts Cost:           ₹25,000
+└─ Total COGS:                 ₹8,75,000
+
+GROSS PROFIT:                  ₹4,35,000 (33.2%)
+
+OPERATING EXPENSES:
+├─ Rent:                       ₹50,000
+├─ Salaries:                   ₹1,50,000
+├─ Utilities:                  ₹15,000
+├─ Marketing:                  ₹20,000
+├─ Transportation:             ₹10,000
+└─ Other Expenses:             ₹25,000
+   Total Expenses:             ₹2,70,000
+
+NET PROFIT:                    ₹1,65,000 (12.6%)
+Visual Charts:
+
+Revenue vs Expenses (Bar chart)
+Profit Trend (Line chart)
+Expense Breakdown (Pie chart)
+Month-over-Month comparison
+8. HTML/CSS/JavaScript Code Structure
+8.1 Base HTML Template
+html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Shop Management</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    
+    <!-- Bootstrap 5 (Optional but recommended) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    
+    <!-- Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside id="sidebar">
+        <div class="sidebar-header">
+            <h3>Mobile Shop</h3>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="/dashboard.html"><i class="fas fa-dashboard"></i> Dashboard</a></li>
+                
+                <li class="nav-section">Categories</li>
+                <li><a href="/pages/categories/category-list.html"><i class="fas fa-tags"></i> Manage Categories</a></li>
+                <li><a href="/pages/categories/subcategory-list.html"><i class="fas fa-list"></i> Manage Models</a></li>
+                
+                <li class="nav-section">Inventory</li>
+                <li><a href="/pages/inventory/product-list.html"><i class="fas fa-mobile"></i> Products</a></li>
+                <li><a href="/pages/inventory/add-product.html"><i class="fas fa-plus"></i> Add Product</a></li>
+                <li><a href="/pages/inventory/low-stock.html"><i class="fas fa-exclamation-triangle"></i> Low Stock</a></li>
+                
+                <li class="nav-section">Sales</li>
+                <li><a href="/pages/sales/pos.html"><i class="fas fa-cash-register"></i> POS</a></li>
+                <li><a href="/pages/sales/sales-history.html"><i class="fas fa-history"></i> Sales History</a></li>
+                
+                <li class="nav-section">People</li>
+                <li><a href="/pages/customers/customer-list.html"><i class="fas fa-users"></i> Customers</a></li>
+                <li><a href="/pages/suppliers/supplier-list.html"><i class="fas fa-truck"></i> Suppliers</a></li>
+                
+                <li class="nav-section">Repairs</li>
+                <li><a href="/pages/repairs/repair-list.html"><i class="fas fa-wrench"></i> Repair Jobs</a></li>
+                
+                <li class="nav-section">Reports</li>
+                <li><a href="/pages/reports/sales-report.html"><i class="fas fa-chart-line"></i> Sales Report</a></li>
+                <li><a href="/pages/reports/category-report.html"><i class="fas fa-chart-pie"></i> Category Report</a></li>
+                <li><a href="/pages/reports/inventory-report.html"><i class="fas fa-warehouse"></i> Inventory Report</a></li>
+                <li><a href="/pages/reports/profit-loss.html"><i class="fas fa-dollar-sign"></i> Profit & Loss</a></li>
+                
+                <li class="nav-section">Settings</li>
+                <li><a href="/pages/settings/profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                <li><a href="/pages/settings/users.html"><i class="fas fa-users-cog"></i> Users</a></li>
+                <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <button id="sidebar-toggle" class="btn btn-link">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="topbar-right">
+                <div class="notification-icon">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">5</span>
+                </div>
+                <div class="user-info">
+                    <span id="user-name">Admin</span>
+                    <img src="/assets/images/user-avatar.png" alt="User" class="user-avatar">
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="container-fluid py-4">
+            <!-- Page content goes here -->
+        </div>
+    </main>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom Scripts -->
+    <script src="/js/config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/api.js"></script>
+</body>
+</html>
+8.2 Core JavaScript Files
+js/config.js
+javascript
+// API Configuration
+const API_CONFIG = {
+    BASE_URL: 'https://your-replit-backend.repl.co/api',
+    TIMEOUT: 30000,
+    HEADERS: {
+        'Content-Type': 'application/json'
+    }
+};
+
+// App Configuration
+const APP_CONFIG = {
+    APP_NAME: 'Mobile Shop Management',
+    CURRENCY: '₹',
+    GST_PERCENTAGE: 18,
+    LOW_STOCK_THRESHOLD: 5,
+    ITEMS_PER_PAGE: 25,
+    DATE_FORMAT: 'DD/MM/YYYY',
+    TIME_FORMAT: 'hh:mm A'
+};
+
+// Local Storage Keys
+const STORAGE_KEYS = {
+    TOKEN: 'auth_token',
+    USER: 'user_data',
+    CART: 'pos_cart',
+    SETTINGS: 'app_settings'
+};
+js/auth.js
+javascript
+// Authentication Functions
+class AuthManager {
+    static setToken(token) {
+        localStorage.setItem(STORAGE_KEYS.TOKEN, token);
+    }
+
+    static getToken() {
+        return localStorage.getItem(STORAGE_KEYS.TOKEN);
+    }
+
+    static setUser(user) {
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+    }
+
+    static getUser() {
+        const user = localStorage.getItem(STORAGE_KEYS.USER);
+        return user ? JSON.parse(user) : null;
+    }
+
+    static isAuthenticated() {
+        return !!this.getToken();
+    }
+
+    static logout() {
+        localStorage.removeItem(STORAGE_KEYS.TOKEN);
+        localStorage.removeItem(STORAGE_KEYS.USER);
+        window.location.href = '/index.html';
+    }
+
+    static async login(username, password) {
+        try {
+            const response = await axios.post(`${API_CONFIG.BASE_URL}/auth/login`, {
+                username,
+                password
+            });
+            
+            if (response.data.access_token) {
+                this.setToken(response.data.access_token);
+                this.setUser(response.data.user);
+                return { success: true, user: response.data.user };
+            }
+        } catch (error) {
+            return { success: false, message: error.response?.data?.detail || 'Login failed' };
+        }
+    }
+
+    static checkAuth() {
+        if (!this.isAuthenticated() && !window.location.pathname.includes('login')) {
+            window.location.href = '/index.html';
+        }
+    }
+}
+
+// Check authentication on page load
+document.addEventListener('DOMContentLoaded', () => {
+    AuthManager.checkAuth();
+    
+    // Display user info
+    const user = AuthManager.getUser();
+    if (user) {
+        document.getElementById('user-name').textContent = user.full_name || user.username;
+    }
+});
+
+function logout() {
+    Swal.fire({
+        title: 'Logout?',
+        text: 'Are you sure you want to logout?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, logout',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            AuthManager.logout();
+        }
+    });
+}
+js/api.js
+javascript
+// API Service Class
+class APIService {
+    constructor() {
+        this.baseURL = API_CONFIG.BASE_URL;
+        this.setupInterceptors();
+    }
+
+    setupInterceptors() {
+        // Request interceptor - add token
+        axios.interceptors.request.use(
+            (config) => {
+                const token = AuthManager.getToken();
+                if (token) {
+                    config.headers.Authorization = `Bearer ${token}`;
+                }
+                return config;
+            },
+            (error) => Promise.reject(error)
+        );
+
+        // Response interceptor - handle errors
+        axios.interceptors.response.use(
+            (response) => response,
+            (error) => {
+                if (error.response?.status === 401) {
+                    AuthManager.logout();
+                }
+                return Promise.reject(error);
+            }
+        );
+    }
+
+    // Generic methods
+    async get(endpoint, params = {}) {
+        try {
+            const response = await axios.get(`${this.baseURL}${endpoint}`, { params });
+            return { success: true, data: response.data };
+        } catch (error) {
+            return this.handleError(error);
+        }
+    }
+
+    async post(endpoint, data) {
+        try {
+            const response = await axios.post(`${this.baseURL}${endpoint}`, data);
+            return { success: true, data: response.data };
+        } catch (error) {
+            return this.handleError(error);
+        }
+    }
+
+    async put(endpoint, data) {
+        try {
+            const response = await axios.put(`${this.baseURL}${endpoint}`, data);
+            return { success: true, data: response.data };
+        } catch (error) {
+            return this.handleError(error);
+        }
+    }
+
+    async delete(endpoint) {
+        try {
+            const response = await axios.delete(`${this.baseURL}${endpoint}`);
+            return { success: true, data: response.data };
+        } catch (error) {
+            return this.handleError(error);
+        }
+    }
+
+    handleError(error) {
+        const message = error.response?.data?.detail || error.message || 'An error occurred';
+        return { success: false, message };
+    }
+
+    // Category APIs
+    async getCategories() {
+        return this.get('/categories');
+    }
+
+    async
+Continue
+
+javascript
+    async createCategory(data) {
+        return this.post('/categories', data);
+    }
+
+    async updateCategory(id, data) {
+        return this.put(`/categories/${id}`, data);
+    }
+
+    async deleteCategory(id) {
+        return this.delete(`/categories/${id}`);
+    }
+
+    async getCategoryHierarchy() {
+        return this.get('/categories/hierarchy');
+    }
+
+    // Sub-category APIs
+    async getSubcategories(categoryId = null) {
+        const endpoint = categoryId 
+            ? `/subcategories/by-category/${categoryId}` 
+            : '/subcategories';
+        return this.get(endpoint);
+    }
+
+    async createSubcategory(data) {
+        return this.post('/subcategories', data);
+    }
+
+    async updateSubcategory(id, data) {
+        return this.put(`/subcategories/${id}`, data);
+    }
+
+    async deleteSubcategory(id) {
+        return this.delete(`/subcategories/${id}`);
+    }
+
+    // Product APIs
+    async getProducts(filters = {}) {
+        return this.get('/products', filters);
+    }
+
+    async getProductById(id) {
+        return this.get(`/products/${id}`);
+    }
+
+    async createProduct(data) {
+        return this.post('/products', data);
+    }
+
+    async updateProduct(id, data) {
+        return this.put(`/products/${id}`, data);
+    }
+
+    async deleteProduct(id) {
+        return this.delete(`/products/${id}`);
+    }
+
+    async searchProducts(query) {
+        return this.get('/products/search', { q: query });
+    }
+
+    async getLowStockProducts() {
+        return this.get('/products/low-stock');
+    }
+
+    async getProductByBarcode(barcode) {
+        return this.get(`/products/barcode/${barcode}`);
+    }
+
+    async getProductByIMEI(imei) {
+        return this.get(`/products/imei/${imei}`);
+    }
+
+    // Sales APIs
+    async createSale(data) {
+        return this.post('/sales', data);
+    }
+
+    async getSales(filters = {}) {
+        return this.get('/sales', filters);
+    }
+
+    async getSaleById(id) {
+        return this.get(`/sales/${id}`);
+    }
+
+    async getTodaySales() {
+        return this.get('/sales/today');
+    }
+
+    async processRefund(id, data) {
+        return this.post(`/sales/${id}/refund`, data);
+    }
+
+    // Customer APIs
+    async getCustomers() {
+        return this.get('/customers');
+    }
+
+    async createCustomer(data) {
+        return this.post('/customers', data);
+    }
+
+    async updateCustomer(id, data) {
+        return this.put(`/customers/${id}`, data);
+    }
+
+    async searchCustomerByPhone(phone) {
+        return this.get('/customers/search', { phone });
+    }
+
+    async getCustomerPurchaseHistory(id) {
+        return this.get(`/customers/${id}/purchase-history`);
+    }
+
+    // Reports APIs
+    async getDashboardStats() {
+        return this.get('/reports/dashboard');
+    }
+
+    async getSalesReport(filters) {
+        return this.get('/reports/sales', filters);
+    }
+
+    async getCategoryWiseSales(filters) {
+        return this.get('/reports/category-wise-sales', filters);
+    }
+
+    async getInventoryReport() {
+        return this.get('/reports/inventory');
+    }
+
+    async getProfitLossReport(filters) {
+        return this.get('/reports/profit-loss', filters);
+    }
+
+    async getTopProducts(limit = 10) {
+        return this.get('/reports/top-products', { limit });
+    }
+}
+
+// Create global API instance
+const api = new APIService();
+js/utils.js
+javascript
+// Utility Functions
+
+// Format currency
+function formatCurrency(amount) {
+    return `${APP_CONFIG.CURRENCY}${parseFloat(amount).toLocaleString('en-IN', { 
+        minimumFractionDigits: 2, 
+        maximumFractionDigits: 2 
+    })}`;
+}
+
+// Format date
+function formatDate(date, format = APP_CONFIG.DATE_FORMAT) {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    
+    if (format === 'DD/MM/YYYY') {
+        return `${day}/${month}/${year}`;
+    } else if (format === 'YYYY-MM-DD') {
+        return `${year}-${month}-${day}`;
+    }
+    return `${day}/${month}/${year}`;
+}
+
+// Format date and time
+function formatDateTime(datetime) {
+    const date = formatDate(datetime);
+    const d = new Date(datetime);
+    const time = d.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: true 
+    });
+    return `${date} ${time}`;
+}
+
+// Show loading spinner
+function showLoading(message = 'Loading...') {
+    Swal.fire({
+        title: message,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+}
+
+// Hide loading spinner
+function hideLoading() {
+    Swal.close();
+}
+
+// Show success message
+function showSuccess(message, callback = null) {
+    Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: message,
+        confirmButtonText: 'OK'
+    }).then((result) => {
+        if (callback) callback();
+    });
+}
+
+// Show error message
+function showError(message) {
+    Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: message,
+        confirmButtonText: 'OK'
+    });
+}
+
+// Confirm dialog
+function confirmAction(message, callback) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: message,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed && callback) {
+            callback();
+        }
+    });
+}
+
+// Generate invoice number
+function generateInvoiceNumber() {
+    const date = new Date();
+    const year = date.getFullYear().toString().substr(-2);
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    return `INV${year}${month}${day}${random}`;
+}
+
+// Calculate GST
+function calculateGST(amount, percentage = APP_CONFIG.GST_PERCENTAGE) {
+    return (amount * percentage) / 100;
+}
+
+// Calculate discount
+function calculateDiscount(amount, discountPercentage) {
+    return (amount * discountPercentage) / 100;
+}
+
+// Validate email
+function isValidEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+// Validate phone
+function isValidPhone(phone) {
+    const re = /^[6-9]\d{9}$/;
+    return re.test(phone);
+}
+
+// Debounce function for search
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Export to CSV
+function exportToCSV(data, filename) {
+    const csvContent = convertToCSV(data);
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function convertToCSV(data) {
+    if (!data || data.length === 0) return '';
+    
+    const headers = Object.keys(data[0]);
+    const csvRows = [];
+    
+    // Add headers
+    csvRows.push(headers.join(','));
+    
+    // Add data rows
+    for (const row of data) {
+        const values = headers.map(header => {
+            const value = row[header];
+            return `"${value}"`;
+        });
+        csvRows.push(values.join(','));
+    }
+    
+    return csvRows.join('\n');
+}
+
+// Initialize Select2 for dropdowns
+function initSelect2(selector, options = {}) {
+    $(selector).select2({
+        theme: 'bootstrap-5',
+        placeholder: options.placeholder || 'Select an option',
+        allowClear: options.allowClear !== false,
+        ...options
+    });
+}
+
+// Initialize DataTable
+function initDataTable(selector, options = {}) {
+    return $(selector).DataTable({
+        responsive: true,
+        pageLength: APP_CONFIG.ITEMS_PER_PAGE,
+        language: {
+            searchPlaceholder: 'Search...',
+            search: '',
+        },
+        ...options
+    });
+}
+
+// Sidebar toggle
+document.getElementById('sidebar-toggle')?.addEventListener('click', function() {
+    document.getElementById('sidebar').classList.toggle('collapsed');
+    document.getElementById('main-content').classList.toggle('expanded');
+});
+8.3 Sample Page Implementation
+pages/categories/category-list.html
+html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Categories - Mobile Shop</title>
+    
+    <!-- Include all CSS from base template -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Include Sidebar (same as base template) -->
+    
+    <main id="main-content">
+        <div class="container-fluid py-4">
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2>Manage Categories</h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/dashboard.html">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Categories</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div>
+                    <button class="btn btn-primary" onclick="openAddCategoryModal()">
+                        <i class="fas fa-plus"></i> Add Category
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Parent Type</label>
+                            <select id="filter-parent-type" class="form-select">
+                                <option value="">All Types</option>
+                                <option value="mobiles">Mobiles</option>
+                                <option value="accessories">Accessories</option>
+                                <option value="spare_parts">Spare Parts</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Status</label>
+                            <select id="filter-status" class="form-select">
+                                <option value="">All</option>
+                                <option value="true">Active</option>
+                                <option value="false">Inactive</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button class="btn btn-secondary" onclick="applyFilters()">
+                                <i class="fas fa-filter"></i> Apply Filters
+                            </button>
+                            <button class="btn btn-outline-secondary ms-2" onclick="resetFilters()">
+                                <i class="fas fa-redo"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Table -->
+            <div class="card">
+                <div class="card-body">
+                    <table id="categories-table" class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Icon</th>
+                                <th>Name</th>
+                                <th>Slug</th>
+                                <th>Type</th>
+                                <th>Sub-Categories</th>
+                                <th>Products</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categories-tbody">
+                            <!-- Data will be loaded via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add/Edit Category Modal -->
+    <div class="modal fade" id="categoryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="categoryModalTitle">Add Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="categoryForm">
+                        <input type="hidden" id="category-id">
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Category Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="category-name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Slug</label>
+                            <input type="text" class="form-control" id="category-slug" readonly>
+                            <small class="text-muted">Auto-generated from name</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Parent Type <span class="text-danger">*</span></label>
+                            <select class="form-select" id="category-parent-type" required>
+                                <option value="">Select Type</option>
+                                <option value="mobiles">Mobiles</option>
+                                <option value="accessories">Accessories</option>
+                                <option value="spare_parts">Spare Parts</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="category-description" rows="3"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Display Order</label>
+                            <input type="number" class="form-control" id="category-display-order" value="0">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Icon URL</label>
+                            <input type="text" class="form-control" id="category-icon-url">
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="category-is-active" checked>
+                            <label class="form-check-label" for="category-is-active">
+                                Active
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveCategory()">Save Category</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include all JavaScript libraries -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script src="/js/config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/categories.js"></script>
+</body>
+</html>
+js/categories.js
+javascript
+let categoriesTable;
+let currentCategories = [];
+let categoryModal;
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    categoryModal = new bootstrap.Modal(document.getElementById('categoryModal'));
+    loadCategories();
+    
+    // Auto-generate slug from name
+    document.getElementById('category-name').addEventListener('input', function(e) {
+        const slug = e.target.value.toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+        document.getElementById('category-slug').value = slug;
+    });
+});
+
+// Load categories from API
+async function loadCategories() {
+    showLoading('Loading categories...');
+    
+    const result = await api.getCategories();
+    
+    hideLoading();
+    
+    if (result.success) {
+        currentCategories = result.data;
+        renderCategoriesTable(result.data);
+    } else {
+        showError('Failed to load categories: ' + result.message);
+    }
+}
+
+// Render categories table
+function renderCategoriesTable(categories) {
+    const tbody = document.getElementById('categories-tbody');
+    tbody.innerHTML = '';
+    
+    if (categories.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center">No categories found</td></tr>';
+        return;
+    }
+    
+    categories.forEach(category => {
+        const row = `
+            <tr>
+                <td>${category.id}</td>
+                <td>
+                    ${category.icon_url 
+                        ? `<img src="${category.icon_url}" alt="${category.name}" style="width: 30px; height: 30px;">`
+                        : '<i class="fas fa-tag fa-2x"></i>'}
+                </td>
+                <td><strong>${category.name}</strong></td>
+                <td><code>${category.slug}</code></td>
+                <td><span class="badge bg-info">${category.parent_type || 'N/A'}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="viewSubcategories(${category.id})">
+                        <i class="fas fa-list"></i> View (${category.subcategory_count || 0})
+                    </button>
+                </td>
+                <td><span class="badge bg-secondary">${category.product_count || 0}</span></td>
+                <td>
+                    ${category.is_active 
+                        ? '<span class="badge bg-success">Active</span>' 
+                        : '<span class="badge bg-danger">Inactive</span>'}
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" onclick="editCategory(${category.id})" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="deleteCategory(${category.id})" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+    
+    // Initialize or refresh DataTable
+    if (categoriesTable) {
+        categoriesTable.destroy();
+    }
+    categoriesTable = initDataTable('#categories-table');
+}
+
+// Open add category modal
+function openAddCategoryModal() {
+    document.getElementById('categoryModalTitle').textContent = 'Add Category';
+    document.getElementById('categoryForm').reset();
+    document.getElementById('category-id').value = '';
+    document.getElementById('category-is-active').checked = true;
+    categoryModal.show();
+}
+
+// Edit category
+async function editCategory(id) {
+    const category = currentCategories.find(c => c.id === id);
+    
+    if (!category) {
+        showError('Category not found');
+        return;
+    }
+    
+    document.getElementById('categoryModalTitle').textContent = 'Edit Category';
+    document.getElementById('category-id').value = category.id;
+    document.getElementById('category-name').value = category.name;
+    document.getElementById('category-slug').value = category.slug;
+    document.getElementById('category-parent-type').value = category.parent_type || '';
+    document.getElementById('category-description').value = category.description || '';
+    document.getElementById('category-display-order').value = category.display_order || 0;
+    document.getElementById('category-icon-url').value = category.icon_url || '';
+    document.getElementById('category-is-active').checked = category.is_active;
+    
+    categoryModal.show();
+}
+
+// Save category (create or update)
+async function saveCategory() {
+    const id = document.getElementById('category-id').value;
+    const data = {
+        name: document.getElementById('category-name').value.trim(),
+        slug: document.getElementById('category-slug').value.trim(),
+        parent_type: document.getElementById('category-parent-type').value,
+        description: document.getElementById('category-description').value.trim(),
+        display_order: parseInt(document.getElementById('category-display-order').value) || 0,
+        icon_url: document.getElementById('category-icon-url').value.trim(),
+        is_active: document.getElementById('category-is-active').checked
+    };
+    
+    // Validation
+    if (!data.name) {
+        showError('Category name is required');
+        return;
+    }
+    
+    if (!data.parent_type) {
+        showError('Parent type is required');
+        return;
+    }
+    
+    showLoading(id ? 'Updating category...' : 'Creating category...');
+    
+    const result = id 
+        ? await api.updateCategory(id, data)
+        : await api.createCategory(data);
+    
+    hideLoading();
+    
+    if (result.success) {
+        showSuccess(
+            id ? 'Category updated successfully' : 'Category created successfully',
+            () => {
+                categoryModal.hide();
+                loadCategories();
+            }
+        );
+    } else {
+        showError('Failed to save category: ' + result.message);
+    }
+}
+
+// Delete category
+function deleteCategory(id) {
+    confirmAction('This will delete the category and all its sub-categories. Continue?', async () => {
+        showLoading('Deleting category...');
+        
+        const result = await api.deleteCategory(id);
+        
+        hideLoading();
+        
+        if (result.success) {
+            showSuccess('Category deleted successfully', () => {
+                loadCategories();
+            });
+        } else {
+            showError('Failed to delete category: ' + result.message);
+        }
+    });
+}
+
+// View sub-categories
+function viewSubcategories(categoryId) {
+    window.location.href = `/pages/categories/subcategory-list.html?category_id=${categoryId}`;
+}
+
+// Apply filters
+function applyFilters() {
+    const parentType = document.getElementById('filter-parent-type').value;
+    const status = document.getElementById('filter-status').value;
+    
+    let filtered = [...currentCategories];
+    
+    if (parentType) {
+        filtered = filtered.filter(c => c.parent_type === parentType);
+    }
+    
+    if (status !== '') {
+        const isActive = status === 'true';
+        filtered = filtered.filter(c => c.is_active === isActive);
+    }
+    
+    renderCategoriesTable(filtered);
+}
+
+// Reset filters
+function resetFilters() {
+    document.getElementById('filter-parent-type').value = '';
+    document.getElementById('filter-status').value = '';
+    renderCategoriesTable(currentCategories);
+}
+9. Python Backend Implementation
+9.1 Main Application File
+main.py
+python
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from app.database import engine, Base
+from app.routers import (
+    auth, categories, subcategories, products, 
+    sales, customers, suppliers, reports, users, repairs
+)
+
+# Create database tables
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI(
+    title="Mobile Shop Management API",
+    description="Complete API for Mobile Shop Management System",
+    version="1.0.0",
+    docs_url="/api/docs",
+    redoc_url="/api/redoc"
+)
+
+# CORS Configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, specify exact origins
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include routers
+app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
+app.include_router(categories.router, prefix="/api/categories", tags=["Categories"])
+app.include_router(subcategories.router, prefix="/api/subcategories", tags=["Sub-Categories"])
+app.include_router(products.router, prefix="/api/products", tags=["Products"])
+app.include_router(sales.router, prefix="/api/sales", tags=["Sales"])
+app.include_router(customers.router, prefix="/api/customers", tags=["Customers"])
+app.include_router(suppliers.router, prefix="/api/suppliers", tags=["Suppliers"])
+app.include_router(repairs.router, prefix="/api/repairs", tags=["Repairs"])
+app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])
+app.include_router(users.router, prefix="/api/users", tags=["Users"])
+
+# Serve static files (optional - for uploaded images)
+# app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+@app.get("/")
+def read_root():
+    return {
+        "message": "Mobile Shop Management API",
+        "version": "1.0.0",
+        "docs": "/api/docs"
+    }
+
+@app.get("/api/health")
+def health_check():
+    return {"status": "healthy"}
+9.2 Category Model
+app/models/category.py
+python
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text
+from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
+from app.database import Base
+
+class Category(Base):
+    __tablename__ = "categories"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), unique=True, nullable=False, index=True)
+    slug = Column(String(100), unique=True, nullable=False, index=True)
+    description = Column(Text, nullable=True)
+    icon_url = Column(String(255), nullable=True)
+    display_order = Column(Integer, default=0)
+    is_active = Column(Boolean, default=True)
+    parent_type = Column(String(50), nullable=True)  # 'mobiles', 'accessories', 'spare_parts'
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Relationships
+    subcategories = relationship("Subcategory", back_populates="category", cascade="all, delete-orphan")
+    products = relationship("Product", back_populates="category")
+9.3 Sub-Category Model
+app/models/subcategory.py
+python
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, ForeignKey, JSON
+from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
+from app.database import Base
+
+class Subcategory(Base):
+    __tablename__ = "subcategories"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    category_id = Column(Integer, ForeignKey("categories.id", ondelete="CASCADE"), nullable=False)
+    name = Column(String(100), nullable=False)
+    full_name = Column(String(150), nullable=False)
+    slug = Column(String(150), unique=True, nullable=False, index=True)
+    description = Column(Text, nullable=True)
+    image_url = Column(String(255), nullable=True)
+    display_order = Column(Integer, default=0)
+    is_active = Column(Boolean, default=True)
+    specifications = Column(JSON, nullable=True)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Relationships
+    category = relationship("Category", back_populates="subcategories")
+    products = relationship("Product", back_populates="subcategory")
+9.4 Category Router
+app/routers/categories.py
+python
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from typing import List
+from app.database import get_db
+from app.models.category import Category
+from app.schemas.category_schema import CategoryCreate, CategoryUpdate, CategoryResponse
+from app.utils.security import get_current_user
+
+router = APIRouter()
+
+@router.post("/", response_model=CategoryResponse, status_code=status.HTTP_201_CREATED)
+def create_category(
+    category: CategoryCreate,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Create
+Continue
+
+python
+    """Create a new category"""
+    # Check if category with same name or slug exists
+    existing = db.query(Category).filter(
+        (Category.name == category.name) | (Category.slug == category.slug)
+    ).first()
+    
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Category with this name or slug already exists"
+        )
+    
+    db_category = Category(**category.dict())
+    db.add(db_category)
+    db.commit()
+    db.refresh(db_category)
+    
+    return db_category
+
+@router.get("/", response_model=List[CategoryResponse])
+def get_categories(
+    skip: int = 0,
+    limit: int = 100,
+    parent_type: str = None,
+    is_active: bool = None,
+    db: Session = Depends(get_db)
+):
+    """Get all categories with optional filters"""
+    query = db.query(Category)
+    
+    if parent_type:
+        query = query.filter(Category.parent_type == parent_type)
+    
+    if is_active is not None:
+        query = query.filter(Category.is_active == is_active)
+    
+    query = query.order_by(Category.display_order, Category.name)
+    categories = query.offset(skip).limit(limit).all()
+    
+    # Add subcategory and product counts
+    for category in categories:
+        category.subcategory_count = len(category.subcategories)
+        category.product_count = len(category.products)
+    
+    return categories
+
+@router.get("/hierarchy")
+def get_category_hierarchy(db: Session = Depends(get_db)):
+    """Get complete category hierarchy with subcategories"""
+    categories = db.query(Category).filter(Category.is_active == True).order_by(Category.display_order).all()
+    
+    hierarchy = []
+    for category in categories:
+        category_data = {
+            "id": category.id,
+            "name": category.name,
+            "slug": category.slug,
+            "parent_type": category.parent_type,
+            "icon_url": category.icon_url,
+            "subcategories": [
+                {
+                    "id": sub.id,
+                    "name": sub.name,
+                    "full_name": sub.full_name,
+                    "slug": sub.slug,
+                    "product_count": len(sub.products)
+                }
+                for sub in category.subcategories if sub.is_active
+            ]
+        }
+        hierarchy.append(category_data)
+    
+    return hierarchy
+
+@router.get("/{category_id}", response_model=CategoryResponse)
+def get_category(category_id: int, db: Session = Depends(get_db)):
+    """Get a specific category by ID"""
+    category = db.query(Category).filter(Category.id == category_id).first()
+    
+    if not category:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Category not found"
+        )
+    
+    category.subcategory_count = len(category.subcategories)
+    category.product_count = len(category.products)
+    
+    return category
+
+@router.get("/{category_id}/subcategories")
+def get_category_subcategories(category_id: int, db: Session = Depends(get_db)):
+    """Get all subcategories of a specific category"""
+    category = db.query(Category).filter(Category.id == category_id).first()
+    
+    if not category:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Category not found"
+        )
+    
+    return category.subcategories
+
+@router.put("/{category_id}", response_model=CategoryResponse)
+def update_category(
+    category_id: int,
+    category_update: CategoryUpdate,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Update a category"""
+    db_category = db.query(Category).filter(Category.id == category_id).first()
+    
+    if not db_category:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Category not found"
+        )
+    
+    # Check for duplicate name/slug (excluding current category)
+    if category_update.name or category_update.slug:
+        existing = db.query(Category).filter(
+            Category.id != category_id,
+            (Category.name == category_update.name) | (Category.slug == category_update.slug)
+        ).first()
+        
+        if existing:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Category with this name or slug already exists"
+            )
+    
+    # Update fields
+    update_data = category_update.dict(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(db_category, field, value)
+    
+    db.commit()
+    db.refresh(db_category)
+    
+    return db_category
+
+@router.delete("/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_category(
+    category_id: int,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Delete a category (will also delete all subcategories and unlink products)"""
+    category = db.query(Category).filter(Category.id == category_id).first()
+    
+    if not category:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Category not found"
+        )
+    
+    # Check if category has products
+    if len(category.products) > 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Cannot delete category with {len(category.products)} products. Remove or reassign products first."
+        )
+    
+    db.delete(category)
+    db.commit()
+    
+    return None
+
+@router.get("/stats/summary")
+def get_category_stats(db: Session = Depends(get_db)):
+    """Get category statistics"""
+    total_categories = db.query(Category).count()
+    active_categories = db.query(Category).filter(Category.is_active == True).count()
+    
+    stats_by_type = {}
+    for parent_type in ['mobiles', 'accessories', 'spare_parts']:
+        count = db.query(Category).filter(Category.parent_type == parent_type).count()
+        stats_by_type[parent_type] = count
+    
+    return {
+        "total_categories": total_categories,
+        "active_categories": active_categories,
+        "by_type": stats_by_type
+    }
+9.5 Category Schemas
+app/schemas/category_schema.py
+python
+from pydantic import BaseModel, validator
+from typing import Optional
+from datetime import datetime
+
+class CategoryBase(BaseModel):
+    name: str
+    slug: str
+    parent_type: Optional[str] = None
+    description: Optional[str] = None
+    icon_url: Optional[str] = None
+    display_order: Optional[int] = 0
+    is_active: Optional[bool] = True
+
+class CategoryCreate(CategoryBase):
+    @validator('name')
+    def name_must_not_be_empty(cls, v):
+        if not v or not v.strip():
+            raise ValueError('Name cannot be empty')
+        return v.strip()
+    
+    @validator('slug')
+    def slug_must_be_valid(cls, v):
+        if not v or not v.strip():
+            raise ValueError('Slug cannot be empty')
+        # Check slug format (lowercase, alphanumeric, hyphens only)
+        if not v.replace('-', '').isalnum():
+            raise ValueError('Slug must contain only lowercase letters, numbers, and hyphens')
+        return v.strip().lower()
+
+class CategoryUpdate(BaseModel):
+    name: Optional[str] = None
+    slug: Optional[str] = None
+    parent_type: Optional[str] = None
+    description: Optional[str] = None
+    icon_url: Optional[str] = None
+    display_order: Optional[int] = None
+    is_active: Optional[bool] = None
+
+class CategoryResponse(CategoryBase):
+    id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    subcategory_count: Optional[int] = 0
+    product_count: Optional[int] = 0
+    
+    class Config:
+        from_attributes = True
+9.6 Sub-Category Router
+app/routers/subcategories.py
+python
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from typing import List
+from app.database import get_db
+from app.models.subcategory import Subcategory
+from app.models.category import Category
+from app.schemas.subcategory_schema import SubcategoryCreate, SubcategoryUpdate, SubcategoryResponse
+from app.utils.security import get_current_user
+
+router = APIRouter()
+
+@router.post("/", response_model=SubcategoryResponse, status_code=status.HTTP_201_CREATED)
+def create_subcategory(
+    subcategory: SubcategoryCreate,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Create a new subcategory"""
+    # Check if category exists
+    category = db.query(Category).filter(Category.id == subcategory.category_id).first()
+    if not category:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Category not found"
+        )
+    
+    # Check for duplicate
+    existing = db.query(Subcategory).filter(
+        (Subcategory.slug == subcategory.slug) |
+        ((Subcategory.category_id == subcategory.category_id) & 
+         (Subcategory.name == subcategory.name))
+    ).first()
+    
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Subcategory with this name or slug already exists"
+        )
+    
+    # Auto-generate full_name if not provided
+    if not subcategory.full_name:
+        subcategory.full_name = f"{category.name} {subcategory.name}"
+    
+    db_subcategory = Subcategory(**subcategory.dict())
+    db.add(db_subcategory)
+    db.commit()
+    db.refresh(db_subcategory)
+    
+    return db_subcategory
+
+@router.get("/", response_model=List[SubcategoryResponse])
+def get_subcategories(
+    skip: int = 0,
+    limit: int = 100,
+    category_id: int = None,
+    is_active: bool = None,
+    db: Session = Depends(get_db)
+):
+    """Get all subcategories with optional filters"""
+    query = db.query(Subcategory)
+    
+    if category_id:
+        query = query.filter(Subcategory.category_id == category_id)
+    
+    if is_active is not None:
+        query = query.filter(Subcategory.is_active == is_active)
+    
+    query = query.order_by(Subcategory.display_order, Subcategory.name)
+    subcategories = query.offset(skip).limit(limit).all()
+    
+    # Add product count
+    for subcategory in subcategories:
+        subcategory.product_count = len(subcategory.products)
+    
+    return subcategories
+
+@router.get("/by-category/{category_id}", response_model=List[SubcategoryResponse])
+def get_subcategories_by_category(
+    category_id: int,
+    db: Session = Depends(get_db)
+):
+    """Get all subcategories of a specific category"""
+    category = db.query(Category).filter(Category.id == category_id).first()
+    
+    if not category:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Category not found"
+        )
+    
+    subcategories = db.query(Subcategory).filter(
+        Subcategory.category_id == category_id,
+        Subcategory.is_active == True
+    ).order_by(Subcategory.display_order).all()
+    
+    for subcategory in subcategories:
+        subcategory.product_count = len(subcategory.products)
+    
+    return subcategories
+
+@router.get("/{subcategory_id}", response_model=SubcategoryResponse)
+def get_subcategory(subcategory_id: int, db: Session = Depends(get_db)):
+    """Get a specific subcategory by ID"""
+    subcategory = db.query(Subcategory).filter(Subcategory.id == subcategory_id).first()
+    
+    if not subcategory:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Subcategory not found"
+        )
+    
+    subcategory.product_count = len(subcategory.products)
+    
+    return subcategory
+
+@router.get("/{subcategory_id}/products")
+def get_subcategory_products(
+    subcategory_id: int,
+    db: Session = Depends(get_db)
+):
+    """Get all products in a subcategory"""
+    subcategory = db.query(Subcategory).filter(Subcategory.id == subcategory_id).first()
+    
+    if not subcategory:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Subcategory not found"
+        )
+    
+    return subcategory.products
+
+@router.put("/{subcategory_id}", response_model=SubcategoryResponse)
+def update_subcategory(
+    subcategory_id: int,
+    subcategory_update: SubcategoryUpdate,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Update a subcategory"""
+    db_subcategory = db.query(Subcategory).filter(Subcategory.id == subcategory_id).first()
+    
+    if not db_subcategory:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Subcategory not found"
+        )
+    
+    # Check for duplicates (excluding current subcategory)
+    if subcategory_update.name or subcategory_update.slug:
+        existing = db.query(Subcategory).filter(
+            Subcategory.id != subcategory_id,
+            (Subcategory.slug == subcategory_update.slug) |
+            ((Subcategory.category_id == db_subcategory.category_id) & 
+             (Subcategory.name == subcategory_update.name))
+        ).first()
+        
+        if existing:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Subcategory with this name or slug already exists"
+            )
+    
+    # Update fields
+    update_data = subcategory_update.dict(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(db_subcategory, field, value)
+    
+    db.commit()
+    db.refresh(db_subcategory)
+    
+    return db_subcategory
+
+@router.delete("/{subcategory_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_subcategory(
+    subcategory_id: int,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Delete a subcategory"""
+    subcategory = db.query(Subcategory).filter(Subcategory.id == subcategory_id).first()
+    
+    if not subcategory:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Subcategory not found"
+        )
+    
+    # Check if subcategory has products
+    if len(subcategory.products) > 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Cannot delete subcategory with {len(subcategory.products)} products"
+        )
+    
+    db.delete(subcategory)
+    db.commit()
+    
+    return None
+9.7 Sub-Category Schemas
+app/schemas/subcategory_schema.py
+python
+from pydantic import BaseModel, validator
+from typing import Optional, Dict, Any
+from datetime import datetime
+
+class SubcategoryBase(BaseModel):
+    category_id: int
+    name: str
+    full_name: Optional[str] = None
+    slug: str
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+    display_order: Optional[int] = 0
+    is_active: Optional[bool] = True
+    specifications: Optional[Dict[str, Any]] = None
+
+class SubcategoryCreate(SubcategoryBase):
+    @validator('name')
+    def name_must_not_be_empty(cls, v):
+        if not v or not v.strip():
+            raise ValueError('Name cannot be empty')
+        return v.strip()
+    
+    @validator('slug')
+    def slug_must_be_valid(cls, v):
+        if not v or not v.strip():
+            raise ValueError('Slug cannot be empty')
+        return v.strip().lower()
+
+class SubcategoryUpdate(BaseModel):
+    category_id: Optional[int] = None
+    name: Optional[str] = None
+    full_name: Optional[str] = None
+    slug: Optional[str] = None
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+    display_order: Optional[int] = None
+    is_active: Optional[bool] = None
+    specifications: Optional[Dict[str, Any]] = None
+
+class SubcategoryResponse(SubcategoryBase):
+    id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    product_count: Optional[int] = 0
+    category_name: Optional[str] = None
+    
+    class Config:
+        from_attributes = True
+10. CSS Styling
+css/style.css
+css
+/* Global Styles */
+:root {
+    --primary-color: #4a90e2;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --sidebar-width: 260px;
+    --topbar-height: 60px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+}
+
+/* Sidebar Styles */
+#sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+#sidebar.collapsed {
+    width: 70px;
+}
+
+.sidebar-header {
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-nav li {
+    padding: 0;
+}
+
+.sidebar-nav li.nav-section {
+    padding: 15px 20px 5px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 600;
+}
+
+.sidebar-nav a {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.sidebar-nav a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    padding-left: 25px;
+}
+
+.sidebar-nav a i {
+    margin-right: 12px;
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-nav a.active {
+    background: var(--primary-color);
+    color: white;
+    border-left: 4px solid white;
+}
+
+/* Main Content */
+#main-content {
+    margin-left: var(--sidebar-width);
+    transition: all 0.3s ease;
+}
+
+#main-content.expanded {
+    margin-left: 70px;
+}
+
+/* Topbar */
+.topbar {
+    height: var(--topbar-height);
+    background: white;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.notification-icon {
+    position: relative;
+    cursor: pointer;
+    font-size: 1.3rem;
+    color: #666;
+}
+
+.notification-icon .badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--danger-color);
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.7rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background: white;
+    border-bottom: 2px solid #f0f0f0;
+    font-weight: 600;
+    padding: 15px 20px;
+}
+
+/* Dashboard Cards */
+.stat-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card .stat-icon {
+    font-size: 2.5rem;
+    opacity: 0.3;
+}
+
+.stat-card h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 10px 0;
+}
+
+.stat-card p {
+    color: #666;
+    margin: 0;
+}
+
+/* Tables */
+.table {
+    background: white;
+}
+
+.table thead th {
+    background: #f8f9fa;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    color: #666;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background: #3a7bc8;
+    border-color: #3a7bc8;
+}
+
+/* Forms */
+.form-label {
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.form-control, .form-select {
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    padding: 10px 12px;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
+}
+
+/* Badges */
+.badge {
+    padding: 6px 12px;
+    font-weight: 500;
+    border-radius: 6px;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin-bottom: 0;
+}
+
+.breadcrumb-item a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #sidebar {
+        transform: translateX(-100%);
+    }
+    
+    #sidebar.show {
+        transform: translateX(0);
+    }
+    
+    #main-content {
+        margin-left: 0;
+    }
+}
+
+/* Loading Spinner */
+.spinner-border {
+    width: 2rem;
+    height: 2rem;
+}
+
+/* Print Styles */
+@media print {
+    #sidebar,
+    .topbar,
+    .btn,
+    .no-print {
+        display: none !important;
+    }
+    
+    #main-content {
+        margin-left: 0;
+    }
+}
+11. requirements.txt
+txt
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+sqlalchemy==2.0.23
+psycopg2-binary==2.9.9
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+pydantic==2.5.0
+pydantic-settings==2.1.0
+python-dotenv==1.0.0
+alembic==1.12.1
+python-dateutil==2.8.2
+```
+
+---
+
+## 12. Replit Agent Prompts
+
+### **Prompt 1: Setup Backend with Categories**
+```
+Create a Python FastAPI backend for mobile shop management with:
+1. PostgreSQL database connection using SQLAlchemy
+2. Models for: users, categories, subcategories, products
+3. Category model with: id, name, slug, parent_type, description, icon_url, display_order, is_active
+4. Subcategory model with: id, category_id (FK), name, full_name, slug, description, specifications (JSON)
+5. Product model linked to both category_id and subcategory_id
+6. API routes for CRUD operations on categories and subcategories
+7. JWT authentication
+8. CORS enabled
+```
+
+### **Prompt 2: Frontend Category Management**
+```
+Create HTML pages with vanilla JavaScript for:
+1. Category list page with DataTable, filters (parent_type, status)
+2. Add/Edit category modal with form validation
+3. Subcategory list page showing categories with their models
+4. Cascading dropdowns (Category → Subcategory)
+5. Use Bootstrap 5 for styling
+6. Use Axios for API calls
+7. Use SweetAlert2 for alerts
+8. Auto-generate slug from name
+```
+
+### **Prompt 3: POS System**
+```
+Create a POS (Point of Sale) page with:
+1. Left panel: Product selection with category tabs and subcategory filters
+2. Right panel: Shopping cart, customer selection, payment processing
+3. Barcode scanner integration
+4. Real-time stock checking
+5. Invoice generation and print functionality
+6. Support multiple payment methods
+7. Calculate GST automatically
+```
+
+### **Prompt 4: Reports with Category Hierarchy**
+```
+Create report pages showing:
+1. Category-wise sales report with drill-down to subcategories
+2. Best selling products grouped by category and subcategory
+3. Stock value report by category
+4. Interactive charts using Chart.js
+5. Export to CSV functionality
+6. Date range filters
+This comprehensive requirements document provides everything needed to build a complete mobile shop management system with hierarchical categories (Brand → Model) using HTML, CSS, JavaScript, Python FastAPI, and PostgreSQL. The system supports category and subcategory management, making it perfect for managing different mobile brands and their models.
+
+
+
+How can I help you today?
+
+
+
+
+
+
