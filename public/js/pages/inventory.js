@@ -210,25 +210,25 @@ export function render(app) {
                 <div style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 16px; align-items: center; margin-bottom: 16px;">
                   <label class="form-label" style="margin: 0; white-space: nowrap;"></label>
                   <div style="text-align: center; font-weight: 500; color: var(--text-secondary); font-size: 0.9rem;">Margin %:</div>
-                  <div></div>
+                  <div style="text-align: center; font-weight: 500; color: var(--text-secondary); font-size: 0.9rem;">Price (₹):</div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 16px; align-items: center; margin-bottom: 16px;">
                   <label for="productMRP" class="form-label" style="margin: 0; white-space: nowrap;">MRP:</label>
-                  <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" data-testid="input-margin-mrp-1" />
-                  <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" data-testid="input-margin-mrp-2" />
+                  <input type="number" id="marginMRP" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" data-testid="input-margin-mrp-percent" oninput="calculatePriceFromMargin('mrp')" />
+                  <input type="number" id="priceMRP" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #e8f5e9;" data-testid="input-margin-mrp-price" readonly />
                 </div>
 
                 <div style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 16px; align-items: center; margin-bottom: 16px;">
                   <label for="productPrice" class="form-label" style="margin: 0; white-space: nowrap;">Retail Sale Price*:</label>
-                  <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" data-testid="input-margin-retail-1" />
-                  <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" data-testid="input-margin-retail-2" />
+                  <input type="number" id="marginRetail" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" data-testid="input-margin-retail-percent" oninput="calculatePriceFromMargin('retail')" />
+                  <input type="number" id="priceRetail" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #e8f5e9;" data-testid="input-margin-retail-price" readonly />
                 </div>
 
                 <div style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 16px; align-items: center; margin-bottom: 16px;">
                   <label for="productWholesalePrice" class="form-label" style="margin: 0; white-space: nowrap;">Wholesale Price:</label>
-                  <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" data-testid="input-margin-wholesale-1" />
-                  <input type="number" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" data-testid="input-margin-wholesale-2" />
+                  <input type="number" id="marginWholesale" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" data-testid="input-margin-wholesale-percent" oninput="calculatePriceFromMargin('wholesale')" />
+                  <input type="number" id="priceWholesale" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #e8f5e9;" data-testid="input-margin-wholesale-price" readonly />
                 </div>
 
                 <div style="margin-top: 24px; margin-bottom: 16px;">
@@ -509,8 +509,42 @@ export async function init(app) {
   window.filterProducts = filterProducts;
   window.setFilter = setFilter;
   window.updateModelOptions = updateModelOptions;
+  window.calculatePriceFromMargin = calculatePriceFromMargin;
   // window.handleImageSelect = handleImageSelect; // Removed
   // window.updateImagePreview = updateImagePreview; // Removed
+}
+
+function calculatePriceFromMargin(priceType) {
+  const costPrice = parseFloat(document.getElementById('productCostPrice').value) || 0;
+  
+  if (costPrice <= 0) {
+    return;
+  }
+  
+  let marginPercent = 0;
+  let priceField = null;
+  let hiddenField = null;
+  
+  if (priceType === 'mrp') {
+    marginPercent = parseFloat(document.getElementById('marginMRP').value) || 0;
+    priceField = document.getElementById('priceMRP');
+    hiddenField = document.getElementById('productMRP');
+  } else if (priceType === 'retail') {
+    marginPercent = parseFloat(document.getElementById('marginRetail').value) || 0;
+    priceField = document.getElementById('priceRetail');
+    hiddenField = document.getElementById('productPrice');
+  } else if (priceType === 'wholesale') {
+    marginPercent = parseFloat(document.getElementById('marginWholesale').value) || 0;
+    priceField = document.getElementById('priceWholesale');
+    hiddenField = document.getElementById('productWholesalePrice');
+  }
+  
+  if (priceField && hiddenField) {
+    const calculatedPrice = costPrice + (costPrice * marginPercent / 100);
+    const roundedPrice = Math.round(calculatedPrice * 100) / 100;
+    priceField.value = roundedPrice.toFixed(2);
+    hiddenField.value = roundedPrice;
+  }
 }
 
 function loadBrandsAndModels() {
@@ -556,6 +590,15 @@ function openAddProductModal() {
   document.getElementById('modalTitle').textContent = 'Add New Product';
   document.getElementById('productForm').reset();
   document.getElementById('productId').value = '';
+  
+  // Reset margin fields
+  document.getElementById('marginMRP').value = '0.00';
+  document.getElementById('marginRetail').value = '0.00';
+  document.getElementById('marginWholesale').value = '0.00';
+  document.getElementById('priceMRP').value = '0.00';
+  document.getElementById('priceRetail').value = '0.00';
+  document.getElementById('priceWholesale').value = '0.00';
+  
   loadBrandsAndModels();
   document.getElementById('productModal').classList.remove('hidden');
 }
@@ -675,6 +718,22 @@ async function editProduct(id) {
     document.getElementById('productGST').value = product.gst || 0;
     document.getElementById('productSGST').value = product.sgst || 0;
     document.getElementById('productCESS').value = product.cess || 0;
+    
+    // Calculate and populate margin percentages
+    const costPrice = product.costPrice || 0;
+    if (costPrice > 0) {
+      const mrpMargin = ((product.mrp || 0) - costPrice) / costPrice * 100;
+      const retailMargin = ((product.price || 0) - costPrice) / costPrice * 100;
+      const wholesaleMargin = ((product.wholesalePrice || 0) - costPrice) / costPrice * 100;
+      
+      document.getElementById('marginMRP').value = mrpMargin.toFixed(2);
+      document.getElementById('marginRetail').value = retailMargin.toFixed(2);
+      document.getElementById('marginWholesale').value = wholesaleMargin.toFixed(2);
+      
+      document.getElementById('priceMRP').value = (product.mrp || 0).toFixed(2);
+      document.getElementById('priceRetail').value = (product.price || 0).toFixed(2);
+      document.getElementById('priceWholesale').value = (product.wholesalePrice || 0).toFixed(2);
+    }
     document.getElementById('productBarcode').value = product.barcode || '';
     document.getElementById('productRack').value = product.rack || '';
     document.getElementById('productDefaultQty').value = product.defaultQty || 1;
