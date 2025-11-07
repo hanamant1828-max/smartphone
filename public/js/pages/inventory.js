@@ -277,7 +277,7 @@ export function render(app) {
                       <input type="number" id="priceMRP" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-mrp-price" style="background-color: #ffffcc;" oninput="calculateMarginFromPrice('mrp')" />
                       <div>
                         <label style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">Margin %:</label>
-                        <input type="number" id="marginMRP" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-mrp-percent" readonly style="background-color: #ffffcc;" />
+                        <input type="number" id="marginMRP" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-mrp-percent" oninput="handleMarginChange('mrp')" style="background-color: #ffffcc;" />
                       </div>
                     </div>
                   </div>
@@ -287,7 +287,7 @@ export function render(app) {
                     <label for="priceRetail" class="form-label">Retail Sale Price:</label>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                       <input type="number" id="priceRetail" class="form-input" step="0.01" value="0.00" placeholder="0.00" required data-testid="input-margin-retail-price" style="background-color: #ffffcc;" oninput="calculateMarginFromPrice('retail')" />
-                      <input type="number" id="marginRetail" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-retail-percent" readonly style="background-color: #ffffcc;" />
+                      <input type="number" id="marginRetail" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-retail-percent" oninput="handleMarginChange('retail')" style="background-color: #ffffcc;" />
                     </div>
                   </div>
 
@@ -296,7 +296,7 @@ export function render(app) {
                     <label for="priceWholesale" class="form-label">Wholesale Price:</label>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                       <input type="number" id="priceWholesale" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-wholesale-price" style="background-color: #ffffcc;" oninput="calculateMarginFromPrice('wholesale')" />
-                      <input type="number" id="marginWholesale" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-wholesale-percent" readonly style="background-color: #ffffcc;" />
+                      <input type="number" id="marginWholesale" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-wholesale-percent" oninput="handleMarginChange('wholesale')" style="background-color: #ffffcc;" />
                     </div>
                   </div>
 
