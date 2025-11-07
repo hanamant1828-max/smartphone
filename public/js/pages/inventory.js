@@ -189,15 +189,14 @@ export function render(app) {
               </div>
 
               <!-- Purchase Price Row -->
-              <div class="form-group" style="grid-column: span 2;">
+              <div class="form-group">
                 <label for="productCostPrice" class="form-label">Purchase Price*:</label>
-                <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center;">
-                  <input type="number" id="productCostPrice" class="form-input" step="0.01" required data-testid="input-product-cost-price" style="background-color: #ffffcc;" oninput="recalculateAllPrices()" />
-                  <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
-                    <span style="color: var(--text-secondary);">Margin %:</span>
-                    <input type="number" id="marginPurchase" class="form-input" step="0.01" value="0" data-testid="input-margin-purchase" readonly style="background-color: #f5f5f5; width: 80px; text-align: center;" />
-                  </div>
-                </div>
+                <input type="number" id="productCostPrice" class="form-input" step="0.01" required data-testid="input-product-cost-price" style="background-color: #ffffcc;" oninput="recalculateAllPrices()" />
+              </div>
+
+              <div class="form-group">
+                <label for="marginPurchase" class="form-label">Margin %:</label>
+                <input type="number" id="marginPurchase" class="form-input" step="0.01" value="0" data-testid="input-margin-purchase" readonly style="background-color: #f5f5f5;" />
               </div>
 
               <div class="form-group">
@@ -206,32 +205,48 @@ export function render(app) {
               </div>
 
               <!-- MRP Row -->
-              <div class="form-group" style="grid-column: span 2;">
-                <label for="productMRP" class="form-label">MRP:</label>
-                <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center;">
-                  <input type="number" id="priceMRP" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-mrp-price" style="background-color: #ffffcc;" oninput="calculateMarginFromPrice('mrp')" />
-                  <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
-                    <input type="number" id="marginMRP" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-mrp-percent" readonly style="background-color: #ffffcc; width: 80px; text-align: center;" />
-                  </div>
-                </div>
+              <div class="form-group"></div>
+
+              <div class="form-group">
+                <label for="priceMRP" class="form-label">MRP:</label>
+                <input type="number" id="priceMRP" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-mrp-price" style="background-color: #ffffcc;" oninput="calculateMarginFromPrice('mrp')" />
               </div>
 
+              <div class="form-group">
+                <label for="marginMRP" class="form-label">Price (₹):</label>
+                <input type="number" id="marginMRP" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-mrp-percent" readonly style="background-color: #ffffcc;" />
+              </div>
+
+              <!-- Retail Sale Price Row -->
+              <div class="form-group"></div>
+
+              <div class="form-group">
+                <label for="priceRetail" class="form-label">Retail Sale Price*:</label>
+                <input type="number" id="priceRetail" class="form-input" step="0.01" value="0.00" placeholder="0.00" required data-testid="input-margin-retail-price" style="background-color: #ffffcc;" oninput="calculateMarginFromPrice('retail')" />
+              </div>
+
+              <div class="form-group">
+                <label for="marginRetail" class="form-label">Price (₹):</label>
+                <input type="number" id="marginRetail" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-retail-percent" readonly style="background-color: #ffffcc;" />
+              </div>
+
+              <!-- Wholesale Price Row -->
               <div class="form-group">
                 <label for="productSalesDiscount" class="form-label">Sales Discount %</label>
                 <input type="number" id="productSalesDiscount" class="form-input" step="0.01" value="0.00" data-testid="input-product-sales-discount" />
               </div>
 
-              <!-- Retail Sale Price Row -->
-              <div class="form-group" style="grid-column: span 2;">
-                <label for="productPrice" class="form-label">Retail Sale Price*:</label>
-                <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center;">
-                  <input type="number" id="priceRetail" class="form-input" step="0.01" value="0.00" placeholder="0.00" required data-testid="input-margin-retail-price" style="background-color: #ffffcc;" oninput="calculateMarginFromPrice('retail')" />
-                  <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
-                    <input type="number" id="marginRetail" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-retail-percent" readonly style="background-color: #ffffcc; width: 80px; text-align: center;" />
-                  </div>
-                </div>
+              <div class="form-group">
+                <label for="priceWholesale" class="form-label">Wholesale Price:</label>
+                <input type="number" id="priceWholesale" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-wholesale-price" style="background-color: #ffffcc;" oninput="calculateMarginFromPrice('wholesale')" />
               </div>
 
+              <div class="form-group">
+                <label for="marginWholesale" class="form-label">Price (₹):</label>
+                <input type="number" id="marginWholesale" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-wholesale-percent" readonly style="background-color: #ffffcc;" />
+              </div>
+
+              <!-- Units Row -->
               <div class="form-group">
                 <label for="productPurchaseUnit" class="form-label">Purchase Main Unit</label>
                 <select id="productPurchaseUnit" class="form-select" data-testid="input-product-purchase-unit">
@@ -248,17 +263,6 @@ export function render(app) {
                   <option value="meter">Meter</option>
                   <option value="pair">Pair</option>
                 </select>
-              </div>
-
-              <!-- Wholesale Price Row -->
-              <div class="form-group" style="grid-column: span 2;">
-                <label for="productWholesalePrice" class="form-label">Wholesale Price:</label>
-                <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center;">
-                  <input type="number" id="priceWholesale" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-wholesale-price" style="background-color: #ffffcc;" oninput="calculateMarginFromPrice('wholesale')" />
-                  <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
-                    <input type="number" id="marginWholesale" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-wholesale-percent" readonly style="background-color: #ffffcc; width: 80px; text-align: center;" />
-                  </div>
-                </div>
               </div>
 
               <div class="form-group">
@@ -278,6 +282,8 @@ export function render(app) {
                   <option value="pair">Pair</option>
                 </select>
               </div>
+
+              <div class="form-group"></div>
 
               <!-- Hidden fields for backward compatibility -->
               <input type="number" id="productMRP" class="form-input" step="0.01" value="0.00" data-testid="input-product-mrp" style="display: none;" />
