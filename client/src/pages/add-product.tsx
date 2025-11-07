@@ -113,16 +113,16 @@ export default function AddProduct() {
 
   // Calculate MRP from Margin %
   useEffect(() => {
-    if (costPrice > 0 && marginPercent1 > 0) {
+    if (costPrice && costPrice > 0 && marginPercent1 !== undefined && marginPercent1 > 0) {
       const calculatedMRP = costPrice + (costPrice * marginPercent1 / 100);
-      form.setValue("mrp", Number(calculatedMRP.toFixed(2)));
+      form.setValue("mrp", Number(calculatedMRP.toFixed(2)), { shouldValidate: false });
     }
   }, [costPrice, marginPercent1, form]);
 
   useEffect(() => {
-    if (costPrice > 0 && marginPercent2 > 0) {
+    if (costPrice && costPrice > 0 && marginPercent2 !== undefined && marginPercent2 > 0) {
       const calculatedMRP2 = costPrice + (costPrice * marginPercent2 / 100);
-      form.setValue("mrp2", Number(calculatedMRP2.toFixed(2)));
+      form.setValue("mrp2", Number(calculatedMRP2.toFixed(2)), { shouldValidate: false });
     }
   }, [costPrice, marginPercent2, form]);
 
@@ -376,9 +376,10 @@ export default function AddProduct() {
                                 step="0.01"
                                 placeholder="0.00"
                                 className="bg-yellow-100 text-right h-9"
-                                value={field.value || 0}
+                                value={field.value || ''}
                                 onChange={(e) => {
-                                  const margin = parseFloat(e.target.value) || 0;
+                                  const value = e.target.value;
+                                  const margin = value === '' ? 0 : parseFloat(value);
                                   field.onChange(margin);
                                 }}
                                 data-testid="input-margin-percent-1"
@@ -399,9 +400,10 @@ export default function AddProduct() {
                                 step="0.01"
                                 placeholder="0.00"
                                 className="bg-yellow-100 text-right h-9"
-                                value={field.value || 0}
+                                value={field.value || ''}
                                 onChange={(e) => {
-                                  const margin = parseFloat(e.target.value) || 0;
+                                  const value = e.target.value;
+                                  const margin = value === '' ? 0 : parseFloat(value);
                                   field.onChange(margin);
                                 }}
                                 data-testid="input-margin-percent-2"
