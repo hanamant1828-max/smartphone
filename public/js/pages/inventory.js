@@ -207,17 +207,56 @@ export function render(app) {
 
                 <div class="form-group">
                   <label for="productPurchaseUnit" class="form-label">Purchase Main Unit</label>
-                  <input type="text" id="productPurchaseUnit" class="form-input" placeholder="GST %" data-testid="input-product-purchase-unit" />
+                  <select id="productPurchaseUnit" class="form-select" data-testid="input-product-purchase-unit">
+                    <option value="">Select Unit</option>
+                    <option value="pcs">Pcs (Pieces)</option>
+                    <option value="box">Box</option>
+                    <option value="dozen">Dozen</option>
+                    <option value="pack">Pack</option>
+                    <option value="set">Set</option>
+                    <option value="unit">Unit</option>
+                    <option value="kg">Kg (Kilogram)</option>
+                    <option value="gram">Gram</option>
+                    <option value="liter">Liter</option>
+                    <option value="meter">Meter</option>
+                    <option value="pair">Pair</option>
+                  </select>
                 </div>
 
                 <div class="form-group">
                   <label for="productSalesUnit" class="form-label">Sales Main Unit</label>
-                  <input type="text" id="productSalesUnit" class="form-input" placeholder="LOT NO" data-testid="input-product-sales-unit" />
+                  <select id="productSalesUnit" class="form-select" data-testid="input-product-sales-unit">
+                    <option value="">Select Unit</option>
+                    <option value="pcs">Pcs (Pieces)</option>
+                    <option value="box">Box</option>
+                    <option value="dozen">Dozen</option>
+                    <option value="pack">Pack</option>
+                    <option value="set">Set</option>
+                    <option value="unit">Unit</option>
+                    <option value="kg">Kg (Kilogram)</option>
+                    <option value="gram">Gram</option>
+                    <option value="liter">Liter</option>
+                    <option value="meter">Meter</option>
+                    <option value="pair">Pair</option>
+                  </select>
                 </div>
 
                 <div class="form-group">
                   <label for="productAlterUnit" class="form-label">Alter Unit</label>
-                  <input type="text" id="productAlterUnit" class="form-input" data-testid="input-product-alter-unit" />
+                  <select id="productAlterUnit" class="form-select" data-testid="input-product-alter-unit">
+                    <option value="">Select Unit</option>
+                    <option value="pcs">Pcs (Pieces)</option>
+                    <option value="box">Box</option>
+                    <option value="dozen">Dozen</option>
+                    <option value="pack">Pack</option>
+                    <option value="set">Set</option>
+                    <option value="unit">Unit</option>
+                    <option value="kg">Kg (Kilogram)</option>
+                    <option value="gram">Gram</option>
+                    <option value="liter">Liter</option>
+                    <option value="meter">Meter</option>
+                    <option value="pair">Pair</option>
+                  </select>
                 </div>
               </div>
 
