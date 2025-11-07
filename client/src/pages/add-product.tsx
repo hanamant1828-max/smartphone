@@ -100,6 +100,9 @@ export default function AddProduct() {
   });
 
   const gstValue = form.watch("gst");
+  const costPrice = form.watch("costPrice");
+  const marginPercent1 = form.watch("marginPercent1");
+  const marginPercent2 = form.watch("marginPercent2");
 
   useEffect(() => {
     const gst = gstValue || 0;
@@ -107,6 +110,21 @@ export default function AddProduct() {
     form.setValue("sgst", Number((gst / 2).toFixed(2)));
     form.setValue("igst", 0);
   }, [gstValue, form]);
+
+  // Calculate MRP from Margin %
+  useEffect(() => {
+    if (costPrice > 0 && marginPercent1 > 0) {
+      const calculatedMRP = costPrice + (costPrice * marginPercent1 / 100);
+      form.setValue("mrp", Number(calculatedMRP.toFixed(2)));
+    }
+  }, [costPrice, marginPercent1, form]);
+
+  useEffect(() => {
+    if (costPrice > 0 && marginPercent2 > 0) {
+      const calculatedMRP2 = costPrice + (costPrice * marginPercent2 / 100);
+      form.setValue("mrp2", Number(calculatedMRP2.toFixed(2)));
+    }
+  }, [costPrice, marginPercent2, form]);
 
   const createMutation = useMutation({
     mutationFn: async (data: ProductFormData) => {
