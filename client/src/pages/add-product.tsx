@@ -352,6 +352,7 @@ export default function AddProduct() {
                             type="number"
                             step="0.01"
                             placeholder="0.00"
+                            className="bg-yellow-50"
                             {...field}
                             onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                             data-testid="input-salesDiscount"
@@ -676,6 +677,7 @@ export default function AddProduct() {
                               step="0.01"
                               placeholder="0.00"
                               readOnly
+                              className="bg-gray-50"
                               {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                               data-testid="input-cgst"
@@ -696,6 +698,8 @@ export default function AddProduct() {
                               type="number"
                               step="0.01"
                               placeholder="0.00"
+                              readOnly
+                              className="bg-gray-50"
                               {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                               data-testid="input-sgst"
@@ -717,6 +721,7 @@ export default function AddProduct() {
                               step="0.01"
                               placeholder="0.00"
                               readOnly
+                              className="bg-gray-50"
                               value={field.value || 0}
                               data-testid="input-igst"
                             />
@@ -748,6 +753,30 @@ export default function AddProduct() {
                       </FormItem>
                     )}
                   />
+                  
+                  <div className="flex gap-2 items-end">
+                    <Button type="button" size="sm" className="bg-green-500 hover:bg-green-600 h-10 px-3" data-testid="button-add-item">
+                      <span className="text-xl">+</span>
+                    </Button>
+                    <FormField
+                      control={form.control}
+                      name="defaultQty"
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="1"
+                              {...field}
+                              onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                              data-testid="input-defaultQty"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
               </div>
             </CardContent>
