@@ -786,6 +786,7 @@ export async function init(app) {
   window.setFilter = setFilter;
   window.updateModelOptions = updateModelOptions;
   window.calculateMarginFromPrice = calculateMarginFromPrice;
+  window.handleMarginChange = handleMarginChange;
   window.recalculateAllPrices = recalculateAllPrices;
   window.calculateGSTComponents = calculateGSTComponents;
   window.incrementPriceQty = incrementPriceQty;
@@ -877,7 +878,12 @@ function showImageLibrary() {
   showToast('Online image library feature coming soon', 'info');
 }
 
+let isCalculating = false;
+
 function calculateMarginFromPrice(priceType) {
+  if (isCalculating) return;
+  isCalculating = true;
+  
   const costPrice = parseFloat(document.getElementById('productCostPrice').value) || 0;
   
   let priceField = null;
@@ -909,9 +915,73 @@ function calculateMarginFromPrice(priceType) {
       marginField.value = '0.00';
     }
   }
+  
+  isCalculating = false;
+}
+
+function handleMarginChange(priceType) {
+  if (isCalculating) return;
+  isCalculating = true;
+  
+  const costPrice = parseFloat(document.getElementById('productCostPrice').value) || 0;
+  
+  let priceField = null;
+  let marginField = null;
+  let hiddenField = null;
+  
+  if (priceType === 'mrp') {
+    priceField = document.getElementById('priceMRP');
+    marginField = document.getElementById('marginMRP');
+    hiddenField = document.getElementById('productMRP');
+  } else if (priceType === 'retail') {
+    priceField = document.getElementById('priceRetail');
+    marginField = document.getElementById('marginRetail');
+    hiddenField = document.getElementById('productPrice');
+  } else if (priceType === 'wholesale') {
+    priceField = document.getElementById('priceWholesale');
+    marginField = document.getElementById('marginWholesale');
+    hiddenField = document.getElementById('productWholesalePrice');
+  }
+  
+  if (priceField && marginField && hiddenField) {
+    const marginPercent = parseFloat(marginField.value) || 0;
+    
+    if (costPrice > 0) {
+      const calculatedPrice = costPrice * (1 + marginPercent / 100);
+      priceField.value = calculatedPrice.toFixed(2);
+      hiddenField.value = calculatedPrice.toFixed(2);
+    } else {
+      priceField.value = '0.00';
+      hiddenField.value = '0.00';
+    }
+  }
+  
+  isCalculating = false;
 }
 
 function recalculateAllPrices() {
+  if (isCalculating) return;
+  isCalculating = true;
+  
+  const costPrice = parseFloat(document.getElementById('productCostPrice').value) || 0;
+  
+  // Auto-calculate MRP from Purchase Price + MRP Margin %
+  const marginMRPField = document.getElementById('marginMRP');
+  const priceMRPField = document.getElementById('priceMRP');
+  const hiddenMRPField = document.getElementById('productMRP');
+  
+  if (costPrice > 0 && marginMRPField && priceMRPField && hiddenMRPField) {
+    const marginPercent = parseFloat(marginMRPField.value) || 0;
+    if (marginPercent > 0) {
+      const calculatedMRP = costPrice * (1 + marginPercent / 100);
+      priceMRPField.value = calculatedMRP.toFixed(2);
+      hiddenMRPField.value = calculatedMRP.toFixed(2);
+    }
+  }
+  
+  isCalculating = false;
+  
+  // Recalculate margins for all price types
   calculateMarginFromPrice('mrp');
   calculateMarginFromPrice('retail');
   calculateMarginFromPrice('wholesale');
