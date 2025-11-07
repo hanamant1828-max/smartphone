@@ -376,8 +376,11 @@ export default function AddProduct() {
                                 step="0.01"
                                 placeholder="0.00"
                                 className="bg-yellow-100 text-right h-9"
-                                {...field}
-                                onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                value={field.value || 0}
+                                onChange={(e) => {
+                                  const margin = parseFloat(e.target.value) || 0;
+                                  field.onChange(margin);
+                                }}
                                 data-testid="input-margin-percent-1"
                               />
                             </FormControl>
@@ -396,8 +399,11 @@ export default function AddProduct() {
                                 step="0.01"
                                 placeholder="0.00"
                                 className="bg-yellow-100 text-right h-9"
-                                {...field}
-                                onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                value={field.value || 0}
+                                onChange={(e) => {
+                                  const margin = parseFloat(e.target.value) || 0;
+                                  field.onChange(margin);
+                                }}
                                 data-testid="input-margin-percent-2"
                               />
                             </FormControl>
