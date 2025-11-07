@@ -319,16 +319,37 @@ export default function AddProduct() {
               <CardTitle>Price Info (Fill Compulsory) :</CardTitle>
               <CardDescription>Product pricing, units, and tax information</CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="grid gap-8 md:grid-cols-2">
-                {/* Left Column */}
-                <div className="space-y-3">
+            <CardContent className="space-y-4">
+              {/* Row 1: Purchase Price, MRP */}
+              <div className="grid gap-4 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="costPrice"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm">Purchase Price :</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="0.00"
+                          className="bg-yellow-100 text-right h-10"
+                          {...field}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          data-testid="input-costPrice"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="grid grid-cols-2 gap-3">
                   <FormField
                     control={form.control}
-                    name="costPrice"
+                    name="mrp"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-sm">Purchase Price :</FormLabel>
+                        <FormLabel className="text-sm">MRP :</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
@@ -337,41 +358,19 @@ export default function AddProduct() {
                             className="bg-yellow-100 text-right h-10"
                             {...field}
                             onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                            data-testid="input-costPrice"
+                            data-testid="input-mrp-1"
                           />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
                   <FormField
                     control={form.control}
-                    name="minStockLevel"
+                    name="mrp2"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-sm">Min Stock :</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="0"
-                            className="bg-yellow-100 text-right h-10"
-                            {...field}
-                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                            data-testid="input-minStockLevel"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="salesDiscount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm">Sales Discount % :</FormLabel>
+                        <FormLabel className="text-sm">&nbsp;</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
@@ -380,377 +379,364 @@ export default function AddProduct() {
                             className="bg-yellow-100 text-right h-10"
                             {...field}
                             onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                            data-testid="input-salesDiscount"
+                            data-testid="input-mrp-2"
                           />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
-                  <div className="flex gap-2 items-end">
-                    <FormField
-                      control={form.control}
-                      name="purchaseUnit"
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormLabel className="text-sm">Purchase Main Unit :</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="h-10" data-testid="select-purchaseUnit">
-                                <SelectValue placeholder="Select unit" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="pcs">Pcs (Pieces)</SelectItem>
-                              <SelectItem value="box">Box</SelectItem>
-                              <SelectItem value="dozen">Dozen</SelectItem>
-                              <SelectItem value="pack">Pack</SelectItem>
-                              <SelectItem value="set">Set</SelectItem>
-                              <SelectItem value="unit">Unit</SelectItem>
-                              <SelectItem value="kg">Kg (Kilogram)</SelectItem>
-                              <SelectItem value="gram">Gram</SelectItem>
-                              <SelectItem value="liter">Liter</SelectItem>
-                              <SelectItem value="meter">Meter</SelectItem>
-                              <SelectItem value="pair">Pair</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <div className="h-7 w-7 rounded-full bg-red-500 flex items-center justify-center text-white text-sm font-bold mb-2 flex-shrink-0">!</div>
-                  </div>
-                  
-                  <div className="flex gap-2 items-end">
-                    <FormField
-                      control={form.control}
-                      name="salesUnit"
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormLabel className="text-sm">Sales Main Unit :</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="h-10" data-testid="select-salesUnit">
-                                <SelectValue placeholder="Select unit" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="pcs">Pcs (Pieces)</SelectItem>
-                              <SelectItem value="box">Box</SelectItem>
-                              <SelectItem value="dozen">Dozen</SelectItem>
-                              <SelectItem value="pack">Pack</SelectItem>
-                              <SelectItem value="set">Set</SelectItem>
-                              <SelectItem value="unit">Unit</SelectItem>
-                              <SelectItem value="kg">Kg (Kilogram)</SelectItem>
-                              <SelectItem value="gram">Gram</SelectItem>
-                              <SelectItem value="liter">Liter</SelectItem>
-                              <SelectItem value="meter">Meter</SelectItem>
-                              <SelectItem value="pair">Pair</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <div className="h-7 w-7 rounded-full bg-red-500 flex items-center justify-center text-white text-sm font-bold mb-2 flex-shrink-0">!</div>
-                  </div>
-                  
-                  <div className="flex gap-2 items-end">
-                    <FormField
-                      control={form.control}
-                      name="alterUnit"
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormLabel className="text-sm">Alter Unit :</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="h-10" data-testid="select-alterUnit">
-                                <SelectValue placeholder="Select unit" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="pcs">Pcs (Pieces)</SelectItem>
-                              <SelectItem value="box">Box</SelectItem>
-                              <SelectItem value="dozen">Dozen</SelectItem>
-                              <SelectItem value="pack">Pack</SelectItem>
-                              <SelectItem value="set">Set</SelectItem>
-                              <SelectItem value="unit">Unit</SelectItem>
-                              <SelectItem value="kg">Kg (Kilogram)</SelectItem>
-                              <SelectItem value="gram">Gram</SelectItem>
-                              <SelectItem value="liter">Liter</SelectItem>
-                              <SelectItem value="meter">Meter</SelectItem>
-                              <SelectItem value="pair">Pair</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <div className="h-7 w-7 rounded-full bg-red-500 flex items-center justify-center text-white text-sm font-bold mb-2 flex-shrink-0">!</div>
+                </div>
+              </div>
+
+              {/* Row 2: Min Stock, Retail Sale Price */}
+              <div className="grid gap-4 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="minStockLevel"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm">Min Stock :</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="0"
+                          className="bg-yellow-100 text-right h-10"
+                          {...field}
+                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                          data-testid="input-minStockLevel"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField
+                    control={form.control}
+                    name="price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm">Retail Sale Price :</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            placeholder="0.00"
+                            className="bg-yellow-100 text-right h-10"
+                            {...field}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            data-testid="input-price-1"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="retailPrice2"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm">&nbsp;</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            placeholder="0.00"
+                            className="bg-yellow-100 text-right h-10"
+                            {...field}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            data-testid="input-price-2"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* Row 3: Sales Discount, Wholesale Price */}
+              <div className="grid gap-4 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="salesDiscount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm">Sales Discount % :</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="0.00"
+                          className="bg-yellow-100 text-right h-10"
+                          {...field}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          data-testid="input-salesDiscount"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField
+                    control={form.control}
+                    name="wholesalePrice"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm">Wholesale Price :</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            placeholder="0.00"
+                            className="bg-yellow-100 text-right h-10"
+                            {...field}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            data-testid="input-wholesalePrice-1"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="wholesalePrice2"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm">&nbsp;</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            placeholder="0.00"
+                            className="bg-yellow-100 text-right h-10"
+                            {...field}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            data-testid="input-wholesalePrice-2"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* Row 4: Purchase Main Unit, GST */}
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="flex gap-2 items-end">
+                  <FormField
+                    control={form.control}
+                    name="purchaseUnit"
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormLabel className="text-sm">Purchase Main Unit :</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="h-10" data-testid="select-purchaseUnit">
+                              <SelectValue placeholder="Select unit" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="pcs">Pcs (Pieces)</SelectItem>
+                            <SelectItem value="box">Box</SelectItem>
+                            <SelectItem value="dozen">Dozen</SelectItem>
+                            <SelectItem value="pack">Pack</SelectItem>
+                            <SelectItem value="set">Set</SelectItem>
+                            <SelectItem value="unit">Unit</SelectItem>
+                            <SelectItem value="kg">Kg (Kilogram)</SelectItem>
+                            <SelectItem value="gram">Gram</SelectItem>
+                            <SelectItem value="liter">Liter</SelectItem>
+                            <SelectItem value="meter">Meter</SelectItem>
+                            <SelectItem value="pair">Pair</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="h-7 w-7 rounded-full bg-red-500 flex items-center justify-center text-white text-sm font-bold mb-2 flex-shrink-0">!</div>
+                </div>
+                <div className="flex gap-2 items-end">
+                  <FormField
+                    control={form.control}
+                    name="gst"
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormLabel className="text-sm">GST % :</FormLabel>
+                        <Select onValueChange={(value) => field.onChange(parseFloat(value))} value={field.value?.toString()}>
+                          <FormControl>
+                            <SelectTrigger className="h-10" data-testid="select-gst">
+                              <SelectValue placeholder="Select GST %" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="0">0%</SelectItem>
+                            <SelectItem value="5">5%</SelectItem>
+                            <SelectItem value="12">12%</SelectItem>
+                            <SelectItem value="18">18%</SelectItem>
+                            <SelectItem value="28">28%</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex gap-1 items-end pb-2">
+                    <div className="h-7 w-7 rounded-full bg-red-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">!</div>
+                    <Button type="button" size="sm" className="bg-green-500 hover:bg-green-600 h-7 px-3 text-white" data-testid="button-gst-action">
+                      <span className="text-lg font-bold">✓</span>
+                    </Button>
                   </div>
                 </div>
+              </div>
 
-                {/* Right Column */}
-                <div className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    <FormField
-                      control={form.control}
-                      name="marginPercent1"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm">Margin % :</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              placeholder="0.00"
-                              className="bg-yellow-100 text-right h-10"
-                              {...field}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                              data-testid="input-margin-percent-1"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="marginPercent2"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm">&nbsp;</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              placeholder="0.00"
-                              className="bg-yellow-100 text-right h-10"
-                              {...field}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                              data-testid="input-margin-percent-2"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-3">
-                    <FormField
-                      control={form.control}
-                      name="mrp"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm">MRP :</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              placeholder="0.00"
-                              className="bg-yellow-100 text-right h-10"
-                              {...field}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                              data-testid="input-mrp-1"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="mrp2"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm">&nbsp;</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              placeholder="0.00"
-                              className="bg-yellow-100 text-right h-10"
-                              {...field}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                              data-testid="input-mrp-2"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-3">
-                    <FormField
-                      control={form.control}
-                      name="price"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm">Retail Sale Price :</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              placeholder="0.00"
-                              className="bg-yellow-100 text-right h-10"
-                              {...field}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                              data-testid="input-price-1"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="retailPrice2"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm">&nbsp;</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              placeholder="0.00"
-                              className="bg-yellow-100 text-right h-10"
-                              {...field}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                              data-testid="input-price-2"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-3">
-                    <FormField
-                      control={form.control}
-                      name="wholesalePrice"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm">Wholesale Price :</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              placeholder="0.00"
-                              className="bg-yellow-100 text-right h-10"
-                              {...field}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                              data-testid="input-wholesalePrice-1"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="wholesalePrice2"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm">&nbsp;</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              placeholder="0.00"
-                              className="bg-yellow-100 text-right h-10"
-                              {...field}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                              data-testid="input-wholesalePrice-2"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  
-                  <div className="flex gap-2 items-end">
-                    <FormField
-                      control={form.control}
-                      name="gst"
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormLabel className="text-sm">GST % :</FormLabel>
-                          <Select onValueChange={(value) => field.onChange(parseFloat(value))} value={field.value?.toString()}>
-                            <FormControl>
-                              <SelectTrigger className="h-10" data-testid="select-gst">
-                                <SelectValue placeholder="Select GST %" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="0">0%</SelectItem>
-                              <SelectItem value="5">5%</SelectItem>
-                              <SelectItem value="12">12%</SelectItem>
-                              <SelectItem value="18">18%</SelectItem>
-                              <SelectItem value="28">28%</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <div className="flex gap-1 items-end pb-2">
-                      <div className="h-7 w-7 rounded-full bg-red-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">!</div>
-                      <Button type="button" size="sm" className="bg-green-500 hover:bg-green-600 h-7 px-3 text-white" data-testid="button-gst-action">
-                        <span className="text-lg font-bold">✓</span>
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-3 gap-2 mt-1">
-                    <div>
-                      <label className="text-xs text-blue-600 font-medium block mb-1">CGST % :</label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        placeholder="0.00"
-                        readOnly
-                        className="bg-gray-100 text-right h-9 text-sm"
-                        value={form.watch("cgst") || 0}
-                        data-testid="input-cgst"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs text-blue-600 font-medium block mb-1">SGST/UTGST % :</label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        placeholder="0.00"
-                        readOnly
-                        className="bg-gray-100 text-right h-9 text-sm"
-                        value={form.watch("sgst") || 0}
-                        data-testid="input-sgst"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs text-blue-600 font-medium block mb-1">IGST % :</label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        placeholder="0.00"
-                        readOnly
-                        className="bg-gray-100 text-right h-9 text-sm"
-                        value={form.watch("igst") || 0}
-                        data-testid="input-igst"
-                      />
-                    </div>
-                  </div>
-                  
+              {/* Row 5: Sales Main Unit, CGST/SGST/IGST */}
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="flex gap-2 items-end">
                   <FormField
                     control={form.control}
-                    name="cess"
+                    name="salesUnit"
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormLabel className="text-sm">Sales Main Unit :</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="h-10" data-testid="select-salesUnit">
+                              <SelectValue placeholder="Select unit" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="pcs">Pcs (Pieces)</SelectItem>
+                            <SelectItem value="box">Box</SelectItem>
+                            <SelectItem value="dozen">Dozen</SelectItem>
+                            <SelectItem value="pack">Pack</SelectItem>
+                            <SelectItem value="set">Set</SelectItem>
+                            <SelectItem value="unit">Unit</SelectItem>
+                            <SelectItem value="kg">Kg (Kilogram)</SelectItem>
+                            <SelectItem value="gram">Gram</SelectItem>
+                            <SelectItem value="liter">Liter</SelectItem>
+                            <SelectItem value="meter">Meter</SelectItem>
+                            <SelectItem value="pair">Pair</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="h-7 w-7 rounded-full bg-red-500 flex items-center justify-center text-white text-sm font-bold mb-2 flex-shrink-0">!</div>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <label className="text-xs text-blue-600 font-medium block mb-1">CGST % :</label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="0.00"
+                      readOnly
+                      className="bg-gray-100 text-right h-10 text-sm"
+                      value={form.watch("cgst") || 0}
+                      data-testid="input-cgst"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-blue-600 font-medium block mb-1">SGST/UTGST % :</label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="0.00"
+                      readOnly
+                      className="bg-gray-100 text-right h-10 text-sm"
+                      value={form.watch("sgst") || 0}
+                      data-testid="input-sgst"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-blue-600 font-medium block mb-1">IGST % :</label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="0.00"
+                      readOnly
+                      className="bg-gray-100 text-right h-10 text-sm"
+                      value={form.watch("igst") || 0}
+                      data-testid="input-igst"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Row 6: Alter Unit, CESS */}
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="flex gap-2 items-end">
+                  <FormField
+                    control={form.control}
+                    name="alterUnit"
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormLabel className="text-sm">Alter Unit :</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="h-10" data-testid="select-alterUnit">
+                              <SelectValue placeholder="Select unit" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="pcs">Pcs (Pieces)</SelectItem>
+                            <SelectItem value="box">Box</SelectItem>
+                            <SelectItem value="dozen">Dozen</SelectItem>
+                            <SelectItem value="pack">Pack</SelectItem>
+                            <SelectItem value="set">Set</SelectItem>
+                            <SelectItem value="unit">Unit</SelectItem>
+                            <SelectItem value="kg">Kg (Kilogram)</SelectItem>
+                            <SelectItem value="gram">Gram</SelectItem>
+                            <SelectItem value="liter">Liter</SelectItem>
+                            <SelectItem value="meter">Meter</SelectItem>
+                            <SelectItem value="pair">Pair</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="h-7 w-7 rounded-full bg-red-500 flex items-center justify-center text-white text-sm font-bold mb-2 flex-shrink-0">!</div>
+                </div>
+                <FormField
+                  control={form.control}
+                  name="cess"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm">CESS % :</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="0.00"
+                          className="bg-yellow-100 text-right h-10"
+                          {...field}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          data-testid="input-cess"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Row 7: Margin %, Default Qty with + button */}
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField
+                    control={form.control}
+                    name="marginPercent1"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-sm">CESS % :</FormLabel>
+                        <FormLabel className="text-sm">Margin % :</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
@@ -759,38 +745,59 @@ export default function AddProduct() {
                             className="bg-yellow-100 text-right h-10"
                             {...field}
                             onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                            data-testid="input-cess"
+                            data-testid="input-margin-percent-1"
                           />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
-                  <div className="flex gap-2 items-center pt-1">
-                    <Button type="button" size="sm" className="bg-green-500 hover:bg-green-600 h-10 w-10 flex items-center justify-center p-0" data-testid="button-add-item">
-                      <span className="text-2xl font-bold leading-none">+</span>
-                    </Button>
-                    <FormField
-                      control={form.control}
-                      name="defaultQty"
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormControl>
-                            <Input
-                              type="number"
-                              placeholder="1"
-                              className="bg-gray-100 text-center h-10"
-                              {...field}
-                              onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
-                              data-testid="input-defaultQty"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="marginPercent2"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm">&nbsp;</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            placeholder="0.00"
+                            className="bg-yellow-100 text-right h-10"
+                            {...field}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            data-testid="input-margin-percent-2"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="flex gap-2 items-end">
+                  <Button type="button" size="sm" className="bg-green-500 hover:bg-green-600 h-10 w-10 flex items-center justify-center p-0" data-testid="button-add-item">
+                    <span className="text-2xl font-bold leading-none">+</span>
+                  </Button>
+                  <FormField
+                    control={form.control}
+                    name="defaultQty"
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormLabel className="text-sm">&nbsp;</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="1"
+                            className="bg-gray-100 text-center h-10"
+                            {...field}
+                            onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                            data-testid="input-defaultQty"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </div>
             </CardContent>
