@@ -183,144 +183,153 @@ export function render(app) {
 
               <div class="form-group"></div>
 
-              <!-- Price Info Section (2-column layout) -->
+              <!-- Price Info Section -->
               <div style="grid-column: span 3; margin-top: 16px; margin-bottom: 8px;">
                 <h4 style="font-weight: 600; color: var(--text-primary); font-size: 0.95rem;">Price Info (Fill Compulsory):</h4>
               </div>
 
-              <!-- Left Column -->
-              <div style="grid-column: span 1;">
-                <div class="form-group">
-                  <label for="productCostPrice" class="form-label">Purchase Price*</label>
-                  <input type="number" id="productCostPrice" class="form-input" step="0.01" required data-testid="input-product-cost-price" oninput="recalculateAllPrices()" />
-                </div>
-
-                <div class="form-group">
-                  <label for="productMinStock" class="form-label">Min Stock</label>
-                  <input type="number" id="productMinStock" class="form-input" value="0" data-testid="input-product-min-stock" />
-                </div>
-
-                <div class="form-group">
-                  <label for="productSalesDiscount" class="form-label">Sales Discount %</label>
-                  <input type="number" id="productSalesDiscount" class="form-input" step="0.01" value="0.00" data-testid="input-product-sales-discount" />
-                </div>
-
-                <div class="form-group">
-                  <label for="productPurchaseUnit" class="form-label">Purchase Main Unit</label>
-                  <select id="productPurchaseUnit" class="form-select" data-testid="input-product-purchase-unit">
-                    <option value="">Select Unit</option>
-                    <option value="pcs">Pcs (Pieces)</option>
-                    <option value="box">Box</option>
-                    <option value="dozen">Dozen</option>
-                    <option value="pack">Pack</option>
-                    <option value="set">Set</option>
-                    <option value="unit">Unit</option>
-                    <option value="kg">Kg (Kilogram)</option>
-                    <option value="gram">Gram</option>
-                    <option value="liter">Liter</option>
-                    <option value="meter">Meter</option>
-                    <option value="pair">Pair</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label for="productSalesUnit" class="form-label">Sales Main Unit</label>
-                  <select id="productSalesUnit" class="form-select" data-testid="input-product-sales-unit">
-                    <option value="">Select Unit</option>
-                    <option value="pcs">Pcs (Pieces)</option>
-                    <option value="box">Box</option>
-                    <option value="dozen">Dozen</option>
-                    <option value="pack">Pack</option>
-                    <option value="set">Set</option>
-                    <option value="unit">Unit</option>
-                    <option value="kg">Kg (Kilogram)</option>
-                    <option value="gram">Gram</option>
-                    <option value="liter">Liter</option>
-                    <option value="meter">Meter</option>
-                    <option value="pair">Pair</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label for="productAlterUnit" class="form-label">Alter Unit</label>
-                  <select id="productAlterUnit" class="form-select" data-testid="input-product-alter-unit">
-                    <option value="">Select Unit</option>
-                    <option value="pcs">Pcs (Pieces)</option>
-                    <option value="box">Box</option>
-                    <option value="dozen">Dozen</option>
-                    <option value="pack">Pack</option>
-                    <option value="set">Set</option>
-                    <option value="unit">Unit</option>
-                    <option value="kg">Kg (Kilogram)</option>
-                    <option value="gram">Gram</option>
-                    <option value="liter">Liter</option>
-                    <option value="meter">Meter</option>
-                    <option value="pair">Pair</option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- Right Column -->
-              <div style="grid-column: span 2;">
-                <div style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 16px; align-items: center; margin-bottom: 16px;">
-                  <label class="form-label" style="margin: 0; white-space: nowrap;"></label>
-                  <div style="text-align: center; font-weight: 500; color: var(--text-secondary); font-size: 0.9rem;">Margin %:</div>
-                  <div style="text-align: center; font-weight: 500; color: var(--text-secondary); font-size: 0.9rem;">Price (₹):</div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 16px; align-items: center; margin-bottom: 16px;">
-                  <label for="productMRP" class="form-label" style="margin: 0; white-space: nowrap;">MRP:</label>
-                  <input type="number" id="marginMRP" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" data-testid="input-margin-mrp-percent" oninput="calculatePriceFromMargin('mrp')" />
-                  <input type="number" id="priceMRP" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #e8f5e9;" data-testid="input-margin-mrp-price" readonly />
-                </div>
-
-                <div style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 16px; align-items: center; margin-bottom: 16px;">
-                  <label for="productPrice" class="form-label" style="margin: 0; white-space: nowrap;">Retail Sale Price*:</label>
-                  <input type="number" id="marginRetail" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" data-testid="input-margin-retail-percent" oninput="calculatePriceFromMargin('retail')" />
-                  <input type="number" id="priceRetail" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #e8f5e9;" data-testid="input-margin-retail-price" readonly />
-                </div>
-
-                <div style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 16px; align-items: center; margin-bottom: 16px;">
-                  <label for="productWholesalePrice" class="form-label" style="margin: 0; white-space: nowrap;">Wholesale Price:</label>
-                  <input type="number" id="marginWholesale" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #ffffcc;" data-testid="input-margin-wholesale-percent" oninput="calculatePriceFromMargin('wholesale')" />
-                  <input type="number" id="priceWholesale" class="form-input" step="0.01" value="0.00" placeholder="0.00" style="background-color: #e8f5e9;" data-testid="input-margin-wholesale-price" readonly />
-                </div>
-
-                <div style="margin-top: 24px; margin-bottom: 16px;">
-                  <input type="number" id="productMRP" class="form-input" step="0.01" value="0.00" data-testid="input-product-mrp" style="display: none;" />
-                  <input type="number" id="productPrice" class="form-input" step="0.01" required data-testid="input-product-price" style="display: none;" />
-                  <input type="number" id="productWholesalePrice" class="form-input" step="0.01" value="0.00" data-testid="input-product-wholesale-price" style="display: none;" />
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                  <div class="form-group" style="margin: 0;">
-                    <label for="productGST" class="form-label">GST %</label>
-                    <input type="number" id="productGST" class="form-input" step="0.01" value="0.00" data-testid="input-product-gst" />
-                  </div>
-                  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-                    <div style="text-align: center;">
-                      <label style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">CGST %:</label>
-                      <input type="number" class="form-input" step="0.01" value="0.00" style="text-align: center;" readonly />
-                    </div>
-                    <div style="text-align: center;">
-                      <label style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">SGST/UTGST %:</label>
-                      <input type="number" id="productSGST" class="form-input" step="0.01" value="0.00" data-testid="input-product-sgst" style="text-align: center;" readonly />
-                    </div>
-                    <div style="text-align: center;">
-                      <label style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">IGST %:</label>
-                      <input type="number" class="form-input" step="0.01" value="0.00" style="text-align: center;" readonly />
-                    </div>
-                  </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                  <div></div>
-                  <div class="form-group" style="margin: 0;">
-                    <label for="productCESS" class="form-label">CESS %</label>
-                    <input type="number" id="productCESS" class="form-input" step="0.01" value="0.00" data-testid="input-product-cess" />
+              <!-- Purchase Price Row -->
+              <div class="form-group" style="grid-column: span 2;">
+                <label for="productCostPrice" class="form-label">Purchase Price*:</label>
+                <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center;">
+                  <input type="number" id="productCostPrice" class="form-input" step="0.01" required data-testid="input-product-cost-price" style="background-color: #ffffcc;" oninput="recalculateAllPrices()" />
+                  <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+                    <span style="color: var(--text-secondary);">Margin %:</span>
+                    <input type="number" id="marginPurchase" class="form-input" step="0.01" value="0" data-testid="input-margin-purchase" readonly style="background-color: #f5f5f5; width: 80px; text-align: center;" />
                   </div>
                 </div>
               </div>
+
+              <div class="form-group">
+                <label for="productMinStock" class="form-label">Min Stock</label>
+                <input type="number" id="productMinStock" class="form-input" value="0" data-testid="input-product-min-stock" />
+              </div>
+
+              <!-- MRP Row -->
+              <div class="form-group" style="grid-column: span 2;">
+                <label for="productMRP" class="form-label">MRP:</label>
+                <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center;">
+                  <input type="number" id="priceMRP" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-mrp-price" style="background-color: #ffffcc;" oninput="calculateMarginFromPrice('mrp')" />
+                  <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+                    <input type="number" id="marginMRP" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-mrp-percent" readonly style="background-color: #ffffcc; width: 80px; text-align: center;" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="productSalesDiscount" class="form-label">Sales Discount %</label>
+                <input type="number" id="productSalesDiscount" class="form-input" step="0.01" value="0.00" data-testid="input-product-sales-discount" />
+              </div>
+
+              <!-- Retail Sale Price Row -->
+              <div class="form-group" style="grid-column: span 2;">
+                <label for="productPrice" class="form-label">Retail Sale Price*:</label>
+                <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center;">
+                  <input type="number" id="priceRetail" class="form-input" step="0.01" value="0.00" placeholder="0.00" required data-testid="input-margin-retail-price" style="background-color: #ffffcc;" oninput="calculateMarginFromPrice('retail')" />
+                  <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+                    <input type="number" id="marginRetail" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-retail-percent" readonly style="background-color: #ffffcc; width: 80px; text-align: center;" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="productPurchaseUnit" class="form-label">Purchase Main Unit</label>
+                <select id="productPurchaseUnit" class="form-select" data-testid="input-product-purchase-unit">
+                  <option value="">Select Unit</option>
+                  <option value="pcs">Pcs (Pieces)</option>
+                  <option value="box">Box</option>
+                  <option value="dozen">Dozen</option>
+                  <option value="pack">Pack</option>
+                  <option value="set">Set</option>
+                  <option value="unit">Unit</option>
+                  <option value="kg">Kg (Kilogram)</option>
+                  <option value="gram">Gram</option>
+                  <option value="liter">Liter</option>
+                  <option value="meter">Meter</option>
+                  <option value="pair">Pair</option>
+                </select>
+              </div>
+
+              <!-- Wholesale Price Row -->
+              <div class="form-group" style="grid-column: span 2;">
+                <label for="productWholesalePrice" class="form-label">Wholesale Price:</label>
+                <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center;">
+                  <input type="number" id="priceWholesale" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-wholesale-price" style="background-color: #ffffcc;" oninput="calculateMarginFromPrice('wholesale')" />
+                  <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+                    <input type="number" id="marginWholesale" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-wholesale-percent" readonly style="background-color: #ffffcc; width: 80px; text-align: center;" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="productSalesUnit" class="form-label">Sales Main Unit</label>
+                <select id="productSalesUnit" class="form-select" data-testid="input-product-sales-unit">
+                  <option value="">Select Unit</option>
+                  <option value="pcs">Pcs (Pieces)</option>
+                  <option value="box">Box</option>
+                  <option value="dozen">Dozen</option>
+                  <option value="pack">Pack</option>
+                  <option value="set">Set</option>
+                  <option value="unit">Unit</option>
+                  <option value="kg">Kg (Kilogram)</option>
+                  <option value="gram">Gram</option>
+                  <option value="liter">Liter</option>
+                  <option value="meter">Meter</option>
+                  <option value="pair">Pair</option>
+                </select>
+              </div>
+
+              <!-- Hidden fields for backward compatibility -->
+              <input type="number" id="productMRP" class="form-input" step="0.01" value="0.00" data-testid="input-product-mrp" style="display: none;" />
+              <input type="number" id="productPrice" class="form-input" step="0.01" required data-testid="input-product-price" style="display: none;" />
+              <input type="number" id="productWholesalePrice" class="form-input" step="0.01" value="0.00" data-testid="input-product-wholesale-price" style="display: none;" />
+
+              <!-- GST and Tax Fields Row -->
+              <div class="form-group" style="grid-column: span 2;">
+                <label for="productGST" class="form-label">GST %</label>
+                <div style="display: grid; grid-template-columns: 1fr repeat(3, auto); gap: 8px; align-items: center;">
+                  <input type="number" id="productGST" class="form-input" step="0.01" value="0.00" data-testid="input-product-gst" />
+                  <div style="text-align: center; width: 80px;">
+                    <label style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">CGST %:</label>
+                    <input type="number" class="form-input" step="0.01" value="0.00" style="text-align: center;" readonly />
+                  </div>
+                  <div style="text-align: center; width: 100px;">
+                    <label style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">SGST/UTGST %:</label>
+                    <input type="number" id="productSGST" class="form-input" step="0.01" value="0.00" data-testid="input-product-sgst" style="text-align: center;" readonly />
+                  </div>
+                  <div style="text-align: center; width: 80px;">
+                    <label style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">IGST %:</label>
+                    <input type="number" class="form-input" step="0.01" value="0.00" style="text-align: center;" readonly />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="productAlterUnit" class="form-label">Alter Unit</label>
+                <select id="productAlterUnit" class="form-select" data-testid="input-product-alter-unit">
+                  <option value="">Select Unit</option>
+                  <option value="pcs">Pcs (Pieces)</option>
+                  <option value="box">Box</option>
+                  <option value="dozen">Dozen</option>
+                  <option value="pack">Pack</option>
+                  <option value="set">Set</option>
+                  <option value="unit">Unit</option>
+                  <option value="kg">Kg (Kilogram)</option>
+                  <option value="gram">Gram</option>
+                  <option value="liter">Liter</option>
+                  <option value="meter">Meter</option>
+                  <option value="pair">Pair</option>
+                </select>
+              </div>
+
+              <!-- CESS Row -->
+              <div class="form-group"></div>
+              <div class="form-group">
+                <label for="productCESS" class="form-label">CESS %</label>
+                <input type="number" id="productCESS" class="form-input" step="0.01" value="0.00" data-testid="input-product-cess" />
+              </div>
+
+              <div class="form-group"></div>
 
               <!-- Row 11: (empty row for spacing) -->
               <div class="form-group"></div>
@@ -752,7 +761,7 @@ export async function init(app) {
   window.filterProducts = filterProducts;
   window.setFilter = setFilter;
   window.updateModelOptions = updateModelOptions;
-  window.calculatePriceFromMargin = calculatePriceFromMargin;
+  window.calculateMarginFromPrice = calculateMarginFromPrice;
   window.recalculateAllPrices = recalculateAllPrices;
   window.updateProductAction = updateProductAction;
   window.deleteProductAction = deleteProductAction;
@@ -841,43 +850,44 @@ function showImageLibrary() {
   showToast('Online image library feature coming soon', 'info');
 }
 
-function calculatePriceFromMargin(priceType) {
+function calculateMarginFromPrice(priceType) {
   const costPrice = parseFloat(document.getElementById('productCostPrice').value) || 0;
   
-  let marginPercent = 0;
   let priceField = null;
+  let marginField = null;
   let hiddenField = null;
   
   if (priceType === 'mrp') {
-    marginPercent = parseFloat(document.getElementById('marginMRP').value) || 0;
     priceField = document.getElementById('priceMRP');
+    marginField = document.getElementById('marginMRP');
     hiddenField = document.getElementById('productMRP');
   } else if (priceType === 'retail') {
-    marginPercent = parseFloat(document.getElementById('marginRetail').value) || 0;
     priceField = document.getElementById('priceRetail');
+    marginField = document.getElementById('marginRetail');
     hiddenField = document.getElementById('productPrice');
   } else if (priceType === 'wholesale') {
-    marginPercent = parseFloat(document.getElementById('marginWholesale').value) || 0;
     priceField = document.getElementById('priceWholesale');
+    marginField = document.getElementById('marginWholesale');
     hiddenField = document.getElementById('productWholesalePrice');
   }
   
-  if (priceField && hiddenField && costPrice > 0) {
-    const calculatedPrice = costPrice * (1 + marginPercent / 100);
-    const roundedPrice = Math.round(calculatedPrice * 100) / 100;
-    priceField.value = roundedPrice.toFixed(2);
-    hiddenField.value = roundedPrice.toFixed(2);
-  } else if (priceField && hiddenField) {
-    // If cost price is 0 or invalid, clear the fields
-    priceField.value = '0.00';
-    hiddenField.value = '0.00';
+  if (priceField && marginField && hiddenField) {
+    const price = parseFloat(priceField.value) || 0;
+    hiddenField.value = price.toFixed(2);
+    
+    if (costPrice > 0 && price > 0) {
+      const marginPercent = ((price - costPrice) / costPrice) * 100;
+      marginField.value = marginPercent.toFixed(2);
+    } else {
+      marginField.value = '0.00';
+    }
   }
 }
 
 function recalculateAllPrices() {
-  calculatePriceFromMargin('mrp');
-  calculatePriceFromMargin('retail');
-  calculatePriceFromMargin('wholesale');
+  calculateMarginFromPrice('mrp');
+  calculateMarginFromPrice('retail');
+  calculateMarginFromPrice('wholesale');
 }
 
 function loadBrandsAndModels() {
