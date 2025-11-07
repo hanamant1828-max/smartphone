@@ -334,14 +334,14 @@ export function render(app) {
                     <input type="number" id="productCESS" class="form-input" step="0.01" value="0.00" data-testid="input-product-cess" placeholder="0.00" style="background-color: #ffffcc;" />
                   </div>
 
-                  <!-- Quantity (Default Qty) -->
+                  <!-- Quantity Display -->
                   <div class="form-group" style="margin: 0;">
                     <div style="display: flex; gap: 8px; align-items: flex-end;">
-                      <button type="button" style="padding: 10px 20px; background: linear-gradient(180deg, #90EE90 0%, #7BC67E 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; flex-shrink: 0;">
+                      <button type="button" data-testid="button-increment-qty" onclick="incrementPriceQty()" style="padding: 10px 20px; background: linear-gradient(180deg, #90EE90 0%, #7BC67E 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; flex-shrink: 0;">
                         +
                       </button>
                       <div style="flex: 1; max-width: 200px;">
-                        <input type="number" id="productDefaultQty" class="form-input" value="1" min="1" data-testid="input-product-default-qty-price-section" style="text-align: center; font-weight: 600;" />
+                        <input type="number" id="priceInfoQtyDisplay" class="form-input" value="1" min="1" data-testid="input-price-info-qty-display" readonly style="text-align: center; font-weight: 600; background-color: #f5f5f5;" />
                       </div>
                     </div>
                   </div>
@@ -788,6 +788,8 @@ export async function init(app) {
   window.calculateMarginFromPrice = calculateMarginFromPrice;
   window.recalculateAllPrices = recalculateAllPrices;
   window.calculateGSTComponents = calculateGSTComponents;
+  window.incrementPriceQty = incrementPriceQty;
+  window.syncPriceInfoQty = syncPriceInfoQty;
   window.updateProductAction = updateProductAction;
   window.deleteProductAction = deleteProductAction;
   window.getProductData = getProductData;
@@ -927,6 +929,25 @@ function calculateGSTComponents() {
   document.getElementById('productIGST').value = igst.toFixed(2);
 }
 
+function incrementPriceQty() {
+  const displayField = document.getElementById('priceInfoQtyDisplay');
+  const actualField = document.getElementById('productDefaultQty');
+  const currentValue = parseInt(displayField.value) || 1;
+  const newValue = currentValue + 1;
+  displayField.value = newValue;
+  if (actualField) {
+    actualField.value = newValue;
+  }
+}
+
+function syncPriceInfoQty() {
+  const actualField = document.getElementById('productDefaultQty');
+  const displayField = document.getElementById('priceInfoQtyDisplay');
+  if (actualField && displayField) {
+    displayField.value = actualField.value || '1';
+  }
+}
+
 function loadBrandsAndModels() {
   const brands = JSON.parse(localStorage.getItem('brands') || '[]');
   const brandModels = JSON.parse(localStorage.getItem('brandModels') || '[]');
@@ -1046,6 +1067,9 @@ function openAddProductModal() {
   document.getElementById('productSGST').value = '0.00';
   document.getElementById('productIGST').value = '0.00';
   document.getElementById('productCESS').value = '0.00';
+  
+  // Reset price info quantity display
+  document.getElementById('priceInfoQtyDisplay').value = '1';
   
   // Reset image preview
   clearProductImage();
