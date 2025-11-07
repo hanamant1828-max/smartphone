@@ -328,13 +328,13 @@ export default function AddProduct() {
                     name="costPrice"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Purchase Price *</FormLabel>
+                        <FormLabel>Purchase Price :</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
                             step="0.01"
                             placeholder="0.00"
-                            className="bg-yellow-50"
+                            className="bg-yellow-50 text-right"
                             {...field}
                             onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                             data-testid="input-costPrice"
@@ -350,12 +350,12 @@ export default function AddProduct() {
                     name="minStockLevel"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Min Stock</FormLabel>
+                        <FormLabel>Min Stock :</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
                             placeholder="0"
-                            className="bg-yellow-50"
+                            className="bg-yellow-50 text-right"
                             {...field}
                             onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                             data-testid="input-minStockLevel"
@@ -371,13 +371,13 @@ export default function AddProduct() {
                     name="salesDiscount"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Sales Discount %</FormLabel>
+                        <FormLabel>Sales Discount % :</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
                             step="0.01"
                             placeholder="0.00"
-                            className="bg-yellow-50"
+                            className="bg-yellow-50 text-right"
                             {...field}
                             onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                             data-testid="input-salesDiscount"
@@ -394,7 +394,7 @@ export default function AddProduct() {
                       name="purchaseUnit"
                       render={({ field }) => (
                         <FormItem className="flex-1">
-                          <FormLabel>Purchase Main Unit</FormLabel>
+                          <FormLabel>Purchase Main Unit :</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger data-testid="select-purchaseUnit">
@@ -428,7 +428,7 @@ export default function AddProduct() {
                       name="salesUnit"
                       render={({ field }) => (
                         <FormItem className="flex-1">
-                          <FormLabel>Sales Main Unit</FormLabel>
+                          <FormLabel>Sales Main Unit :</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger data-testid="select-salesUnit">
@@ -462,7 +462,7 @@ export default function AddProduct() {
                       name="alterUnit"
                       render={({ field }) => (
                         <FormItem className="flex-1">
-                          <FormLabel>Alter Unit</FormLabel>
+                          <FormLabel>Alter Unit :</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger data-testid="select-alterUnit">
@@ -499,13 +499,13 @@ export default function AddProduct() {
                       name="marginPercent1"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Margin %</FormLabel>
+                          <FormLabel>Margin % :</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
                               step="0.01"
                               placeholder="0.00"
-                              className="bg-yellow-50"
+                              className="bg-yellow-50 text-right"
                               {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                               data-testid="input-margin-percent-1"
@@ -526,7 +526,7 @@ export default function AddProduct() {
                               type="number"
                               step="0.01"
                               placeholder="0.00"
-                              className="bg-yellow-50"
+                              className="bg-yellow-50 text-right"
                               {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                               data-testid="input-margin-percent-2"
@@ -544,13 +544,13 @@ export default function AddProduct() {
                       name="mrp"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>MRP</FormLabel>
+                          <FormLabel>MRP :</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
                               step="0.01"
                               placeholder="0.00"
-                              className="bg-yellow-50"
+                              className="bg-yellow-50 text-right"
                               {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                               data-testid="input-mrp-1"
@@ -571,7 +571,7 @@ export default function AddProduct() {
                               type="number"
                               step="0.01"
                               placeholder="0.00"
-                              className="bg-yellow-50"
+                              className="bg-yellow-50 text-right"
                               {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                               data-testid="input-mrp-2"
@@ -589,13 +589,13 @@ export default function AddProduct() {
                       name="price"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Retail Sale Price *</FormLabel>
+                          <FormLabel>Retail Sale Price :</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
                               step="0.01"
                               placeholder="0.00"
-                              className="bg-yellow-50"
+                              className="bg-yellow-50 text-right"
                               {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                               data-testid="input-price-1"
@@ -616,7 +616,7 @@ export default function AddProduct() {
                               type="number"
                               step="0.01"
                               placeholder="0.00"
-                              className="bg-yellow-50"
+                              className="bg-yellow-50 text-right"
                               {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                               data-testid="input-price-2"
@@ -634,13 +634,13 @@ export default function AddProduct() {
                       name="wholesalePrice"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Wholesale Price</FormLabel>
+                          <FormLabel>Wholesale Price :</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
                               step="0.01"
                               placeholder="0.00"
-                              className="bg-yellow-50"
+                              className="bg-yellow-50 text-right"
                               {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                               data-testid="input-wholesalePrice-1"
@@ -661,7 +661,7 @@ export default function AddProduct() {
                               type="number"
                               step="0.01"
                               placeholder="0.00"
-                              className="bg-yellow-50"
+                              className="bg-yellow-50 text-right"
                               {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                               data-testid="input-wholesalePrice-2"
@@ -679,7 +679,7 @@ export default function AddProduct() {
                       name="gst"
                       render={({ field }) => (
                         <FormItem className="flex-1">
-                          <FormLabel>GST %</FormLabel>
+                          <FormLabel>GST % :</FormLabel>
                           <Select onValueChange={(value) => field.onChange(parseFloat(value))} value={field.value?.toString()}>
                             <FormControl>
                               <SelectTrigger data-testid="select-gst">
@@ -708,37 +708,37 @@ export default function AddProduct() {
                   
                   <div className="grid grid-cols-3 gap-2">
                     <div>
-                      <label className="text-xs text-blue-600 font-medium">CGST %</label>
+                      <label className="text-xs text-blue-600 font-medium">CGST % :</label>
                       <Input
                         type="number"
                         step="0.01"
                         placeholder="0.00"
                         readOnly
-                        className="bg-gray-50 mt-2"
+                        className="bg-gray-50 mt-2 text-right"
                         value={form.watch("cgst") || 0}
                         data-testid="input-cgst"
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-blue-600 font-medium">SGST/UTGST %</label>
+                      <label className="text-xs text-blue-600 font-medium">SGST/UTGST % :</label>
                       <Input
                         type="number"
                         step="0.01"
                         placeholder="0.00"
                         readOnly
-                        className="bg-gray-50 mt-2"
+                        className="bg-gray-50 mt-2 text-right"
                         value={form.watch("sgst") || 0}
                         data-testid="input-sgst"
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-blue-600 font-medium">IGST %</label>
+                      <label className="text-xs text-blue-600 font-medium">IGST % :</label>
                       <Input
                         type="number"
                         step="0.01"
                         placeholder="0.00"
                         readOnly
-                        className="bg-gray-50 mt-2"
+                        className="bg-gray-50 mt-2 text-right"
                         value={form.watch("igst") || 0}
                         data-testid="input-igst"
                       />
@@ -750,13 +750,13 @@ export default function AddProduct() {
                     name="cess"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>CESS %</FormLabel>
+                        <FormLabel>CESS % :</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
                             step="0.01"
                             placeholder="0.00"
-                            className="bg-yellow-50"
+                            className="bg-yellow-50 text-right"
                             {...field}
                             onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                             data-testid="input-cess"
@@ -780,6 +780,7 @@ export default function AddProduct() {
                             <Input
                               type="number"
                               placeholder="1"
+                              className="text-right"
                               {...field}
                               onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
                               data-testid="input-defaultQty"
