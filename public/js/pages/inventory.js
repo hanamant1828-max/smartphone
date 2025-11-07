@@ -199,10 +199,91 @@ export function render(app) {
                 <input type="number" id="marginPurchase" class="form-input" step="0.01" value="0" data-testid="input-margin-purchase" readonly style="background-color: #f5f5f5;" />
               </div>
 
+              <div class="form-group"></div>
+
+              <!-- Min Stock -->
               <div class="form-group">
                 <label for="productMinStock" class="form-label">Min Stock</label>
                 <input type="number" id="productMinStock" class="form-input" value="0" data-testid="input-product-min-stock" />
               </div>
+
+              <div class="form-group"></div>
+              <div class="form-group"></div>
+
+              <!-- Sales Discount -->
+              <div class="form-group">
+                <label for="productSalesDiscount" class="form-label">Sales Discount %</label>
+                <input type="number" id="productSalesDiscount" class="form-input" step="0.01" value="0.00" data-testid="input-product-sales-discount" />
+              </div>
+
+              <div class="form-group"></div>
+              <div class="form-group"></div>
+
+              <!-- Purchase Main Unit -->
+              <div class="form-group">
+                <label for="productPurchaseUnit" class="form-label">Purchase Main Unit</label>
+                <select id="productPurchaseUnit" class="form-select" data-testid="input-product-purchase-unit">
+                  <option value="">Select Unit</option>
+                  <option value="pcs">Pcs (Pieces)</option>
+                  <option value="box">Box</option>
+                  <option value="dozen">Dozen</option>
+                  <option value="pack">Pack</option>
+                  <option value="set">Set</option>
+                  <option value="unit">Unit</option>
+                  <option value="kg">Kg (Kilogram)</option>
+                  <option value="gram">Gram</option>
+                  <option value="liter">Liter</option>
+                  <option value="meter">Meter</option>
+                  <option value="pair">Pair</option>
+                </select>
+              </div>
+
+              <div class="form-group"></div>
+              <div class="form-group"></div>
+
+              <!-- Sales Main Unit -->
+              <div class="form-group">
+                <label for="productSalesUnit" class="form-label">Sales Main Unit</label>
+                <select id="productSalesUnit" class="form-select" data-testid="input-product-sales-unit">
+                  <option value="">Select Unit</option>
+                  <option value="pcs">Pcs (Pieces)</option>
+                  <option value="box">Box</option>
+                  <option value="dozen">Dozen</option>
+                  <option value="pack">Pack</option>
+                  <option value="set">Set</option>
+                  <option value="unit">Unit</option>
+                  <option value="kg">Kg (Kilogram)</option>
+                  <option value="gram">Gram</option>
+                  <option value="liter">Liter</option>
+                  <option value="meter">Meter</option>
+                  <option value="pair">Pair</option>
+                </select>
+              </div>
+
+              <div class="form-group"></div>
+              <div class="form-group"></div>
+
+              <!-- Alter Unit -->
+              <div class="form-group">
+                <label for="productAlterUnit" class="form-label">Alter Unit</label>
+                <select id="productAlterUnit" class="form-select" data-testid="input-product-alter-unit">
+                  <option value="">Select Unit</option>
+                  <option value="pcs">Pcs (Pieces)</option>
+                  <option value="box">Box</option>
+                  <option value="dozen">Dozen</option>
+                  <option value="pack">Pack</option>
+                  <option value="set">Set</option>
+                  <option value="unit">Unit</option>
+                  <option value="kg">Kg (Kilogram)</option>
+                  <option value="gram">Gram</option>
+                  <option value="liter">Liter</option>
+                  <option value="meter">Meter</option>
+                  <option value="pair">Pair</option>
+                </select>
+              </div>
+
+              <div class="form-group"></div>
+              <div class="form-group"></div>
 
               <!-- MRP Row -->
               <div class="form-group"></div>
@@ -231,10 +312,7 @@ export function render(app) {
               </div>
 
               <!-- Wholesale Price Row -->
-              <div class="form-group">
-                <label for="productSalesDiscount" class="form-label">Sales Discount %</label>
-                <input type="number" id="productSalesDiscount" class="form-input" step="0.01" value="0.00" data-testid="input-product-sales-discount" />
-              </div>
+              <div class="form-group"></div>
 
               <div class="form-group">
                 <label for="priceWholesale" class="form-label">Wholesale Price:</label>
@@ -246,43 +324,8 @@ export function render(app) {
                 <input type="number" id="marginWholesale" class="form-input" step="0.01" value="0.00" placeholder="0.00" data-testid="input-margin-wholesale-percent" readonly style="background-color: #ffffcc;" />
               </div>
 
-              <!-- Units Row -->
-              <div class="form-group">
-                <label for="productPurchaseUnit" class="form-label">Purchase Main Unit</label>
-                <select id="productPurchaseUnit" class="form-select" data-testid="input-product-purchase-unit">
-                  <option value="">Select Unit</option>
-                  <option value="pcs">Pcs (Pieces)</option>
-                  <option value="box">Box</option>
-                  <option value="dozen">Dozen</option>
-                  <option value="pack">Pack</option>
-                  <option value="set">Set</option>
-                  <option value="unit">Unit</option>
-                  <option value="kg">Kg (Kilogram)</option>
-                  <option value="gram">Gram</option>
-                  <option value="liter">Liter</option>
-                  <option value="meter">Meter</option>
-                  <option value="pair">Pair</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="productSalesUnit" class="form-label">Sales Main Unit</label>
-                <select id="productSalesUnit" class="form-select" data-testid="input-product-sales-unit">
-                  <option value="">Select Unit</option>
-                  <option value="pcs">Pcs (Pieces)</option>
-                  <option value="box">Box</option>
-                  <option value="dozen">Dozen</option>
-                  <option value="pack">Pack</option>
-                  <option value="set">Set</option>
-                  <option value="unit">Unit</option>
-                  <option value="kg">Kg (Kilogram)</option>
-                  <option value="gram">Gram</option>
-                  <option value="liter">Liter</option>
-                  <option value="meter">Meter</option>
-                  <option value="pair">Pair</option>
-                </select>
-              </div>
-
+              <div class="form-group"></div>
+              <div class="form-group"></div>
               <div class="form-group"></div>
 
               <!-- Hidden fields for backward compatibility -->
@@ -291,7 +334,7 @@ export function render(app) {
               <input type="number" id="productWholesalePrice" class="form-input" step="0.01" value="0.00" data-testid="input-product-wholesale-price" style="display: none;" />
 
               <!-- GST and Tax Fields Row -->
-              <div class="form-group" style="grid-column: span 2;">
+              <div class="form-group" style="grid-column: span 3;">
                 <label for="productGST" class="form-label">GST %</label>
                 <div style="display: grid; grid-template-columns: 1fr repeat(3, auto); gap: 8px; align-items: center;">
                   <input type="number" id="productGST" class="form-input" step="0.01" value="0.00" data-testid="input-product-gst" />
@@ -308,24 +351,6 @@ export function render(app) {
                     <input type="number" class="form-input" step="0.01" value="0.00" style="text-align: center;" readonly />
                   </div>
                 </div>
-              </div>
-
-              <div class="form-group">
-                <label for="productAlterUnit" class="form-label">Alter Unit</label>
-                <select id="productAlterUnit" class="form-select" data-testid="input-product-alter-unit">
-                  <option value="">Select Unit</option>
-                  <option value="pcs">Pcs (Pieces)</option>
-                  <option value="box">Box</option>
-                  <option value="dozen">Dozen</option>
-                  <option value="pack">Pack</option>
-                  <option value="set">Set</option>
-                  <option value="unit">Unit</option>
-                  <option value="kg">Kg (Kilogram)</option>
-                  <option value="gram">Gram</option>
-                  <option value="liter">Liter</option>
-                  <option value="meter">Meter</option>
-                  <option value="pair">Pair</option>
-                </select>
               </div>
 
               <!-- CESS Row -->
