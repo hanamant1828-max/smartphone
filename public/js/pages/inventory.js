@@ -332,72 +332,144 @@ export function render(app) {
                 <h4 style="font-weight: 600; color: var(--text-primary); font-size: 1rem;">Opening Stock (Optional Except Barcode):</h4>
               </div>
 
-              <!-- Row 1: Quality, Barcode -->
+              <!-- Row 1: Quantity, Barcode, Extra Info Button -->
               <div class="form-group">
-                <label for="productDefaultQty" class="form-label">Quality:</label>
-                <input type="number" id="productDefaultQty" class="form-input" value="10" data-testid="input-product-default-qty" />
+                <label for="productDefaultQty" class="form-label">Quantity:</label>
+                <input type="number" id="productDefaultQty" class="form-input" value="10" data-testid="input-product-default-qty" style="background-color: #ffffcc;" />
               </div>
 
-              <div class="form-group" style="grid-column: span 2;">
+              <div class="form-group">
                 <label for="productBarcode" class="form-label">Barcode*:</label>
                 <input type="text" id="productBarcode" class="form-input" data-testid="input-product-barcode" style="background-color: #ffffcc;" />
               </div>
 
-              <!-- Row 2: Batch/Serial No., Mfg. Date, Expiry Date -->
+              <div class="form-group" style="display: flex; align-items: flex-end;">
+                <button type="button" class="btn" style="background: linear-gradient(180deg, #90EE90 0%, #7BC67E 100%); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                  ✓ Extra Info
+                </button>
+              </div>
+
+              <!-- Row 2: Purchase Price, Margin %, Size, Colour -->
               <div class="form-group">
-                <label for="productBatchSerialNo" class="form-label">Batch/Serial No.:</label>
-                <input type="text" id="productBatchSerialNo" class="form-input" data-testid="input-product-batch-serial" />
+                <label for="openingPurchasePrice" class="form-label">Purchase Price:</label>
+                <input type="number" id="openingPurchasePrice" class="form-input" step="0.01" value="0.00" data-testid="input-opening-purchase-price" style="background-color: #ffffcc;" />
               </div>
 
               <div class="form-group">
-                <label for="productMfgDate" class="form-label">Mfg. Date:</label>
-                <input type="date" id="productMfgDate" class="form-input" data-testid="input-product-mfg-date" />
+                <label for="openingPurchaseMargin" class="form-label">Margin %:</label>
+                <input type="number" id="openingPurchaseMargin" class="form-input" step="0.01" value="0.00" data-testid="input-opening-purchase-margin" readonly style="background-color: #f5f5f5;" />
               </div>
 
               <div class="form-group">
-                <label for="productExpiryDate" class="form-label">Expiry Date:</label>
-                <input type="date" id="productExpiryDate" class="form-input" data-testid="input-product-expiry-date" />
+                <label for="openingSize" class="form-label">Size:</label>
+                <select id="openingSize" class="form-select" data-testid="select-opening-size" style="background-color: #ffffcc;">
+                  <option value="">Select Size</option>
+                  <option value="32GB">32GB</option>
+                  <option value="64GB">64GB</option>
+                  <option value="128GB">128GB</option>
+                  <option value="256GB">256GB</option>
+                  <option value="512GB">512GB</option>
+                  <option value="1TB">1TB</option>
+                </select>
               </div>
 
-              <!-- Row 3: Colour, IMEI Number -->
+              <!-- Row 3: MRP, Margin %, Colour -->
+              <div class="form-group">
+                <label for="openingMRP" class="form-label">MRP:</label>
+                <input type="number" id="openingMRP" class="form-input" step="0.01" value="0.00" data-testid="input-opening-mrp" style="background-color: #ffffcc;" />
+              </div>
+
+              <div class="form-group">
+                <label for="openingMRPMargin" class="form-label">Margin %:</label>
+                <input type="number" id="openingMRPMargin" class="form-input" step="0.01" value="0.00" data-testid="input-opening-mrp-margin" readonly style="background-color: #f5f5f5;" />
+              </div>
+
               <div class="form-group">
                 <label for="productColor" class="form-label">Colour:</label>
-                <input type="text" id="productColor" class="form-input" data-testid="input-product-color" />
+                <select id="productColor" class="form-select" data-testid="input-product-color" style="background-color: #ffffcc;">
+                  <option value="">Select Colour</option>
+                  <option value="BLACK">BLACK</option>
+                  <option value="WHITE">WHITE</option>
+                  <option value="SILVER">SILVER</option>
+                  <option value="GOLD">GOLD</option>
+                  <option value="BLUE">BLUE</option>
+                  <option value="RED">RED</option>
+                  <option value="GREEN">GREEN</option>
+                  <option value="PURPLE">PURPLE</option>
+                  <option value="PINK">PINK</option>
+                </select>
+              </div>
+
+              <!-- Row 4: Retail Sale Price, Margin %, IMEI-1 -->
+              <div class="form-group">
+                <label for="openingRetailPrice" class="form-label">Retail Sale Price:</label>
+                <input type="number" id="openingRetailPrice" class="form-input" step="0.01" value="0.00" data-testid="input-opening-retail-price" style="background-color: #ffffcc;" />
+              </div>
+
+              <div class="form-group">
+                <label for="openingRetailMargin" class="form-label">Margin %:</label>
+                <input type="number" id="openingRetailMargin" class="form-input" step="0.01" value="0.00" data-testid="input-opening-retail-margin" readonly style="background-color: #f5f5f5;" />
+              </div>
+
+              <div class="form-group">
+                <label for="productIMEI" class="form-label">IMEI-1:</label>
+                <input type="text" id="productIMEI" class="form-input" maxlength="15" data-testid="input-product-imei" style="background-color: #ffffcc;" />
+              </div>
+
+              <!-- Row 5: Wholesale Price, Margin %, IMEI-2 -->
+              <div class="form-group">
+                <label for="openingWholesalePrice" class="form-label">Wholesale Price:</label>
+                <input type="number" id="openingWholesalePrice" class="form-input" step="0.01" value="0.00" data-testid="input-opening-wholesale-price" style="background-color: #ffffcc;" />
+              </div>
+
+              <div class="form-group">
+                <label for="openingWholesaleMargin" class="form-label">Margin %:</label>
+                <input type="number" id="openingWholesaleMargin" class="form-input" step="0.01" value="0.00" data-testid="input-opening-wholesale-margin" readonly style="background-color: #f5f5f5;" />
+              </div>
+
+              <div class="form-group">
+                <label for="productIMEI2" class="form-label">IMEI-2:</label>
+                <input type="text" id="productIMEI2" class="form-input" maxlength="15" data-testid="input-product-imei2" style="background-color: #ffffcc;" />
+              </div>
+
+              <!-- Row 6: Batch/Serial No., RCC, WCC -->
+              <div class="form-group">
+                <label for="productBatchSerialNo" class="form-label">Batch/Serial No.:</label>
+                <input type="text" id="productBatchSerialNo" class="form-input" data-testid="input-product-batch-serial" style="background-color: #ffffcc;" />
+              </div>
+
+              <div class="form-group">
+                <label for="openingRCC" class="form-label">RCC:</label>
+                <input type="text" id="openingRCC" class="form-input" data-testid="input-opening-rcc" style="background-color: #ADD8E6;" />
+              </div>
+
+              <div class="form-group">
+                <label for="openingWCC" class="form-label">WCC:</label>
+                <input type="text" id="openingWCC" class="form-input" data-testid="input-opening-wcc" />
+              </div>
+
+              <!-- Row 7: Mfg. Date, Expiry Date (with calendar button) -->
+              <div class="form-group" style="display: flex; align-items: flex-end; gap: 8px;">
+                <button type="button" style="padding: 10px; background: linear-gradient(180deg, #FFB6C1 0%, #FF69B4 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;">
+                  C
+                </button>
               </div>
 
               <div class="form-group" style="grid-column: span 2;">
-                <label for="productIMEI" class="form-label">IMEI Number:</label>
-                <input type="text" id="productIMEI" class="form-input" maxlength="15" data-testid="input-product-imei" />
+                <label for="productMfgDate" class="form-label">Mfg. Date:</label>
+                <div style="display: flex; gap: 8px;">
+                  <input type="date" id="productMfgDate" class="form-input" data-testid="input-product-mfg-date" style="flex: 1;" />
+                </div>
               </div>
 
-              <!-- Row 4: Purchase Price, MRP, Retail Sale Price -->
-              <div class="form-group">
-                <label for="openingPurchasePrice" class="form-label">Purchase Price:</label>
-                <input type="number" id="openingPurchasePrice" class="form-input" step="0.01" value="0.00" data-testid="input-opening-purchase-price" />
-              </div>
-
-              <div class="form-group">
-                <label for="openingMRP" class="form-label">MRP:</label>
-                <input type="number" id="openingMRP" class="form-input" step="0.01" value="0.00" data-testid="input-opening-mrp" />
-              </div>
-
-              <div class="form-group">
-                <label for="openingRetailPrice" class="form-label">Retail Sale Price:</label>
-                <input type="number" id="openingRetailPrice" class="form-input" step="0.01" value="0.00" data-testid="input-opening-retail-price" />
-              </div>
-
-              <!-- Row 5: Wholesale Price, Margin -->
-              <div class="form-group">
-                <label for="openingWholesalePrice" class="form-label">Wholesale Price:</label>
-                <input type="number" id="openingWholesalePrice" class="form-input" step="0.01" value="0.00" data-testid="input-opening-wholesale-price" />
-              </div>
-
-              <div class="form-group">
-                <label for="openingMargin" class="form-label">Margin %:</label>
-                <input type="number" id="openingMargin" class="form-input" step="0.01" value="0.00" data-testid="input-opening-margin" readonly style="background-color: #f5f5f5;" />
-              </div>
-
+              <!-- Row 8: Expiry Date -->
               <div class="form-group"></div>
+              <div class="form-group" style="grid-column: span 2;">
+                <label for="productExpiryDate" class="form-label">Expiry Date:</label>
+                <div style="display: flex; gap: 8px;">
+                  <input type="date" id="productExpiryDate" class="form-input" data-testid="input-product-expiry-date" style="flex: 1;" />
+                </div>
+              </div>
 
               <!-- Hidden stock field for backward compatibility -->
               <input type="number" id="productStock" value="0" data-testid="input-product-stock" style="display: none;" />
