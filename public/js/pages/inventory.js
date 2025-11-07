@@ -370,6 +370,35 @@ export function render(app) {
                 <input type="text" id="productIMEI" class="form-input" maxlength="15" data-testid="input-product-imei" />
               </div>
 
+              <!-- Row 4: Purchase Price, MRP, Retail Sale Price -->
+              <div class="form-group">
+                <label for="openingPurchasePrice" class="form-label">Purchase Price:</label>
+                <input type="number" id="openingPurchasePrice" class="form-input" step="0.01" value="0.00" data-testid="input-opening-purchase-price" />
+              </div>
+
+              <div class="form-group">
+                <label for="openingMRP" class="form-label">MRP:</label>
+                <input type="number" id="openingMRP" class="form-input" step="0.01" value="0.00" data-testid="input-opening-mrp" />
+              </div>
+
+              <div class="form-group">
+                <label for="openingRetailPrice" class="form-label">Retail Sale Price:</label>
+                <input type="number" id="openingRetailPrice" class="form-input" step="0.01" value="0.00" data-testid="input-opening-retail-price" />
+              </div>
+
+              <!-- Row 5: Wholesale Price, Margin -->
+              <div class="form-group">
+                <label for="openingWholesalePrice" class="form-label">Wholesale Price:</label>
+                <input type="number" id="openingWholesalePrice" class="form-input" step="0.01" value="0.00" data-testid="input-opening-wholesale-price" />
+              </div>
+
+              <div class="form-group">
+                <label for="openingMargin" class="form-label">Margin %:</label>
+                <input type="number" id="openingMargin" class="form-input" step="0.01" value="0.00" data-testid="input-opening-margin" readonly style="background-color: #f5f5f5;" />
+              </div>
+
+              <div class="form-group"></div>
+
               <!-- Hidden stock field for backward compatibility -->
               <input type="number" id="productStock" value="0" data-testid="input-product-stock" style="display: none;" />
 
