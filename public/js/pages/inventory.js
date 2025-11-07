@@ -327,25 +327,23 @@ export function render(app) {
               <div class="form-group"></div>
               <div class="form-group"></div>
 
-              <!-- Row 12: Opening Stock section header -->
-              <div style="grid-column: span 3; margin-top: 8px; margin-bottom: 4px;">
-                <label class="form-label" style="font-weight: 500;">Opening Stock (Optional Except Barcode):</label>
+              <!-- Opening Stock Section -->
+              <div style="grid-column: span 3; margin-top: 16px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 2px solid #e0e0e0;">
+                <h4 style="font-weight: 600; color: var(--text-primary); font-size: 1rem;">Opening Stock (Optional Except Barcode):</h4>
               </div>
 
-              <!-- Row 13: Quantity and Barcode fields -->
+              <!-- Row 1: Quality, Barcode -->
               <div class="form-group">
-                <label for="productDefaultQty" class="form-label">Quantity:</label>
-                <input type="number" id="productDefaultQty" class="form-input" value="10" data-testid="input-product-default-qty" style="background-color: #ffffcc;" />
+                <label for="productDefaultQty" class="form-label">Quality:</label>
+                <input type="number" id="productDefaultQty" class="form-input" value="10" data-testid="input-product-default-qty" />
               </div>
 
-              <div class="form-group">
-                <label for="productBarcode" class="form-label">Barcode:</label>
+              <div class="form-group" style="grid-column: span 2;">
+                <label for="productBarcode" class="form-label">Barcode*:</label>
                 <input type="text" id="productBarcode" class="form-input" data-testid="input-product-barcode" style="background-color: #ffffcc;" />
               </div>
 
-              <div class="form-group"></div>
-
-              <!-- Row 13a: Batch/Serial No., Mfg Date, Expiry Date -->
+              <!-- Row 2: Batch/Serial No., Mfg. Date, Expiry Date -->
               <div class="form-group">
                 <label for="productBatchSerialNo" class="form-label">Batch/Serial No.:</label>
                 <input type="text" id="productBatchSerialNo" class="form-input" data-testid="input-product-batch-serial" />
@@ -361,10 +359,26 @@ export function render(app) {
                 <input type="date" id="productExpiryDate" class="form-input" data-testid="input-product-expiry-date" />
               </div>
 
+              <!-- Row 3: Colour, IMEI Number -->
+              <div class="form-group">
+                <label for="productColor" class="form-label">Colour:</label>
+                <input type="text" id="productColor" class="form-input" data-testid="input-product-color" />
+              </div>
+
+              <div class="form-group" style="grid-column: span 2;">
+                <label for="productIMEI" class="form-label">IMEI Number:</label>
+                <input type="text" id="productIMEI" class="form-input" maxlength="15" data-testid="input-product-imei" />
+              </div>
+
               <!-- Hidden stock field for backward compatibility -->
               <input type="number" id="productStock" value="0" data-testid="input-product-stock" style="display: none;" />
 
-              <!-- Row 14: Storage/Godown, Rack/Location, (empty) -->
+              <!-- Empty row for spacing -->
+              <div class="form-group"></div>
+              <div class="form-group"></div>
+              <div class="form-group"></div>
+
+              <!-- Storage Section -->
               <div class="form-group">
                 <label for="productStorage" class="form-label">Storage / Godown:</label>
                 <select id="productStorage" class="form-select" data-testid="select-product-storage" style="background-color: #ffffcc;">
@@ -393,7 +407,7 @@ export function render(app) {
 
               <div class="form-group"></div>
 
-              <!-- Row 15: Tax Type on Sale, Tax Type on Purchase, Default Sale Qty -->
+              <!-- Tax and Sale Settings -->
               <div class="form-group">
                 <label for="productTaxTypeSale" class="form-label">Tax Type on Sale:</label>
                 <select id="productTaxTypeSale" class="form-select" data-testid="select-product-tax-type-sale">
@@ -415,7 +429,12 @@ export function render(app) {
                 <input type="number" id="productDefaultSaleQty" class="form-input" value="1" data-testid="input-product-default-sale-qty" style="background-color: #ffffcc;" />
               </div>
 
-              <!-- Row 16: Order Print Section (span 2), (empty) -->
+              <!-- Order Print Section -->
+              <div class="form-group">
+                <label for="productRAM" class="form-label">RAM:</label>
+                <input type="text" id="productRAM" class="form-input" data-testid="input-product-ram" />
+              </div>
+
               <div class="form-group" style="grid-column: span 2;">
                 <label for="productOrderPrintSection" class="form-label">Order Print Section (Optional):</label>
                 <select id="productOrderPrintSection" class="form-select" data-testid="select-product-order-print-section">
@@ -426,24 +445,6 @@ export function render(app) {
                   <option value="terms">Terms & Conditions</option>
                   <option value="custom">Custom Section</option>
                 </select>
-              </div>
-
-              <div class="form-group"></div>
-
-              <!-- Row 17: Color, RAM, IMEI Number -->
-              <div class="form-group">
-                <label for="productColor" class="form-label">Color:</label>
-                <input type="text" id="productColor" class="form-input" data-testid="input-product-color" />
-              </div>
-
-              <div class="form-group">
-                <label for="productRAM" class="form-label">RAM:</label>
-                <input type="text" id="productRAM" class="form-input" data-testid="input-product-ram" />
-              </div>
-
-              <div class="form-group">
-                <label for="productIMEI" class="form-label">IMEI Number:</label>
-                <input type="text" id="productIMEI" class="form-input" maxlength="15" data-testid="input-product-imei" />
               </div>
               </div>
 
