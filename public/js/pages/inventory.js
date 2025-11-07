@@ -448,7 +448,7 @@ export function render(app) {
               </div>
 
               <!-- Right side: Action buttons column -->
-              <div style="display: flex; flex-direction: column; gap: 12px; align-self: start; position: sticky; top: 20px;">
+              <div style="display: flex; flex-direction: column; gap: 16px; align-self: start; position: sticky; top: 20px;">
                 <!-- Photo Upload Section -->
                 <div style="border: 2px solid #e0e0e0; border-radius: 8px; overflow: hidden; background: white;">
                   <div style="background: linear-gradient(180deg, #9B59B6 0%, #8E44AD 100%); color: white; padding: 12px; text-align: center; font-weight: 600; font-size: 16px;">
@@ -505,29 +505,38 @@ export function render(app) {
                 <input type="file" id="productImageInput" accept="image/*" style="display: none;" onchange="handleProductImageSelect(event)" />
                 <input type="text" id="productImageUrl" style="display: none;" />
                 
-                <button type="button" class="btn" style="width: 100%; padding: 16px; background: linear-gradient(180deg, #6B9BD1 0%, #4A7AB8 100%); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" onclick="openAddProductModal()" data-testid="button-new">
-                  New
-                </button>
-                
-                <button type="submit" class="btn" style="width: 100%; padding: 16px; background: linear-gradient(180deg, #7BC67E 0%, #5CAD5F 100%); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" data-testid="button-save-action">
-                  Save
-                </button>
-                
-                <button type="button" class="btn" style="width: 100%; padding: 16px; background: linear-gradient(180deg, #D0D0D0 0%, #A8A8A8 100%); color: #333; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" onclick="updateProductAction()" data-testid="button-update-action">
-                  Update
-                </button>
-                
-                <button type="button" class="btn" style="width: 100%; padding: 16px; background: linear-gradient(180deg, #D0D0D0 0%, #A8A8A8 100%); color: #333; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" onclick="deleteProductAction()" data-testid="button-delete-action">
-                  Delete
-                </button>
-                
-                <button type="button" class="btn" style="width: 100%; padding: 16px; background: linear-gradient(180deg, #6B9BD1 0%, #4A7AB8 100%); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" onclick="getProductData()" data-testid="button-get-data">
-                  Get Data
-                </button>
-                
-                <button type="button" class="btn" style="width: 100%; padding: 16px; background: linear-gradient(180deg, #6B9BD1 0%, #4A7AB8 100%); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" onclick="generateBarcode()" data-testid="button-barcode">
-                  Barcode
-                </button>
+                <!-- Action Buttons Section -->
+                <div style="border: 2px solid #e0e0e0; border-radius: 8px; overflow: hidden; background: white; padding: 16px;">
+                  <div style="font-weight: 600; font-size: 16px; margin-bottom: 16px; color: #333; text-align: center; padding-bottom: 12px; border-bottom: 2px solid #e0e0e0;">
+                    Actions
+                  </div>
+                  
+                  <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <button type="button" class="btn" style="width: 100%; padding: 14px; background: linear-gradient(180deg, #6B9BD1 0%, #4A7AB8 100%); color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.1s;" onclick="openAddProductModal()" data-testid="button-new" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                      New
+                    </button>
+                    
+                    <button type="submit" class="btn" style="width: 100%; padding: 14px; background: linear-gradient(180deg, #7BC67E 0%, #5CAD5F 100%); color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.1s;" data-testid="button-save-action" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                      Save
+                    </button>
+                    
+                    <button type="button" class="btn" style="width: 100%; padding: 14px; background: linear-gradient(180deg, #FFB74D 0%, #FFA726 100%); color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.1s;" onclick="updateProductAction()" data-testid="button-update-action" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                      Update
+                    </button>
+                    
+                    <button type="button" class="btn" style="width: 100%; padding: 14px; background: linear-gradient(180deg, #EF5350 0%, #E53935 100%); color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.1s;" onclick="deleteProductAction()" data-testid="button-delete-action" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                      Delete
+                    </button>
+                    
+                    <button type="button" class="btn" style="width: 100%; padding: 14px; background: linear-gradient(180deg, #9575CD 0%, #7E57C2 100%); color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.1s;" onclick="getProductData()" data-testid="button-get-data" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                      Get Data
+                    </button>
+                    
+                    <button type="button" class="btn" style="width: 100%; padding: 14px; background: linear-gradient(180deg, #4DD0E1 0%, #26C6DA 100%); color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.1s;" onclick="generateBarcode()" data-testid="button-barcode" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                      Barcode
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
