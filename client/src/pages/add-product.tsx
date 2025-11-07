@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { z } from "zod";
+import { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,10 +42,17 @@ const productSchema = z.object({
   purchaseUnit: z.string().optional(),
   salesUnit: z.string().optional(),
   alterUnit: z.string().optional(),
+  marginPercent1: z.number().min(0).default(0),
+  marginPercent2: z.number().min(0).default(0),
   mrp: z.number().min(0).default(0),
+  mrp2: z.number().min(0).default(0),
+  retailPrice2: z.number().min(0).default(0),
   wholesalePrice: z.number().min(0).default(0),
+  wholesalePrice2: z.number().min(0).default(0),
   gst: z.number().min(0).max(100).default(0),
+  cgst: z.number().min(0).max(100).default(0),
   sgst: z.number().min(0).max(100).default(0),
+  igst: z.number().min(0).max(100).default(0),
   cess: z.number().min(0).default(0),
   barcode: z.string().optional(),
   rack: z.string().optional(),
@@ -73,16 +81,32 @@ export default function AddProduct() {
       warrantyMonths: 12,
       isActive: true,
       salesDiscount: 0,
+      marginPercent1: 0,
+      marginPercent2: 0,
       mrp: 0,
+      mrp2: 0,
+      retailPrice2: 0,
       wholesalePrice: 0,
+      wholesalePrice2: 0,
       gst: 0,
+      cgst: 0,
       sgst: 0,
+      igst: 0,
       cess: 0,
       defaultQty: 1,
       taxTypeSale: "inclusive",
       taxTypePurchase: "inclusive",
     },
   });
+
+  const gstValue = form.watch("gst");
+
+  useEffect(() => {
+    const gst = gstValue || 0;
+    form.setValue("cgst", Number((gst / 2).toFixed(2)));
+    form.setValue("sgst", Number((gst / 2).toFixed(2)));
+    form.setValue("igst", 0);
+  }, [gstValue, form]);
 
   const createMutation = useMutation({
     mutationFn: async (data: ProductFormData) => {
@@ -331,6 +355,7 @@ export default function AddProduct() {
                           <Input
                             type="number"
                             placeholder="0"
+                            className="bg-yellow-50"
                             {...field}
                             onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                             data-testid="input-minStockLevel"
@@ -363,98 +388,107 @@ export default function AddProduct() {
                     )}
                   />
                   
-                  <FormField
-                    control={form.control}
-                    name="purchaseUnit"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Purchase Main Unit</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger data-testid="select-purchaseUnit">
-                              <SelectValue placeholder="Select unit" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="pcs">Pcs (Pieces)</SelectItem>
-                            <SelectItem value="box">Box</SelectItem>
-                            <SelectItem value="dozen">Dozen</SelectItem>
-                            <SelectItem value="pack">Pack</SelectItem>
-                            <SelectItem value="set">Set</SelectItem>
-                            <SelectItem value="unit">Unit</SelectItem>
-                            <SelectItem value="kg">Kg (Kilogram)</SelectItem>
-                            <SelectItem value="gram">Gram</SelectItem>
-                            <SelectItem value="liter">Liter</SelectItem>
-                            <SelectItem value="meter">Meter</SelectItem>
-                            <SelectItem value="pair">Pair</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="flex gap-2 items-end">
+                    <FormField
+                      control={form.control}
+                      name="purchaseUnit"
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormLabel>Purchase Main Unit</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger data-testid="select-purchaseUnit">
+                                <SelectValue placeholder="Select unit" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="pcs">Pcs (Pieces)</SelectItem>
+                              <SelectItem value="box">Box</SelectItem>
+                              <SelectItem value="dozen">Dozen</SelectItem>
+                              <SelectItem value="pack">Pack</SelectItem>
+                              <SelectItem value="set">Set</SelectItem>
+                              <SelectItem value="unit">Unit</SelectItem>
+                              <SelectItem value="kg">Kg (Kilogram)</SelectItem>
+                              <SelectItem value="gram">Gram</SelectItem>
+                              <SelectItem value="liter">Liter</SelectItem>
+                              <SelectItem value="meter">Meter</SelectItem>
+                              <SelectItem value="pair">Pair</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="h-6 w-6 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold mb-2">!</div>
+                  </div>
                   
-                  <FormField
-                    control={form.control}
-                    name="salesUnit"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Sales Main Unit</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger data-testid="select-salesUnit">
-                              <SelectValue placeholder="Select unit" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="pcs">Pcs (Pieces)</SelectItem>
-                            <SelectItem value="box">Box</SelectItem>
-                            <SelectItem value="dozen">Dozen</SelectItem>
-                            <SelectItem value="pack">Pack</SelectItem>
-                            <SelectItem value="set">Set</SelectItem>
-                            <SelectItem value="unit">Unit</SelectItem>
-                            <SelectItem value="kg">Kg (Kilogram)</SelectItem>
-                            <SelectItem value="gram">Gram</SelectItem>
-                            <SelectItem value="liter">Liter</SelectItem>
-                            <SelectItem value="meter">Meter</SelectItem>
-                            <SelectItem value="pair">Pair</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="flex gap-2 items-end">
+                    <FormField
+                      control={form.control}
+                      name="salesUnit"
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormLabel>Sales Main Unit</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger data-testid="select-salesUnit">
+                                <SelectValue placeholder="Select unit" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="pcs">Pcs (Pieces)</SelectItem>
+                              <SelectItem value="box">Box</SelectItem>
+                              <SelectItem value="dozen">Dozen</SelectItem>
+                              <SelectItem value="pack">Pack</SelectItem>
+                              <SelectItem value="set">Set</SelectItem>
+                              <SelectItem value="unit">Unit</SelectItem>
+                              <SelectItem value="kg">Kg (Kilogram)</SelectItem>
+                              <SelectItem value="gram">Gram</SelectItem>
+                              <SelectItem value="liter">Liter</SelectItem>
+                              <SelectItem value="meter">Meter</SelectItem>
+                              <SelectItem value="pair">Pair</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="h-6 w-6 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold mb-2">!</div>
+                  </div>
                   
-                  <FormField
-                    control={form.control}
-                    name="alterUnit"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Alter Unit</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger data-testid="select-alterUnit">
-                              <SelectValue placeholder="Select unit" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="pcs">Pcs (Pieces)</SelectItem>
-                            <SelectItem value="box">Box</SelectItem>
-                            <SelectItem value="dozen">Dozen</SelectItem>
-                            <SelectItem value="pack">Pack</SelectItem>
-                            <SelectItem value="set">Set</SelectItem>
-                            <SelectItem value="unit">Unit</SelectItem>
-                            <SelectItem value="kg">Kg (Kilogram)</SelectItem>
-                            <SelectItem value="gram">Gram</SelectItem>
-                            <SelectItem value="liter">Liter</SelectItem>
-                            <SelectItem value="meter">Meter</SelectItem>
-                            <SelectItem value="pair">Pair</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="flex gap-2 items-end">
+                    <FormField
+                      control={form.control}
+                      name="alterUnit"
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormLabel>Alter Unit</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger data-testid="select-alterUnit">
+                                <SelectValue placeholder="Select unit" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="pcs">Pcs (Pieces)</SelectItem>
+                              <SelectItem value="box">Box</SelectItem>
+                              <SelectItem value="dozen">Dozen</SelectItem>
+                              <SelectItem value="pack">Pack</SelectItem>
+                              <SelectItem value="set">Set</SelectItem>
+                              <SelectItem value="unit">Unit</SelectItem>
+                              <SelectItem value="kg">Kg (Kilogram)</SelectItem>
+                              <SelectItem value="gram">Gram</SelectItem>
+                              <SelectItem value="liter">Liter</SelectItem>
+                              <SelectItem value="meter">Meter</SelectItem>
+                              <SelectItem value="pair">Pair</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="h-6 w-6 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold mb-2">!</div>
+                  </div>
                 </div>
 
                 {/* Right Column */}
@@ -462,7 +496,7 @@ export default function AddProduct() {
                   <div className="grid grid-cols-2 gap-2">
                     <FormField
                       control={form.control}
-                      name="mrp"
+                      name="marginPercent1"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Margin %</FormLabel>
@@ -472,7 +506,7 @@ export default function AddProduct() {
                               step="0.01"
                               placeholder="0.00"
                               className="bg-yellow-50"
-                              value={field.value || 0}
+                              {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                               data-testid="input-margin-percent-1"
                             />
@@ -483,7 +517,7 @@ export default function AddProduct() {
                     />
                     <FormField
                       control={form.control}
-                      name="mrp"
+                      name="marginPercent2"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>&nbsp;</FormLabel>
@@ -493,7 +527,7 @@ export default function AddProduct() {
                               step="0.01"
                               placeholder="0.00"
                               className="bg-yellow-50"
-                              value={field.value || 0}
+                              {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                               data-testid="input-margin-percent-2"
                             />
@@ -519,7 +553,7 @@ export default function AddProduct() {
                               className="bg-yellow-50"
                               {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                              data-testid="input-mrp"
+                              data-testid="input-mrp-1"
                             />
                           </FormControl>
                           <FormMessage />
@@ -528,7 +562,7 @@ export default function AddProduct() {
                     />
                     <FormField
                       control={form.control}
-                      name="mrp"
+                      name="mrp2"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>&nbsp;</FormLabel>
@@ -538,7 +572,7 @@ export default function AddProduct() {
                               step="0.01"
                               placeholder="0.00"
                               className="bg-yellow-50"
-                              value={field.value || 0}
+                              {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                               data-testid="input-mrp-2"
                             />
@@ -564,7 +598,7 @@ export default function AddProduct() {
                               className="bg-yellow-50"
                               {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                              data-testid="input-price"
+                              data-testid="input-price-1"
                             />
                           </FormControl>
                           <FormMessage />
@@ -573,7 +607,7 @@ export default function AddProduct() {
                     />
                     <FormField
                       control={form.control}
-                      name="price"
+                      name="retailPrice2"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>&nbsp;</FormLabel>
@@ -583,9 +617,9 @@ export default function AddProduct() {
                               step="0.01"
                               placeholder="0.00"
                               className="bg-yellow-50"
-                              value={field.value || 0}
+                              {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                              data-testid="input-retail-price-2"
+                              data-testid="input-price-2"
                             />
                           </FormControl>
                           <FormMessage />
@@ -609,7 +643,7 @@ export default function AddProduct() {
                               className="bg-yellow-50"
                               {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                              data-testid="input-wholesalePrice"
+                              data-testid="input-wholesalePrice-1"
                             />
                           </FormControl>
                           <FormMessage />
@@ -618,7 +652,7 @@ export default function AddProduct() {
                     />
                     <FormField
                       control={form.control}
-                      name="wholesalePrice"
+                      name="wholesalePrice2"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>&nbsp;</FormLabel>
@@ -628,9 +662,9 @@ export default function AddProduct() {
                               step="0.01"
                               placeholder="0.00"
                               className="bg-yellow-50"
-                              value={field.value || 0}
+                              {...field}
                               onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                              data-testid="input-wholesale-price-2"
+                              data-testid="input-wholesalePrice-2"
                             />
                           </FormControl>
                           <FormMessage />
@@ -639,97 +673,76 @@ export default function AddProduct() {
                     />
                   </div>
                   
-                  <FormField
-                    control={form.control}
-                    name="gst"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>GST %</FormLabel>
-                        <Select onValueChange={(value) => field.onChange(parseFloat(value))} value={field.value?.toString()}>
-                          <FormControl>
-                            <SelectTrigger data-testid="select-gst">
-                              <SelectValue placeholder="Select GST %" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="0">0%</SelectItem>
-                            <SelectItem value="5">5%</SelectItem>
-                            <SelectItem value="12">12%</SelectItem>
-                            <SelectItem value="18">18%</SelectItem>
-                            <SelectItem value="28">28%</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="flex gap-2 items-center">
+                    <FormField
+                      control={form.control}
+                      name="gst"
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormLabel>GST %</FormLabel>
+                          <Select onValueChange={(value) => field.onChange(parseFloat(value))} value={field.value?.toString()}>
+                            <FormControl>
+                              <SelectTrigger data-testid="select-gst">
+                                <SelectValue placeholder="Select GST %" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="0">0%</SelectItem>
+                              <SelectItem value="5">5%</SelectItem>
+                              <SelectItem value="12">12%</SelectItem>
+                              <SelectItem value="18">18%</SelectItem>
+                              <SelectItem value="28">28%</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="flex gap-1 items-end pb-1">
+                      <div className="h-6 w-6 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">!</div>
+                      <Button type="button" size="sm" className="bg-green-500 hover:bg-green-600 h-6 px-2 text-xs" data-testid="button-gst-action">
+                        <span>✓</span>
+                      </Button>
+                    </div>
+                  </div>
                   
                   <div className="grid grid-cols-3 gap-2">
-                    <FormField
-                      control={form.control}
-                      name="sgst"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs text-blue-600">CGST %</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              placeholder="0.00"
-                              readOnly
-                              className="bg-gray-50"
-                              {...field}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                              data-testid="input-cgst"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="sgst"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs text-blue-600">SGST/UTGST %</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              placeholder="0.00"
-                              readOnly
-                              className="bg-gray-50"
-                              {...field}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                              data-testid="input-sgst"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="sgst"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs text-blue-600">IGST %</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              placeholder="0.00"
-                              readOnly
-                              className="bg-gray-50"
-                              value={field.value || 0}
-                              data-testid="input-igst"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <div>
+                      <label className="text-xs text-blue-600 font-medium">CGST %</label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="0.00"
+                        readOnly
+                        className="bg-gray-50 mt-2"
+                        value={form.watch("cgst") || 0}
+                        data-testid="input-cgst"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-blue-600 font-medium">SGST/UTGST %</label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="0.00"
+                        readOnly
+                        className="bg-gray-50 mt-2"
+                        value={form.watch("sgst") || 0}
+                        data-testid="input-sgst"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-blue-600 font-medium">IGST %</label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="0.00"
+                        readOnly
+                        className="bg-gray-50 mt-2"
+                        value={form.watch("igst") || 0}
+                        data-testid="input-igst"
+                      />
+                    </div>
                   </div>
                   
                   <FormField
