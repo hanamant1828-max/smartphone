@@ -393,10 +393,10 @@ export function render(app) {
               <div class="form-group" style="grid-column: span 2;">
                 <label for="openingPurchasePrice" class="form-label">Purchase Price:</label>
                 <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center;">
-                  <input type="number" id="openingPurchasePrice" class="form-input" step="0.01" value="300" data-testid="input-opening-purchase-price" style="background-color: #ffffcc;" />
+                  <input type="number" id="openingPurchasePrice" class="form-input" step="0.01" value="" data-testid="input-opening-purchase-price" style="background-color: #ffffcc;" />
                   <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
                     <span style="color: var(--text-secondary);">Margin %:</span>
-                    <input type="number" id="openingPurchaseMargin" class="form-input" step="0.01" value="0" data-testid="input-opening-purchase-margin" readonly style="background-color: #f5f5f5; width: 80px; text-align: center;" />
+                    <input type="number" id="openingPurchaseMargin" class="form-input" step="0.01" value="" data-testid="input-opening-purchase-margin" readonly style="background-color: #f5f5f5; width: 80px; text-align: center;" />
                   </div>
                 </div>
               </div>
@@ -418,9 +418,9 @@ export function render(app) {
               <div class="form-group" style="grid-column: span 2;">
                 <label for="openingMRP" class="form-label">MRP:</label>
                 <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center;">
-                  <input type="number" id="openingMRP" class="form-input" step="0.01" value="420" data-testid="input-opening-mrp" style="background-color: #ffffcc;" />
+                  <input type="number" id="openingMRP" class="form-input" step="0.01" value="" data-testid="input-opening-mrp" style="background-color: #ffffcc;" />
                   <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
-                    <input type="number" id="openingMRPMargin" class="form-input" step="0.01" value="40" data-testid="input-opening-mrp-margin" readonly style="background-color: #ffffcc; width: 80px; text-align: center;" />
+                    <input type="number" id="openingMRPMargin" class="form-input" step="0.01" value="" data-testid="input-opening-mrp-margin" readonly style="background-color: #ffffcc; width: 80px; text-align: center;" />
                   </div>
                 </div>
               </div>
@@ -445,9 +445,9 @@ export function render(app) {
               <div class="form-group" style="grid-column: span 2;">
                 <label for="openingRetailPrice" class="form-label">Retail Sale Price:</label>
                 <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center;">
-                  <input type="number" id="openingRetailPrice" class="form-input" step="0.01" value="375" data-testid="input-opening-retail-price" style="background-color: #ffffcc;" />
+                  <input type="number" id="openingRetailPrice" class="form-input" step="0.01" value="" data-testid="input-opening-retail-price" style="background-color: #ffffcc;" />
                   <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
-                    <input type="number" id="openingRetailMargin" class="form-input" step="0.01" value="25" data-testid="input-opening-retail-margin" readonly style="background-color: #ffffcc; width: 80px; text-align: center;" />
+                    <input type="number" id="openingRetailMargin" class="form-input" step="0.01" value="" data-testid="input-opening-retail-margin" readonly style="background-color: #ffffcc; width: 80px; text-align: center;" />
                   </div>
                 </div>
               </div>
@@ -461,9 +461,9 @@ export function render(app) {
               <div class="form-group" style="grid-column: span 2;">
                 <label for="openingWholesalePrice" class="form-label">Wholesale Price:</label>
                 <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center;">
-                  <input type="number" id="openingWholesalePrice" class="form-input" step="0.01" value="360" data-testid="input-opening-wholesale-price" style="background-color: #ffffcc;" />
+                  <input type="number" id="openingWholesalePrice" class="form-input" step="0.01" value="" data-testid="input-opening-wholesale-price" style="background-color: #ffffcc;" />
                   <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
-                    <input type="number" id="openingWholesaleMargin" class="form-input" step="0.01" value="20" data-testid="input-opening-wholesale-margin" readonly style="background-color: #ffffcc; width: 80px; text-align: center;" />
+                    <input type="number" id="openingWholesaleMargin" class="form-input" step="0.01" value="" data-testid="input-opening-wholesale-margin" readonly style="background-color: #ffffcc; width: 80px; text-align: center;" />
                   </div>
                 </div>
               </div>
