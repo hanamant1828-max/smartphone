@@ -1,9 +1,18 @@
-import { drizzle } from 'drizzle-orm/better-sqlite3';
-import Database from 'better-sqlite3';
+import { drizzle } from "drizzle-orm/better-sqlite3";
+import Database from "better-sqlite3";
 import * as schema from "@shared/schema";
-import { join } from "path";
+import { existsSync, mkdirSync } from "fs";
+import path from "path";
 
-const dbPath = join(process.cwd(), 'database', 'shop.db');
+// Ensure .data directory exists for persistent storage
+const dataDir = path.join(process.cwd(), ".data");
+if (!existsSync(dataDir)) {
+  mkdirSync(dataDir, { recursive: true });
+}
+
+// Store database in .data directory for persistence
+const dbPath = path.join(dataDir, "database.db");
+console.log("Database path:", dbPath);
+
 const sqlite = new Database(dbPath);
-
 export const db = drizzle(sqlite, { schema });
