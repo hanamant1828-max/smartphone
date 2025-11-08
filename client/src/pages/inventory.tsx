@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,8 +7,31 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useForm } from "react-hook-form";
-import { Plus, Search, Edit, Trash2, Package } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Package, MoreVertical, X, Plus as PlusIcon, Minus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -21,16 +43,26 @@ interface Product {
   model?: string;
   category: string;
   price: number;
+  costPrice: number;
   stockQuantity: number;
   imeiNumber?: string;
   color?: string;
   storage?: string;
   ram?: string;
+  isActive?: boolean;
 }
 
 export default function Inventory() {
   const [searchQuery, setSearchQuery] = useState("");
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
+  const [showStockModal, setShowStockModal] = useState(false);
+  const [showBulkStockModal, setShowBulkStockModal] = useState(false);
+  const [stockProduct, setStockProduct] = useState<Product | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showBulkActionDialog, setShowBulkActionDialog] = useState<'category' | 'status' | 'price' | null>(null);
+  
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -56,6 +88,38 @@ export default function Inventory() {
     },
   });
 
+  const stockForm = useForm({
+    defaultValues: {
+      adjustmentType: "add",
+      quantity: 0,
+      reason: "correction",
+      notes: "",
+      referenceNumber: "",
+    },
+  });
+
+  const bulkStockForm = useForm({
+    defaultValues: {
+      adjustmentType: "add",
+      quantity: 0,
+      reason: "correction",
+      notes: "",
+    },
+  });
+
+  const bulkCategoryForm = useForm({
+    defaultValues: {
+      category: "smartphone",
+    },
+  });
+
+  const bulkPriceForm = useForm({
+    defaultValues: {
+      field: "price",
+      operation: "increase",
+      value: 0,
+    },
+  });
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {
@@ -67,6 +131,99 @@ export default function Inventory() {
       toast({ title: "Product updated successfully" });
       setEditingProduct(null);
       form.reset();
+    },
+  });
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (productIds: number[]) => {
+      const res = await apiRequest("POST", "/api/products/bulk/delete", { productIds });
+      if (!res.ok) throw new Error("Failed to delete products");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      toast({ title: "Products deleted successfully" });
+      setSelectedIds(new Set());
+      setShowDeleteConfirm(false);
+    },
+    onError: () => {
+      toast({ title: "Failed to delete products", variant: "destructive" });
+    },
+  });
+
+  const bulkUpdateMutation = useMutation({
+    mutationFn: async ({ productIds, updates }: { productIds: number[]; updates: any }) => {
+      const res = await apiRequest("POST", "/api/products/bulk/update", { productIds, updates });
+      if (!res.ok) throw new Error("Failed to update products");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      toast({ title: "Products updated successfully" });
+      setSelectedIds(new Set());
+      setShowBulkActionDialog(null);
+    },
+    onError: () => {
+      toast({ title: "Failed to update products", variant: "destructive" });
+    },
+  });
+
+  const bulkUpdatePricesMutation = useMutation({
+    mutationFn: async ({ productIds, priceUpdate }: { productIds: number[]; priceUpdate: any }) => {
+      const res = await apiRequest("POST", "/api/products/bulk/update-prices", { productIds, priceUpdate });
+      if (!res.ok) throw new Error("Failed to update prices");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      toast({ title: "Prices updated successfully" });
+      setSelectedIds(new Set());
+      setShowBulkActionDialog(null);
+    },
+    onError: () => {
+      toast({ title: "Failed to update prices", variant: "destructive" });
+    },
+  });
+
+  const stockAdjustMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const res = await apiRequest("POST", "/api/stock/adjust", data);
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Failed to adjust stock");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      toast({ title: "Stock adjusted successfully" });
+      setShowStockModal(false);
+      setStockProduct(null);
+      stockForm.reset();
+    },
+    onError: (error: Error) => {
+      toast({ title: "Failed to adjust stock", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const bulkStockAdjustMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const res = await apiRequest("POST", "/api/stock/bulk-adjust", data);
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Failed to adjust stock");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      toast({ title: "Stock adjusted for all selected products" });
+      setShowBulkStockModal(false);
+      setSelectedIds(new Set());
+      bulkStockForm.reset();
+    },
+    onError: (error: Error) => {
+      toast({ title: "Failed to adjust stock", description: error.message, variant: "destructive" });
     },
   });
 
@@ -100,6 +257,115 @@ export default function Inventory() {
     form.reset(product);
   };
 
+  const toggleSelection = (id: number, index: number, shiftKey: boolean) => {
+    const newSelection = new Set(selectedIds);
+    
+    if (shiftKey && lastSelectedIndex !== null) {
+      // Range selection
+      const start = Math.min(lastSelectedIndex, index);
+      const end = Math.max(lastSelectedIndex, index);
+      for (let i = start; i <= end; i++) {
+        newSelection.add(filteredProducts[i].id);
+      }
+    } else {
+      // Single toggle
+      if (newSelection.has(id)) {
+        newSelection.delete(id);
+      } else {
+        newSelection.add(id);
+      }
+    }
+    
+    setSelectedIds(newSelection);
+    setLastSelectedIndex(index);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filteredProducts.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredProducts.map(p => p.id)));
+    }
+  };
+
+  const clearSelection = () => {
+    setSelectedIds(new Set());
+  };
+
+  const handleStockAdjust = (product: Product) => {
+    setStockProduct(product);
+    setShowStockModal(true);
+    stockForm.reset({
+      adjustmentType: "add",
+      quantity: 0,
+      reason: "correction",
+      notes: "",
+      referenceNumber: "",
+    });
+  };
+
+  const onStockSubmit = (data: any) => {
+    if (!stockProduct) return;
+    
+    stockAdjustMutation.mutate({
+      productId: stockProduct.id,
+      ...data,
+      quantity: parseInt(data.quantity),
+    });
+  };
+
+  const onBulkStockSubmit = (data: any) => {
+    bulkStockAdjustMutation.mutate({
+      productIds: Array.from(selectedIds),
+      ...data,
+      quantity: parseInt(data.quantity),
+    });
+  };
+
+  const onBulkCategorySubmit = (data: any) => {
+    bulkUpdateMutation.mutate({
+      productIds: Array.from(selectedIds),
+      updates: { category: data.category },
+    });
+  };
+
+  const onBulkPriceSubmit = (data: any) => {
+    bulkUpdatePricesMutation.mutate({
+      productIds: Array.from(selectedIds),
+      priceUpdate: {
+        field: data.field,
+        operation: data.operation,
+        value: parseFloat(data.value),
+      },
+    });
+  };
+
+  const handleBulkStatusChange = (isActive: boolean) => {
+    bulkUpdateMutation.mutate({
+      productIds: Array.from(selectedIds),
+      updates: { isActive },
+    });
+  };
+
+  const calculateNewStock = () => {
+    if (!stockProduct) return stockProduct?.stockQuantity || 0;
+    
+    const current = stockProduct.stockQuantity || 0;
+    const qty = parseInt(stockForm.watch("quantity") as any) || 0;
+    const type = stockForm.watch("adjustmentType");
+    
+    switch (type) {
+      case "add":
+        return current + qty;
+      case "subtract":
+        return Math.max(0, current - qty);
+      case "set":
+        return qty;
+      default:
+        return current;
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6 p-6">
       {/* Header */}
@@ -113,6 +379,76 @@ export default function Inventory() {
           Add Product
         </Button>
       </div>
+
+      {/* Selection Toolbar */}
+      {selectedIds.size > 0 && (
+        <Card className="bg-primary/5 border-primary/20">
+          <CardContent className="py-4">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={clearSelection}
+                  data-testid="button-clear-selection"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+                <span className="font-medium">{selectedIds.size} selected</span>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowBulkStockModal(true)}
+                  data-testid="button-bulk-stock-adjust"
+                >
+                  <Package className="mr-2 h-4 w-4" />
+                  Adjust Stock
+                </Button>
+                
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" data-testid="button-bulk-actions">
+                      Bulk Actions
+                      <MoreVertical className="ml-2 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => setShowBulkActionDialog('category')}>
+                      Change Category
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setShowBulkActionDialog('price')}>
+                      Update Prices
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>Change Status</DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent>
+                        <DropdownMenuItem onClick={() => handleBulkStatusChange(true)}>
+                          Activate All
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleBulkStatusChange(false)}>
+                          Deactivate All
+                        </DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      className="text-destructive"
+                      onClick={() => setShowDeleteConfirm(true)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete Selected
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Edit Dialog */}
       <Dialog open={!!editingProduct} onOpenChange={(open) => {
@@ -218,6 +554,450 @@ export default function Inventory() {
         </DialogContent>
       </Dialog>
 
+      {/* Quick Stock Adjustment Modal */}
+      <Dialog open={showStockModal} onOpenChange={setShowStockModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Adjust Stock - {stockProduct?.name}</DialogTitle>
+            <DialogDescription>
+              Current Stock: <span className="font-mono font-bold">{stockProduct?.stockQuantity || 0}</span>
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...stockForm}>
+            <form onSubmit={stockForm.handleSubmit(onStockSubmit)} className="space-y-4">
+              <FormField
+                control={stockForm.control}
+                name="adjustmentType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Adjustment Type</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger data-testid="select-adjustment-type">
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="add">Add to Stock</SelectItem>
+                        <SelectItem value="subtract">Subtract from Stock</SelectItem>
+                        <SelectItem value="set">Set Stock Level</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={stockForm.control}
+                name="quantity"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Quantity</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        placeholder="0" 
+                        {...field} 
+                        onChange={e => field.onChange(parseInt(e.target.value) || 0)}
+                        data-testid="input-stock-quantity"
+                      />
+                    </FormControl>
+                    <p className="text-sm text-muted-foreground">
+                      New stock: <span className="font-mono font-bold">{calculateNewStock()}</span>
+                    </p>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => stockForm.setValue("quantity", (stockForm.getValues("quantity") as number) + 1)}
+                >
+                  +1
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => stockForm.setValue("quantity", (stockForm.getValues("quantity") as number) + 5)}
+                >
+                  +5
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => stockForm.setValue("quantity", (stockForm.getValues("quantity") as number) + 10)}
+                >
+                  +10
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => stockForm.setValue("quantity", Math.max(0, (stockForm.getValues("quantity") as number) - 1))}
+                >
+                  -1
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => stockForm.setValue("quantity", Math.max(0, (stockForm.getValues("quantity") as number) - 5))}
+                >
+                  -5
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => stockForm.setValue("quantity", Math.max(0, (stockForm.getValues("quantity") as number) - 10))}
+                >
+                  -10
+                </Button>
+              </div>
+              
+              <FormField
+                control={stockForm.control}
+                name="reason"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Reason</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger data-testid="select-reason">
+                          <SelectValue placeholder="Select reason" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="correction">Correction</SelectItem>
+                        <SelectItem value="damage">Damage</SelectItem>
+                        <SelectItem value="lost">Lost</SelectItem>
+                        <SelectItem value="found">Found</SelectItem>
+                        <SelectItem value="return">Return</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={stockForm.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Notes (Optional)</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Add any additional notes..." 
+                        {...field} 
+                        data-testid="textarea-notes"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={stockForm.control}
+                name="referenceNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Reference Number (Optional)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="REF-001" 
+                        {...field} 
+                        data-testid="input-reference"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <DialogFooter>
+                <Button type="submit" data-testid="button-submit-stock-adjust">
+                  Adjust Stock
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Stock Adjustment Modal */}
+      <Dialog open={showBulkStockModal} onOpenChange={setShowBulkStockModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Bulk Stock Adjustment</DialogTitle>
+            <DialogDescription>
+              Adjust stock for {selectedIds.size} selected products
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...bulkStockForm}>
+            <form onSubmit={bulkStockForm.handleSubmit(onBulkStockSubmit)} className="space-y-4">
+              <FormField
+                control={bulkStockForm.control}
+                name="adjustmentType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Adjustment Type</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger data-testid="select-bulk-adjustment-type">
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="add">Add to All</SelectItem>
+                        <SelectItem value="subtract">Subtract from All</SelectItem>
+                        <SelectItem value="set">Set All to Same Value</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={bulkStockForm.control}
+                name="quantity"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Quantity</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        placeholder="0" 
+                        {...field} 
+                        onChange={e => field.onChange(parseInt(e.target.value) || 0)}
+                        data-testid="input-bulk-stock-quantity"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={bulkStockForm.control}
+                name="reason"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Reason</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger data-testid="select-bulk-reason">
+                          <SelectValue placeholder="Select reason" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="correction">Correction</SelectItem>
+                        <SelectItem value="damage">Damage</SelectItem>
+                        <SelectItem value="lost">Lost</SelectItem>
+                        <SelectItem value="found">Found</SelectItem>
+                        <SelectItem value="return">Return</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={bulkStockForm.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Notes (Optional)</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Add any additional notes..." 
+                        {...field} 
+                        data-testid="textarea-bulk-notes"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <DialogFooter>
+                <Button type="submit" data-testid="button-submit-bulk-stock-adjust">
+                  Adjust Stock for {selectedIds.size} Products
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Category Change Dialog */}
+      <Dialog open={showBulkActionDialog === 'category'} onOpenChange={() => setShowBulkActionDialog(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Change Category</DialogTitle>
+            <DialogDescription>
+              Change category for {selectedIds.size} selected products
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...bulkCategoryForm}>
+            <form onSubmit={bulkCategoryForm.handleSubmit(onBulkCategorySubmit)} className="space-y-4">
+              <FormField
+                control={bulkCategoryForm.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>New Category</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger data-testid="select-bulk-category">
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="smartphone">Smartphone</SelectItem>
+                        <SelectItem value="feature_phone">Feature Phone</SelectItem>
+                        <SelectItem value="accessory">Accessory</SelectItem>
+                        <SelectItem value="spare_part">Spare Part</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <DialogFooter>
+                <Button type="submit" data-testid="button-submit-bulk-category">
+                  Update Category
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Price Update Dialog */}
+      <Dialog open={showBulkActionDialog === 'price'} onOpenChange={() => setShowBulkActionDialog(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Update Prices</DialogTitle>
+            <DialogDescription>
+              Update prices for {selectedIds.size} selected products
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...bulkPriceForm}>
+            <form onSubmit={bulkPriceForm.handleSubmit(onBulkPriceSubmit)} className="space-y-4">
+              <FormField
+                control={bulkPriceForm.control}
+                name="field"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Price Field</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger data-testid="select-price-field">
+                          <SelectValue placeholder="Select field" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="price">Retail Price</SelectItem>
+                        <SelectItem value="costPrice">Cost Price</SelectItem>
+                        <SelectItem value="mrp">MRP</SelectItem>
+                        <SelectItem value="wholesalePrice">Wholesale Price</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={bulkPriceForm.control}
+                name="operation"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Operation</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger data-testid="select-price-operation">
+                          <SelectValue placeholder="Select operation" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="increase">Increase by Amount</SelectItem>
+                        <SelectItem value="decrease">Decrease by Amount</SelectItem>
+                        <SelectItem value="increasePercent">Increase by Percent</SelectItem>
+                        <SelectItem value="decreasePercent">Decrease by Percent</SelectItem>
+                        <SelectItem value="set">Set to Value</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={bulkPriceForm.control}
+                name="value"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Value</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        placeholder="0" 
+                        {...field} 
+                        onChange={e => field.onChange(parseFloat(e.target.value) || 0)}
+                        data-testid="input-price-value"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <DialogFooter>
+                <Button type="submit" data-testid="button-submit-bulk-price">
+                  Update Prices
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete {selectedIds.size} selected products. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => bulkDeleteMutation.mutate(Array.from(selectedIds))}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              data-testid="button-confirm-delete"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Search and Stats */}
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="md:col-span-3">
@@ -268,6 +1048,13 @@ export default function Inventory() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-12">
+                    <Checkbox
+                      checked={selectedIds.size === filteredProducts.length}
+                      onCheckedChange={toggleSelectAll}
+                      data-testid="checkbox-select-all"
+                    />
+                  </TableHead>
                   <TableHead>Product Name</TableHead>
                   <TableHead>Brand</TableHead>
                   <TableHead>Model</TableHead>
@@ -277,8 +1064,18 @@ export default function Inventory() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredProducts.map((product) => (
+                {filteredProducts.map((product, index) => (
                   <TableRow key={product.id} data-testid={`row-product-${product.id}`}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedIds.has(product.id)}
+                        onCheckedChange={(e) => {
+                          const event = (e as any).nativeEvent || (e as any);
+                          toggleSelection(product.id, index, event?.shiftKey || false);
+                        }}
+                        data-testid={`checkbox-product-${product.id}`}
+                      />
+                    </TableCell>
                     <TableCell className="font-medium" data-testid={`text-name-${product.id}`}>{product.name}</TableCell>
                     <TableCell data-testid={`text-brand-${product.id}`}>{product.brand || '-'}</TableCell>
                     <TableCell className="font-mono text-sm" data-testid={`text-model-${product.id}`}>{product.model || '-'}</TableCell>
@@ -290,6 +1087,15 @@ export default function Inventory() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleStockAdjust(product)}
+                          data-testid={`button-stock-${product.id}`}
+                          title="Adjust Stock"
+                        >
+                          <Package className="h-4 w-4" />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="icon"

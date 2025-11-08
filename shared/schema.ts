@@ -135,6 +135,22 @@ export const saleItems = sqliteTable("sale_items", {
   costPrice: real("cost_price").notNull(),
 });
 
+// Stock adjustments table for tracking inventory changes
+export const stockAdjustments = sqliteTable("stock_adjustments", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  productId: integer("product_id").references(() => products.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  adjustmentType: text("adjustment_type", { length: 20 }).notNull(), // 'add', 'subtract', 'set'
+  quantityBefore: integer("quantity_before").notNull(),
+  quantityAfter: integer("quantity_after").notNull(),
+  quantityChange: integer("quantity_change").notNull(),
+  reason: text("reason", { length: 50 }).notNull(), // 'correction', 'damage', 'lost', 'found', 'sale', 'purchase', 'return', 'other'
+  notes: text("notes"),
+  referenceNumber: text("reference_number", { length: 50 }),
+  adjustmentDate: integer("adjustment_date", { mode: 'timestamp' }).notNull(),
+  createdAt: integer("created_at", { mode: 'timestamp' }).default(sql`(strftime('%s','now') * 1000)`),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   sales: many(sales),
@@ -158,6 +174,7 @@ export const salesRelations = relations(sales, ({ one, many }) => ({
 
 export const productsRelations = relations(products, ({ many }) => ({
   saleItems: many(saleItems),
+  stockAdjustments: many(stockAdjustments),
 }));
 
 export const saleItemsRelations = relations(saleItems, ({ one }) => ({
@@ -168,6 +185,17 @@ export const saleItemsRelations = relations(saleItems, ({ one }) => ({
   product: one(products, {
     fields: [saleItems.productId],
     references: [products.id],
+  }),
+}));
+
+export const stockAdjustmentsRelations = relations(stockAdjustments, ({ one }) => ({
+  product: one(products, {
+    fields: [stockAdjustments.productId],
+    references: [products.id],
+  }),
+  user: one(users, {
+    fields: [stockAdjustments.userId],
+    references: [users.id],
   }),
 }));
 
@@ -199,6 +227,11 @@ export const insertSaleItemSchema = createInsertSchema(saleItems).omit({
   id: true,
 });
 
+export const insertStockAdjustmentSchema = createInsertSchema(stockAdjustments).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -214,3 +247,6 @@ export type InsertSale = z.infer<typeof insertSaleSchema>;
 
 export type SaleItem = typeof saleItems.$inferSelect;
 export type InsertSaleItem = z.infer<typeof insertSaleItemSchema>;
+
+export type StockAdjustment = typeof stockAdjustments.$inferSelect;
+export type InsertStockAdjustment = z.infer<typeof insertStockAdjustmentSchema>;

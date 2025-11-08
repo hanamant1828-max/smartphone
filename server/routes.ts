@@ -212,6 +212,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Bulk operations routes
+  app.post('/api/products/bulk/delete', authenticateToken, authorizeRoles('admin', 'inventory_manager'), async (req, res) => {
+    try {
+      const { productIds } = req.body;
+      
+      if (!Array.isArray(productIds) || productIds.length === 0) {
+        return res.status(400).json({ message: 'Product IDs array is required' });
+      }
+      
+      await storage.bulkDeleteProducts(productIds);
+      res.json({ message: `${productIds.length} products deleted successfully` });
+    } catch (error) {
+      console.error('Bulk delete products error:', error);
+      res.status(500).json({ message: 'Failed to delete products' });
+    }
+  });
+  
+  app.post('/api/products/bulk/update', authenticateToken, authorizeRoles('admin', 'inventory_manager'), async (req, res) => {
+    try {
+      const { productIds, updates } = req.body;
+      
+      if (!Array.isArray(productIds) || productIds.length === 0) {
+        return res.status(400).json({ message: 'Product IDs array is required' });
+      }
+      
+      if (!updates || typeof updates !== 'object') {
+        return res.status(400).json({ message: 'Updates object is required' });
+      }
+      
+      await storage.bulkUpdateProducts(productIds, updates);
+      res.json({ message: `${productIds.length} products updated successfully` });
+    } catch (error) {
+      console.error('Bulk update products error:', error);
+      res.status(500).json({ message: 'Failed to update products' });
+    }
+  });
+  
+  app.post('/api/products/bulk/update-prices', authenticateToken, authorizeRoles('admin', 'inventory_manager'), async (req, res) => {
+    try {
+      const { productIds, priceUpdate } = req.body;
+      
+      if (!Array.isArray(productIds) || productIds.length === 0) {
+        return res.status(400).json({ message: 'Product IDs array is required' });
+      }
+      
+      if (!priceUpdate || typeof priceUpdate !== 'object') {
+        return res.status(400).json({ message: 'Price update configuration is required' });
+      }
+      
+      const { field, operation, value } = priceUpdate;
+      
+      if (!['price', 'costPrice', 'mrp', 'wholesalePrice'].includes(field)) {
+        return res.status(400).json({ message: 'Invalid price field' });
+      }
+      
+      if (!['increase', 'decrease', 'set', 'increasePercent', 'decreasePercent'].includes(operation)) {
+        return res.status(400).json({ message: 'Invalid operation' });
+      }
+      
+      if (typeof value !== 'number' || value < 0) {
+        return res.status(400).json({ message: 'Invalid value' });
+      }
+      
+      await storage.bulkUpdatePrices(productIds, field, operation, value);
+      res.json({ message: `Prices updated for ${productIds.length} products` });
+    } catch (error) {
+      console.error('Bulk update prices error:', error);
+      res.status(500).json({ message: 'Failed to update prices' });
+    }
+  });
+  
   // Customer routes
   app.get('/api/customers', authenticateToken, async (req, res) => {
     try {
@@ -319,6 +390,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Get sale error:', error);
       res.status(500).json({ message: 'Failed to fetch sale' });
+    }
+  });
+  
+  // Stock adjustment routes
+  app.post('/api/stock/adjust', authenticateToken, authorizeRoles('admin', 'inventory_manager'), async (req: any, res) => {
+    try {
+      const { productId, adjustmentType, quantity, reason, notes, referenceNumber } = req.body;
+      
+      if (!productId || !adjustmentType || quantity === undefined || !reason) {
+        return res.status(400).json({ message: 'Missing required fields' });
+      }
+      
+      if (!['add', 'subtract', 'set'].includes(adjustmentType)) {
+        return res.status(400).json({ message: 'Invalid adjustment type' });
+      }
+      
+      if (typeof quantity !== 'number' || quantity < 0) {
+        return res.status(400).json({ message: 'Quantity must be a non-negative number' });
+      }
+      
+      const product = await storage.adjustStock(
+        productId,
+        req.user.id,
+        adjustmentType,
+        quantity,
+        reason,
+        notes,
+        referenceNumber
+      );
+      
+      res.json(product);
+    } catch (error: any) {
+      console.error('Stock adjustment error:', error);
+      res.status(500).json({ message: error.message || 'Failed to adjust stock' });
+    }
+  });
+  
+  app.post('/api/stock/bulk-adjust', authenticateToken, authorizeRoles('admin', 'inventory_manager'), async (req: any, res) => {
+    try {
+      const { productIds, adjustmentType, quantity, reason, notes } = req.body;
+      
+      if (!Array.isArray(productIds) || productIds.length === 0) {
+        return res.status(400).json({ message: 'Product IDs array is required' });
+      }
+      
+      if (!adjustmentType || quantity === undefined || !reason) {
+        return res.status(400).json({ message: 'Missing required fields' });
+      }
+      
+      if (!['add', 'subtract', 'set'].includes(adjustmentType)) {
+        return res.status(400).json({ message: 'Invalid adjustment type' });
+      }
+      
+      if (typeof quantity !== 'number' || quantity < 0) {
+        return res.status(400).json({ message: 'Quantity must be a non-negative number' });
+      }
+      
+      await storage.bulkAdjustStock(
+        productIds,
+        req.user.id,
+        adjustmentType,
+        quantity,
+        reason,
+        notes
+      );
+      
+      res.json({ message: `Stock adjusted for ${productIds.length} products` });
+    } catch (error: any) {
+      console.error('Bulk stock adjustment error:', error);
+      res.status(500).json({ message: error.message || 'Failed to adjust stock' });
     }
   });
   

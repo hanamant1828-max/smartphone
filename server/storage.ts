@@ -4,6 +4,7 @@ import {
   customers,
   sales,
   saleItems,
+  stockAdjustments,
   type User,
   type InsertUser,
   type Product,
@@ -14,9 +15,11 @@ import {
   type InsertSale,
   type SaleItem,
   type InsertSaleItem,
+  type StockAdjustment,
+  type InsertStockAdjustment,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, gte, lte, and, sql, count } from "drizzle-orm";
+import { eq, desc, gte, lte, and, sql, count, inArray } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
@@ -31,6 +34,16 @@ export interface IStorage {
   updateProduct(id: number, product: Partial<InsertProduct>): Promise<Product | undefined>;
   deleteProduct(id: number): Promise<boolean>;
   getLowStockProducts(): Promise<Product[]>;
+  
+  // Bulk operations
+  bulkDeleteProducts(productIds: number[]): Promise<void>;
+  bulkUpdateProducts(productIds: number[], updates: Partial<InsertProduct>): Promise<void>;
+  bulkUpdatePrices(productIds: number[], field: string, operation: string, value: number): Promise<void>;
+  
+  // Stock adjustment operations
+  createStockAdjustment(adjustment: InsertStockAdjustment): Promise<StockAdjustment>;
+  adjustStock(productId: number, userId: number, adjustmentType: string, quantity: number, reason: string, notes?: string, referenceNumber?: string): Promise<Product>;
+  bulkAdjustStock(productIds: number[], userId: number, adjustmentType: string, quantity: number, reason: string, notes?: string): Promise<void>;
 
   // Customer operations
   getCustomers(filters?: any): Promise<Customer[]>;
@@ -131,6 +144,139 @@ export class DatabaseStorage implements IStorage {
         )
       );
     return result;
+  }
+
+  // Bulk operations
+  async bulkDeleteProducts(productIds: number[]): Promise<void> {
+    await db.delete(products).where(inArray(products.id, productIds));
+  }
+
+  async bulkUpdateProducts(productIds: number[], updates: Partial<InsertProduct>): Promise<void> {
+    await db
+      .update(products)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(inArray(products.id, productIds));
+  }
+
+  async bulkUpdatePrices(
+    productIds: number[],
+    field: string,
+    operation: string,
+    value: number
+  ): Promise<void> {
+    // Get all products to update
+    const productsToUpdate = await db
+      .select()
+      .from(products)
+      .where(inArray(products.id, productIds));
+
+    // Calculate new prices and update each product
+    for (const product of productsToUpdate) {
+      const currentPrice = (product as any)[field] || 0;
+      let newPrice = currentPrice;
+
+      switch (operation) {
+        case 'increase':
+          newPrice = currentPrice + value;
+          break;
+        case 'decrease':
+          newPrice = Math.max(0, currentPrice - value);
+          break;
+        case 'increasePercent':
+          newPrice = currentPrice * (1 + value / 100);
+          break;
+        case 'decreasePercent':
+          newPrice = currentPrice * (1 - value / 100);
+          break;
+        case 'set':
+          newPrice = value;
+          break;
+      }
+
+      await db
+        .update(products)
+        .set({ [field]: newPrice, updatedAt: new Date() } as any)
+        .where(eq(products.id, product.id));
+    }
+  }
+
+  // Stock adjustment operations
+  async createStockAdjustment(adjustment: InsertStockAdjustment): Promise<StockAdjustment> {
+    const [newAdjustment] = await db
+      .insert(stockAdjustments)
+      .values(adjustment)
+      .returning();
+    return newAdjustment;
+  }
+
+  async adjustStock(
+    productId: number,
+    userId: number,
+    adjustmentType: string,
+    quantity: number,
+    reason: string,
+    notes?: string,
+    referenceNumber?: string
+  ): Promise<Product> {
+    const product = await this.getProduct(productId);
+    if (!product) {
+      throw new Error('Product not found');
+    }
+
+    const quantityBefore = product.stockQuantity || 0;
+    let quantityAfter = quantityBefore;
+    let quantityChange = 0;
+
+    switch (adjustmentType) {
+      case 'add':
+        quantityAfter = quantityBefore + quantity;
+        quantityChange = quantity;
+        break;
+      case 'subtract':
+        quantityAfter = Math.max(0, quantityBefore - quantity);
+        quantityChange = -quantity;
+        break;
+      case 'set':
+        quantityAfter = quantity;
+        quantityChange = quantity - quantityBefore;
+        break;
+    }
+
+    // Update product stock
+    await db
+      .update(products)
+      .set({ stockQuantity: quantityAfter, updatedAt: new Date() })
+      .where(eq(products.id, productId));
+
+    // Create adjustment log
+    await this.createStockAdjustment({
+      productId,
+      userId,
+      adjustmentType,
+      quantityBefore,
+      quantityAfter,
+      quantityChange,
+      reason,
+      notes,
+      referenceNumber,
+      adjustmentDate: new Date(),
+    });
+
+    const updatedProduct = await this.getProduct(productId);
+    return updatedProduct!;
+  }
+
+  async bulkAdjustStock(
+    productIds: number[],
+    userId: number,
+    adjustmentType: string,
+    quantity: number,
+    reason: string,
+    notes?: string
+  ): Promise<void> {
+    for (const productId of productIds) {
+      await this.adjustStock(productId, userId, adjustmentType, quantity, reason, notes);
+    }
   }
 
   // Customer operations
