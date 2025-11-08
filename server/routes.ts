@@ -46,6 +46,16 @@ function authorizeRoles(...allowedRoles: string[]) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Disable caching for JavaScript files in development
+  app.use((req, res, next) => {
+    if (req.url.endsWith('.js') || req.url.endsWith('.mjs')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
+    next();
+  });
+  
   // Serve static files from public directory
   app.use(express.static('public'));
   

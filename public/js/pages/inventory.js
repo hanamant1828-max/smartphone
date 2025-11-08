@@ -791,7 +791,28 @@ function renderBrandRows() {
 }
 
 function renderModelRows() {
-
+  if (!models || models.length === 0) {
+    return '<tr><td colspan="6" class="text-center" style="padding: 48px;">No models found</td></tr>';
+  }
+  return models.map(model => {
+    const brand = brands.find(b => b.id === model.brandId);
+    return `
+      <tr>
+        <td>${brand?.name || '-'}</td>
+        <td><strong>${model.name}</strong></td>
+        <td class="font-mono">${model.modelNumber || '-'}</td>
+        <td>${model.launchDate || '-'}</td>
+        <td><span class="badge ${model.active ? 'badge-success' : 'badge-secondary'}">${model.active ? 'Active' : 'Inactive'}</span></td>
+        <td>
+          <div class="flex gap-2">
+            <button class="btn btn-outline btn-sm" onclick="editModel(${model.id})">Edit</button>
+            <button class="btn btn-error btn-sm" onclick="deleteModel(${model.id})">Delete</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
 
 function switchTab(tab) {
   currentTab = tab;
@@ -1503,31 +1524,14 @@ function filterModelsByBrand(brandId) {
   updateTabContent();
 }
 
-function openAddProductModal() {
-  showToast('Product form needs to be redesigned. Use the Add Product page instead.', 'info');
+function filterModelsByStatus(status) {
+  // Implement status-based filtering
+  updateTabContent();
 }
 
-  if (!models || models.length === 0) {
-    return '<tr><td colspan="6" class="text-center" style="padding: 48px;">No models found</td></tr>';
-  }
-  return models.map(model => {
-    const brand = brands.find(b => b.id === model.brandId);
-    return `
-      <tr>
-        <td>${brand?.name || '-'}</td>
-        <td><strong>${model.name}</strong></td>
-        <td class="font-mono">${model.modelNumber || '-'}</td>
-        <td>${model.launchDate || '-'}</td>
-        <td><span class="badge ${model.active ? 'badge-success' : 'badge-secondary'}">${model.active ? 'Active' : 'Inactive'}</span></td>
-        <td>
-          <div class="flex gap-2">
-            <button class="btn btn-outline btn-sm" onclick="editModel(${model.id})">Edit</button>
-            <button class="btn btn-error btn-sm" onclick="deleteModel(${model.id})">Delete</button>
-          </div>
-        </td>
-      </tr>
-    `;
-  }).join('');
+function filterBrandsByStatus(status) {
+  // Implement status-based filtering for brands
+  updateTabContent();
 }
 
 function getCategoryColor(category) {
