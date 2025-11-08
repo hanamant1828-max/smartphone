@@ -625,7 +625,10 @@ export default function AddProduct() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="supplierId">Primary Supplier</Label>
-                    <Select onValueChange={(value) => form.setValue("supplierId", value)} defaultValue={form.getValues("supplierId")}>
+                    <Select 
+                      value={form.watch("supplierId")} 
+                      onValueChange={(value) => form.setValue("supplierId", value)}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select Supplier" />
                       </SelectTrigger>
