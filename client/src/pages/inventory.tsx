@@ -40,6 +40,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import ProductDetailsModal from "@/components/product-details-modal";
 
 interface Product {
   id: number;
@@ -70,6 +71,7 @@ export default function Inventory() {
   const [showBulkPreview, setShowBulkPreview] = useState(false);
   const [bulkPreviewData, setBulkPreviewData] = useState<any[]>([]);
   const [selectAllPages, setSelectAllPages] = useState(false);
+  const [detailsProduct, setDetailsProduct] = useState<Product | null>(null);
 
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
@@ -257,6 +259,21 @@ export default function Inventory() {
     },
     onError: (error: Error) => {
       toast({ title: "Failed to adjust stock", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (productId: number) => {
+      const res = await apiRequest("DELETE", `/api/products/${productId}`);
+      if (!res.ok) throw new Error("Failed to delete product");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      toast({ title: "Product deleted successfully" });
+    },
+    onError: () => {
+      toast({ title: "Failed to delete product", variant: "destructive" });
     },
   });
 
@@ -1462,7 +1479,12 @@ export default function Inventory() {
               </TableHeader>
               <TableBody>
                 {filteredProducts.map((product, index) => (
-                  <TableRow key={product.id} data-testid={`row-product-${product.id}`}>
+                  <TableRow
+                    key={product.id}
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => setDetailsProduct(product)}
+                    data-testid={`row-product-${product.id}`}
+                  >
                     <TableCell>
                       <Checkbox
                         checked={selectedIds.has(product.id)}
@@ -1510,6 +1532,21 @@ export default function Inventory() {
           )}
         </CardContent>
       </Card>
+
+      {/* Product Details Modal */}
+      <ProductDetailsModal
+        product={detailsProduct}
+        open={!!detailsProduct}
+        onOpenChange={(open) => !open && setDetailsProduct(null)}
+        onEdit={(product) => {
+          setDetailsProduct(null);
+          setLocation(`/add-product?id=${product.id}`);
+        }}
+        onDelete={(productId) => {
+          setDetailsProduct(null);
+          deleteMutation.mutate(productId);
+        }}
+      />
     </div>
   );
 }
