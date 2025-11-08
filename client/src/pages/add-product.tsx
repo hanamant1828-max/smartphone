@@ -1,4 +1,5 @@
 
+import React from "react";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -48,11 +49,9 @@ export default function AddProduct() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
-      toast({ title: "Product added successfully" });
       form.reset();
-      setTimeout(() => {
-        setLocation("/inventory");
-      }, 100);
+      toast({ title: "Product added successfully" });
+      setLocation("/inventory");
     },
     onError: (error: Error) => {
       toast({ 
@@ -70,6 +69,21 @@ export default function AddProduct() {
       console.error('Submit error:', error);
     }
   };
+
+  // Disable browser unsaved changes detection
+  React.useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+
+    // Remove the event listener to prevent unsaved changes dialog
+    window.removeEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
 
   return (
     <div className="flex flex-col gap-6 p-6 max-w-5xl mx-auto">
