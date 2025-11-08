@@ -5,6 +5,10 @@ import { formatCurrency, formatNumber, showToast } from '../utils.js';
 let products = [];
 let filteredProducts = [];
 let currentFilter = 'all';
+let currentTab = 'products';
+let categories = [];
+let brands = [];
+let models = [];
 
 export function render(app) {
   return wrapWithLayout(`
@@ -12,7 +16,7 @@ export function render(app) {
       <div class="flex justify-between items-center">
         <div>
           <h1 class="page-title">Inventory Management</h1>
-          <p class="page-subtitle">Manage your product inventory</p>
+          <p class="page-subtitle">Manage products, categories, brands, and models</p>
         </div>
         <button 
           class="btn btn-primary" 
@@ -28,6 +32,277 @@ export function render(app) {
       </div>
     </div>
 
+    <!-- Tabs -->
+    <div class="card mb-6">
+      <div style="display: flex; border-bottom: 1px solid var(--border); gap: 0;">
+        <button 
+          class="tab-button ${currentTab === 'products' ? 'active' : ''}" 
+          onclick="switchTab('products')"
+          data-testid="tab-products"
+        >
+          Products
+        </button>
+        <button 
+          class="tab-button ${currentTab === 'categories' ? 'active' : ''}" 
+          onclick="switchTab('categories')"
+          data-testid="tab-categories"
+        >
+          Categories
+        </button>
+        <button 
+          class="tab-button ${currentTab === 'brands' ? 'active' : ''}" 
+          onclick="switchTab('brands')"
+          data-testid="tab-brands"
+        >
+          Brands
+        </button>
+        <button 
+          class="tab-button ${currentTab === 'models' ? 'active' : ''}" 
+          onclick="switchTab('models')"
+          data-testid="tab-models"
+        >
+          Models
+        </button>
+      </div>
+    </div>
+
+    <div id="tabContent">
+      ${renderTabContent()}
+    </div>
+
+    
+
+    <!-- Category Modal -->
+    <div id="categoryModal" class="modal-backdrop hidden">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title" id="categoryModalTitle">Add Category</h3>
+          <button class="modal-close" onclick="closeCategoryModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="categoryForm">
+            <input type="hidden" id="categoryId" />
+            <div class="grid grid-cols-2 gap-4">
+              <div class="form-group">
+                <label class="form-label">Category Name *</label>
+                <input type="text" id="categoryName" class="form-input" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Parent Category</label>
+                <select id="categoryParent" class="form-input">
+                  <option value="">None (Top Level)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Category Code</label>
+                <input type="text" id="categoryCode" class="form-input" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Display Order</label>
+                <input type="number" id="categoryOrder" class="form-input" value="0" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Description</label>
+              <textarea id="categoryDescription" class="form-input" rows="3"></textarea>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+              <div class="form-group">
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" id="categoryActive" checked />
+                  <span>Active</span>
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" id="categoryShowMenu" checked />
+                  <span>Show in Menu</span>
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" id="categoryShowPOS" checked />
+                  <span>Show in POS</span>
+                </label>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" onclick="closeCategoryModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveCategory()">Save Category</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Brand Modal -->
+    <div id="brandModal" class="modal-backdrop hidden">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title" id="brandModalTitle">Add Brand</h3>
+          <button class="modal-close" onclick="closeBrandModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="brandForm">
+            <input type="hidden" id="brandId" />
+            <div class="grid grid-cols-2 gap-4">
+              <div class="form-group">
+                <label class="form-label">Brand Name *</label>
+                <input type="text" id="brandName" class="form-input" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Brand Code</label>
+                <input type="text" id="brandCode" class="form-input" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Website URL</label>
+                <input type="url" id="brandWebsite" class="form-input" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Contact Email</label>
+                <input type="email" id="brandEmail" class="form-input" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Contact Phone</label>
+                <input type="tel" id="brandPhone" class="form-input" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Country of Origin</label>
+                <input type="text" id="brandCountry" class="form-input" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Description</label>
+              <textarea id="brandDescription" class="form-input" rows="3"></textarea>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+              <div class="form-group">
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" id="brandActive" checked />
+                  <span>Active</span>
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" id="brandFeatured" />
+                  <span>Featured Brand</span>
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" id="brandShowMenu" />
+                  <span>Show in Menu</span>
+                </label>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" onclick="closeBrandModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveBrand()">Save Brand</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Model Modal -->
+    <div id="modelModal" class="modal-backdrop hidden">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title" id="modelModalTitle">Add Model</h3>
+          <button class="modal-close" onclick="closeModelModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="modelForm">
+            <input type="hidden" id="modelId" />
+            <div class="grid grid-cols-2 gap-4">
+              <div class="form-group">
+                <label class="form-label">Brand *</label>
+                <select id="modelBrand" class="form-input" required>
+                  <option value="">Select Brand</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Model Name *</label>
+                <input type="text" id="modelName" class="form-input" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Model Number</label>
+                <input type="text" id="modelNumber" class="form-input" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Model Code</label>
+                <input type="text" id="modelCode" class="form-input" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Launch Date</label>
+                <input type="date" id="modelLaunchDate" class="form-input" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Warranty (months)</label>
+                <input type="number" id="modelWarranty" class="form-input" value="12" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Description</label>
+              <textarea id="modelDescription" class="form-input" rows="3"></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="form-group">
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" id="modelActive" checked />
+                  <span>Active</span>
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" id="modelDiscontinued" />
+                  <span>Discontinued</span>
+                </label>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" onclick="closeModelModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveModel()">Save Model</button>
+        </div>
+      </div>
+    </div>
+  `, 'inventory', app.user);
+}
+
+function renderTabContent() {
+  switch (currentTab) {
+    case 'products':
+      return renderProductsTab();
+    case 'categories':
+      return renderCategoriesTab();
+    case 'brands':
+      return renderBrandsTab();
+    case 'models':
+      return renderModelsTab();
+    default:
+      return renderProductsTab();
+  }
+}
+
+function renderProductsTab() {
+  return `
     <!-- Filters -->
     <div class="card mb-6">
       <div class="flex gap-4 items-center">
@@ -41,7 +316,6 @@ export function render(app) {
             oninput="filterProducts()"
           />
         </div>
-
         <div style="display: flex; gap: 8px;">
           <button 
             class="btn ${currentFilter === 'all' ? 'btn-primary' : 'btn-outline'} btn-sm"
@@ -96,39 +370,127 @@ export function render(app) {
         </tbody>
       </table>
     </div>
+  `;
+}
 
-    <!-- Add/Edit Product Modal -->
-    <div id="productModal" class="modal-backdrop hidden">
-      <div class="modal">
-        <div class="modal-header">
-          <h3 class="modal-title" id="modalTitle">Add New Product</h3>
-          <button class="modal-close" onclick="closeProductModal()" data-testid="button-close-modal">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"/>
-              <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
-        </div>
-
-        <div class="modal-body">
-          <div style="text-align: center; padding: 48px; color: var(--text-secondary);">
-            <p>All form fields have been removed.</p>
-            <p style="margin-top: 8px; font-size: 0.875rem;">Ready for new form design.</p>
-          </div>
-          <form id="productForm" style="display: none;">
-            <input type="hidden" id="productId" />
-              
-
-              </form>
-        </div>
-
-        <div class="modal-footer">
-          <button class="btn btn-outline" onclick="closeProductModal()" data-testid="button-cancel">Cancel</button>
-          <button class="btn btn-primary" onclick="saveProduct()" data-testid="button-save-product">Save Product</button>
-        </div>
-      </div>
+function renderCategoriesTab() {
+  return `
+    <div class="flex justify-between items-center mb-6">
+      <input 
+        type="search" 
+        class="form-input" 
+        placeholder="Search categories..." 
+        style="max-width: 400px;"
+        oninput="filterCategories(this.value)"
+      />
+      <button class="btn btn-primary" onclick="openCategoryModal()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Add Category
+      </button>
     </div>
-  `, 'inventory', app.user);
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Category Name</th>
+            <th>Code</th>
+            <th>Parent</th>
+            <th>Products</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="categoriesTableBody">
+          ${renderCategoryRows()}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderBrandsTab() {
+  return `
+    <div class="flex justify-between items-center mb-6">
+      <input 
+        type="search" 
+        class="form-input" 
+        placeholder="Search brands..." 
+        style="max-width: 400px;"
+        oninput="filterBrands(this.value)"
+      />
+      <button class="btn btn-primary" onclick="openBrandModal()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Add Brand
+      </button>
+    </div>
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Brand Name</th>
+            <th>Code</th>
+            <th>Country</th>
+            <th>Products</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="brandsTableBody">
+          ${renderBrandRows()}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderModelsTab() {
+  return `
+    <div class="flex justify-between items-center mb-6">
+      <div class="flex gap-4" style="flex: 1;">
+        <select class="form-input" style="max-width: 200px;" onchange="filterModelsByBrand(this.value)">
+          <option value="">All Brands</option>
+          ${brands.filter(b => b.active).map(b => `<option value="${b.id}">${b.name}</option>`).join('')}
+        </select>
+        <input 
+          type="search" 
+          class="form-input" 
+          placeholder="Search models..." 
+          style="max-width: 400px;"
+          oninput="filterModels(this.value)"
+        />
+      </div>
+      <button class="btn btn-primary" onclick="openModelModal()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Add Model
+      </button>
+    </div>
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Brand</th>
+            <th>Model Name</th>
+            <th>Model Number</th>
+            <th>Launch Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="modelsTableBody">
+          ${renderModelRows()}
+        </tbody>
+      </table>
+    </div>
+  `;
 }
 
 function renderProductRows() {
@@ -138,7 +500,6 @@ function renderProductRows() {
         <td colspan="9" class="text-center" style="padding: 48px;">
           <div style="color: var(--text-secondary);">
             <p>No products found</p>
-            <button class="btn btn-primary btn-sm mt-4" onclick="openAddProductModal()">Add Your First Product</button>
           </div>
         </td>
       </tr>
@@ -193,6 +554,408 @@ function renderProductRows() {
   `).join('');
 }
 
+function renderCategoryRows() {
+  if (!categories || categories.length === 0) {
+    return '<tr><td colspan="6" class="text-center" style="padding: 48px;">No categories found</td></tr>';
+  }
+  return categories.map(cat => `
+    <tr>
+      <td><strong>${cat.name}</strong></td>
+      <td>${cat.code || '-'}</td>
+      <td>${cat.parentId ? (categories.find(c => c.id === cat.parentId)?.name || '-') : 'Top Level'}</td>
+      <td>${cat.productCount || 0}</td>
+      <td><span class="badge ${cat.active ? 'badge-success' : 'badge-secondary'}">${cat.active ? 'Active' : 'Inactive'}</span></td>
+      <td>
+        <div class="flex gap-2">
+          <button class="btn btn-outline btn-sm" onclick="editCategory(${cat.id})">Edit</button>
+          <button class="btn btn-error btn-sm" onclick="deleteCategory(${cat.id})">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderBrandRows() {
+  if (!brands || brands.length === 0) {
+    return '<tr><td colspan="6" class="text-center" style="padding: 48px;">No brands found</td></tr>';
+  }
+  return brands.map(brand => `
+    <tr>
+      <td><strong>${brand.name}</strong></td>
+      <td>${brand.code || '-'}</td>
+      <td>${brand.country || '-'}</td>
+      <td>${brand.productCount || 0}</td>
+      <td><span class="badge ${brand.active ? 'badge-success' : 'badge-secondary'}">${brand.active ? 'Active' : 'Inactive'}</span></td>
+      <td>
+        <div class="flex gap-2">
+          <button class="btn btn-outline btn-sm" onclick="editBrand(${brand.id})">Edit</button>
+          <button class="btn btn-error btn-sm" onclick="deleteBrand(${brand.id})">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderModelRows() {
+
+
+function switchTab(tab) {
+  currentTab = tab;
+  updateTabContent();
+}
+
+function updateTabContent() {
+  const contentDiv = document.getElementById('tabContent');
+  if (contentDiv) {
+    contentDiv.innerHTML = renderTabContent();
+  }
+}
+
+// Category Management Functions
+function openCategoryModal(parentId = null) {
+  document.getElementById('categoryModalTitle').textContent = 'Add Category';
+  document.getElementById('categoryId').value = '';
+  document.getElementById('categoryName').value = '';
+  document.getElementById('categoryCode').value = '';
+  document.getElementById('categoryDescription').value = '';
+  document.getElementById('categoryOrder').value = '0';
+  document.getElementById('categoryActive').checked = true;
+  document.getElementById('categoryShowMenu').checked = true;
+  document.getElementById('categoryShowPOS').checked = true;
+  
+  // Populate parent category dropdown
+  const parentSelect = document.getElementById('categoryParent');
+  parentSelect.innerHTML = '<option value="">None (Top Level)</option>';
+  categories.filter(c => c.active).forEach(cat => {
+    parentSelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+  });
+  
+  if (parentId) {
+    parentSelect.value = parentId;
+  }
+  
+  document.getElementById('categoryModal').classList.remove('hidden');
+}
+
+function closeCategoryModal() {
+  document.getElementById('categoryModal').classList.add('hidden');
+}
+
+function saveCategory() {
+  const id = document.getElementById('categoryId').value;
+  const categoryData = {
+    id: id ? parseInt(id) : Date.now(),
+    name: document.getElementById('categoryName').value,
+    code: document.getElementById('categoryCode').value,
+    description: document.getElementById('categoryDescription').value,
+    parentId: document.getElementById('categoryParent').value ? parseInt(document.getElementById('categoryParent').value) : null,
+    displayOrder: parseInt(document.getElementById('categoryOrder').value) || 0,
+    active: document.getElementById('categoryActive').checked,
+    showInMenu: document.getElementById('categoryShowMenu').checked,
+    showInPOS: document.getElementById('categoryShowPOS').checked,
+    productCount: 0
+  };
+  
+  if (!categoryData.name) {
+    showToast('Category name is required', 'error');
+    return;
+  }
+  
+  if (id) {
+    const index = categories.findIndex(c => c.id === parseInt(id));
+    if (index !== -1) {
+      categories[index] = { ...categories[index], ...categoryData };
+    }
+  } else {
+    categories.push(categoryData);
+  }
+  
+  localStorage.setItem('categories', JSON.stringify(categories));
+  closeCategoryModal();
+  showToast('Category saved successfully', 'success');
+  updateTabContent();
+}
+
+function editCategory(id) {
+  const category = categories.find(c => c.id === id);
+  if (!category) return;
+  
+  document.getElementById('categoryModalTitle').textContent = 'Edit Category';
+  document.getElementById('categoryId').value = category.id;
+  document.getElementById('categoryName').value = category.name;
+  document.getElementById('categoryCode').value = category.code || '';
+  document.getElementById('categoryDescription').value = category.description || '';
+  document.getElementById('categoryOrder').value = category.displayOrder || 0;
+  document.getElementById('categoryActive').checked = category.active;
+  document.getElementById('categoryShowMenu').checked = category.showInMenu;
+  document.getElementById('categoryShowPOS').checked = category.showInPOS;
+  
+  const parentSelect = document.getElementById('categoryParent');
+  parentSelect.innerHTML = '<option value="">None (Top Level)</option>';
+  categories.filter(c => c.active && c.id !== id).forEach(cat => {
+    parentSelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+  });
+  parentSelect.value = category.parentId || '';
+  
+  document.getElementById('categoryModal').classList.remove('hidden');
+}
+
+function deleteCategory(id) {
+  const category = categories.find(c => c.id === id);
+  if (!category) return;
+  
+  if (category.productCount > 0) {
+    if (!confirm(`This category has ${category.productCount} products. Are you sure you want to delete it?`)) {
+      return;
+    }
+  }
+  
+  categories = categories.filter(c => c.id !== id);
+  localStorage.setItem('categories', JSON.stringify(categories));
+  showToast('Category deleted successfully', 'success');
+  updateTabContent();
+}
+
+function filterCategories(searchTerm) {
+  // Implement category filtering logic
+  updateTabContent();
+}
+
+// Brand Management Functions
+function openBrandModal() {
+  document.getElementById('brandModalTitle').textContent = 'Add Brand';
+  document.getElementById('brandId').value = '';
+  document.getElementById('brandName').value = '';
+  document.getElementById('brandCode').value = '';
+  document.getElementById('brandWebsite').value = '';
+  document.getElementById('brandEmail').value = '';
+  document.getElementById('brandPhone').value = '';
+  document.getElementById('brandCountry').value = '';
+  document.getElementById('brandDescription').value = '';
+  document.getElementById('brandActive').checked = true;
+  document.getElementById('brandFeatured').checked = false;
+  document.getElementById('brandShowMenu').checked = false;
+  
+  document.getElementById('brandModal').classList.remove('hidden');
+}
+
+function closeBrandModal() {
+  document.getElementById('brandModal').classList.add('hidden');
+}
+
+function saveBrand() {
+  const id = document.getElementById('brandId').value;
+  const brandData = {
+    id: id ? parseInt(id) : Date.now(),
+    name: document.getElementById('brandName').value,
+    code: document.getElementById('brandCode').value || document.getElementById('brandName').value.substring(0, 4).toUpperCase(),
+    website: document.getElementById('brandWebsite').value,
+    email: document.getElementById('brandEmail').value,
+    phone: document.getElementById('brandPhone').value,
+    country: document.getElementById('brandCountry').value,
+    description: document.getElementById('brandDescription').value,
+    active: document.getElementById('brandActive').checked,
+    featured: document.getElementById('brandFeatured').checked,
+    showInMenu: document.getElementById('brandShowMenu').checked,
+    productCount: 0
+  };
+  
+  if (!brandData.name) {
+    showToast('Brand name is required', 'error');
+    return;
+  }
+  
+  if (id) {
+    const index = brands.findIndex(b => b.id === parseInt(id));
+    if (index !== -1) {
+      brands[index] = { ...brands[index], ...brandData };
+    }
+  } else {
+    brands.push(brandData);
+  }
+  
+  localStorage.setItem('brands', JSON.stringify(brands));
+  closeBrandModal();
+  showToast('Brand saved successfully', 'success');
+  updateTabContent();
+}
+
+function editBrand(id) {
+  const brand = brands.find(b => b.id === id);
+  if (!brand) return;
+  
+  document.getElementById('brandModalTitle').textContent = 'Edit Brand';
+  document.getElementById('brandId').value = brand.id;
+  document.getElementById('brandName').value = brand.name;
+  document.getElementById('brandCode').value = brand.code || '';
+  document.getElementById('brandWebsite').value = brand.website || '';
+  document.getElementById('brandEmail').value = brand.email || '';
+  document.getElementById('brandPhone').value = brand.phone || '';
+  document.getElementById('brandCountry').value = brand.country || '';
+  document.getElementById('brandDescription').value = brand.description || '';
+  document.getElementById('brandActive').checked = brand.active;
+  document.getElementById('brandFeatured').checked = brand.featured || false;
+  document.getElementById('brandShowMenu').checked = brand.showInMenu || false;
+  
+  document.getElementById('brandModal').classList.remove('hidden');
+}
+
+function deleteBrand(id) {
+  const brand = brands.find(b => b.id === id);
+  if (!brand) return;
+  
+  if (brand.productCount > 0) {
+    if (!confirm(`This brand has ${brand.productCount} products. Are you sure you want to delete it?`)) {
+      return;
+    }
+  }
+  
+  brands = brands.filter(b => b.id !== id);
+  localStorage.setItem('brands', JSON.stringify(brands));
+  showToast('Brand deleted successfully', 'success');
+  updateTabContent();
+}
+
+function filterBrands(searchTerm) {
+  // Implement brand filtering logic
+  updateTabContent();
+}
+
+// Model Management Functions
+function openModelModal() {
+  document.getElementById('modelModalTitle').textContent = 'Add Model';
+  document.getElementById('modelId').value = '';
+  document.getElementById('modelName').value = '';
+  document.getElementById('modelNumber').value = '';
+  document.getElementById('modelCode').value = '';
+  document.getElementById('modelLaunchDate').value = '';
+  document.getElementById('modelWarranty').value = '12';
+  document.getElementById('modelDescription').value = '';
+  document.getElementById('modelActive').checked = true;
+  document.getElementById('modelDiscontinued').checked = false;
+  
+  // Populate brand dropdown
+  const brandSelect = document.getElementById('modelBrand');
+  brandSelect.innerHTML = '<option value="">Select Brand</option>';
+  brands.filter(b => b.active).forEach(brand => {
+    brandSelect.innerHTML += `<option value="${brand.id}">${brand.name}</option>`;
+  });
+  
+  document.getElementById('modelModal').classList.remove('hidden');
+}
+
+function closeModelModal() {
+  document.getElementById('modelModal').classList.add('hidden');
+}
+
+function saveModel() {
+  const id = document.getElementById('modelId').value;
+  const modelData = {
+    id: id ? parseInt(id) : Date.now(),
+    brandId: parseInt(document.getElementById('modelBrand').value),
+    name: document.getElementById('modelName').value,
+    modelNumber: document.getElementById('modelNumber').value,
+    code: document.getElementById('modelCode').value,
+    launchDate: document.getElementById('modelLaunchDate').value,
+    warrantyMonths: parseInt(document.getElementById('modelWarranty').value) || 12,
+    description: document.getElementById('modelDescription').value,
+    active: document.getElementById('modelActive').checked,
+    discontinued: document.getElementById('modelDiscontinued').checked
+  };
+  
+  if (!modelData.name || !modelData.brandId) {
+    showToast('Model name and brand are required', 'error');
+    return;
+  }
+  
+  if (id) {
+    const index = models.findIndex(m => m.id === parseInt(id));
+    if (index !== -1) {
+      models[index] = { ...models[index], ...modelData };
+    }
+  } else {
+    models.push(modelData);
+  }
+  
+  localStorage.setItem('brandModels', JSON.stringify(models));
+  closeModelModal();
+  showToast('Model saved successfully', 'success');
+  updateTabContent();
+}
+
+function editModel(id) {
+  const model = models.find(m => m.id === id);
+  if (!model) return;
+  
+  document.getElementById('modelModalTitle').textContent = 'Edit Model';
+  document.getElementById('modelId').value = model.id;
+  document.getElementById('modelName').value = model.name;
+  document.getElementById('modelNumber').value = model.modelNumber || '';
+  document.getElementById('modelCode').value = model.code || '';
+  document.getElementById('modelLaunchDate').value = model.launchDate || '';
+  document.getElementById('modelWarranty').value = model.warrantyMonths || 12;
+  document.getElementById('modelDescription').value = model.description || '';
+  document.getElementById('modelActive').checked = model.active;
+  document.getElementById('modelDiscontinued').checked = model.discontinued || false;
+  
+  const brandSelect = document.getElementById('modelBrand');
+  brandSelect.innerHTML = '<option value="">Select Brand</option>';
+  brands.filter(b => b.active).forEach(brand => {
+    brandSelect.innerHTML += `<option value="${brand.id}">${brand.name}</option>`;
+  });
+  brandSelect.value = model.brandId;
+  
+  document.getElementById('modelModal').classList.remove('hidden');
+}
+
+function deleteModel(id) {
+  if (!confirm('Are you sure you want to delete this model?')) {
+    return;
+  }
+  
+  models = models.filter(m => m.id !== id);
+  localStorage.setItem('brandModels', JSON.stringify(models));
+  showToast('Model deleted successfully', 'success');
+  updateTabContent();
+}
+
+function filterModels(searchTerm) {
+  // Implement model filtering logic
+  updateTabContent();
+}
+
+function filterModelsByBrand(brandId) {
+  // Implement brand-based filtering
+  updateTabContent();
+}
+
+function openAddProductModal() {
+  showToast('Product form needs to be redesigned. Use the Add Product page instead.', 'info');
+}
+
+  if (!models || models.length === 0) {
+    return '<tr><td colspan="6" class="text-center" style="padding: 48px;">No models found</td></tr>';
+  }
+  return models.map(model => {
+    const brand = brands.find(b => b.id === model.brandId);
+    return `
+      <tr>
+        <td>${brand?.name || '-'}</td>
+        <td><strong>${model.name}</strong></td>
+        <td class="font-mono">${model.modelNumber || '-'}</td>
+        <td>${model.launchDate || '-'}</td>
+        <td><span class="badge ${model.active ? 'badge-success' : 'badge-secondary'}">${model.active ? 'Active' : 'Inactive'}</span></td>
+        <td>
+          <div class="flex gap-2">
+            <button class="btn btn-outline btn-sm" onclick="editModel(${model.id})">Edit</button>
+            <button class="btn btn-error btn-sm" onclick="deleteModel(${model.id})">Delete</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
 function getCategoryColor(category) {
   const colors = {
     smartphone: 'primary',
@@ -213,36 +976,51 @@ export async function init(app) {
   try {
     products = await api.getProducts();
     filteredProducts = products;
-    updateProductsTable();
+    
+    // Load categories, brands, and models from localStorage
+    categories = JSON.parse(localStorage.getItem('categories') || '[]');
+    brands = JSON.parse(localStorage.getItem('brands') || '[]');
+    models = JSON.parse(localStorage.getItem('brandModels') || '[]');
+    
+    updateTabContent();
   } catch (error) {
     console.error('Failed to load products:', error);
     showToast('Failed to load products', 'error');
   }
 
   // Expose functions globally for onclick handlers
+  window.switchTab = switchTab;
   window.openAddProductModal = openAddProductModal;
-  window.closeProductModal = closeProductModal;
   window.saveProduct = saveProduct;
   window.editProduct = editProduct;
   window.deleteProduct = deleteProduct;
   window.filterProducts = filterProducts;
   window.setFilter = setFilter;
-  window.updateModelOptions = updateModelOptions;
-  window.calculateMarginFromPrice = calculateMarginFromPrice;
-  window.handleMarginChange = handleMarginChange;
-  window.recalculateAllPrices = recalculateAllPrices;
-  window.calculateGSTComponents = calculateGSTComponents;
-  window.incrementPriceQty = incrementPriceQty;
-  window.syncPriceInfoQty = syncPriceInfoQty;
-  window.updateProductAction = updateProductAction;
-  window.deleteProductAction = deleteProductAction;
-  window.getProductData = getProductData;
-  window.generateBarcode = generateBarcode;
-  window.handleProductImageSelect = handleProductImageSelect;
-  window.clearProductImage = clearProductImage;
-  window.showImageLibrary = showImageLibrary;
-  // window.handleImageSelect = handleImageSelect; // Removed
-  // window.updateImagePreview = updateImagePreview; // Removed
+  
+  // Category functions
+  window.openCategoryModal = openCategoryModal;
+  window.closeCategoryModal = closeCategoryModal;
+  window.saveCategory = saveCategory;
+  window.editCategory = editCategory;
+  window.deleteCategory = deleteCategory;
+  window.filterCategories = filterCategories;
+  
+  // Brand functions
+  window.openBrandModal = openBrandModal;
+  window.closeBrandModal = closeBrandModal;
+  window.saveBrand = saveBrand;
+  window.editBrand = editBrand;
+  window.deleteBrand = deleteBrand;
+  window.filterBrands = filterBrands;
+  
+  // Model functions
+  window.openModelModal = openModelModal;
+  window.closeModelModal = closeModelModal;
+  window.saveModel = saveModel;
+  window.editModel = editModel;
+  window.deleteModel = deleteModel;
+  window.filterModels = filterModels;
+  window.filterModelsByBrand = filterModelsByBrand;
 }
 
 function updateProductAction() {

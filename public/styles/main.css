@@ -197,6 +197,30 @@ h4 { font-size: 1rem; font-weight: 500; line-height: 1.5; margin-bottom: var(--s
 
 .search-input:focus {
   outline: none;
+
+
+.tab-button {
+  padding: 12px 24px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+
+.tab-button:hover {
+  color: var(--text-primary);
+  background: var(--hover);
+}
+
+.tab-button.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
   border-color: var(--primary);
   background: var(--bg-primary);
 }
