@@ -1035,7 +1035,8 @@ function renderProductsTab() {
 
     <!-- Search and Filters -->
     <div class="card mb-6">
-      <div class="flex gap-4 items-center">
+      <!-- Search Bar -->
+      <div class="flex gap-4 items-center mb-4">
         <div class="flex-1" style="position: relative; max-width: 600px;">
           <input 
             type="search" 
@@ -1057,44 +1058,145 @@ function renderProductsTab() {
             </svg>
           </button>
         </div>
-        <!-- Advanced Filter Button/UI would go here -->
         <button class="btn btn-outline" onclick="toggleAdvancedFilters()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M22 3H2L10 10.67V17l4 4v-6.33L22 3z"></path>
           </svg>
-          Filters
+          ${showAdvancedFilters ? 'Hide' : 'Show'} Filters
         </button>
-        <div style="display: flex; gap: 8px;">
-          <button 
-            class="btn ${currentFilter === 'all' ? 'btn-primary' : 'btn-outline'} btn-sm"
-            onclick="setFilter('all')"
-            data-testid="filter-all"
-          >
-            All
+        <div style="position: relative;">
+          <button class="btn btn-outline" onclick="togglePresetsMenu()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+            Saved Views
           </button>
-          <button 
-            class="btn ${currentFilter === 'smartphone' ? 'btn-primary' : 'btn-outline'} btn-sm"
-            onclick="setFilter('smartphone')"
-            data-testid="filter-smartphone"
-          >
-            Smartphones
-          </button>
-          <button 
-            class="btn ${currentFilter === 'accessory' ? 'btn-primary' : 'btn-outline'} btn-sm"
-            onclick="setFilter('accessory')"
-            data-testid="filter-accessory"
-          >
-            Accessories
-          </button>
-          <button 
-            class="btn ${currentFilter === 'low-stock' ? 'btn-primary' : 'btn-outline'} btn-sm"
-            onclick="setFilter('low-stock')"
-            data-testid="filter-low-stock"
-          >
-            Low Stock
-          </button>
+          ${renderPresetsMenu()}
         </div>
       </div>
+
+      <!-- Quick Filter Chips -->
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
+        <button class="btn btn-outline btn-sm" onclick="applyQuickFilter('all')">All Products</button>
+        <button class="btn btn-outline btn-sm" onclick="applyQuickFilter('low-stock')">Low Stock</button>
+        <button class="btn btn-outline btn-sm" onclick="applyQuickFilter('out-of-stock')">Out of Stock</button>
+        <button class="btn btn-outline btn-sm" onclick="applyQuickFilter('featured')">Featured</button>
+        <button class="btn btn-outline btn-sm" onclick="applyQuickFilter('new-arrivals')">New Arrivals</button>
+        <button class="btn btn-outline btn-sm" onclick="applyQuickFilter('high-value')">High Value (>₹50K)</button>
+        <button class="btn btn-outline btn-sm" onclick="applyQuickFilter('no-images')">No Images</button>
+      </div>
+
+      <!-- Main Filters -->
+      ${showAdvancedFilters ? `
+        <div style="padding: 16px; background: var(--bg-secondary); border-radius: 8px; margin-bottom: 16px;">
+          <div class="grid grid-cols-4 gap-4 mb-4">
+            <!-- Category Filter -->
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Category</label>
+              <select class="form-input" multiple id="categoryFilter" onchange="updateCategoryFilter()" style="height: 100px;">
+                ${categories.filter(c => c.active).map(c => `
+                  <option value="${c.name}" ${activeFilters.categories.includes(c.name) ? 'selected' : ''}>
+                    ${c.name}
+                  </option>
+                `).join('')}
+              </select>
+            </div>
+
+            <!-- Brand Filter -->
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Brand</label>
+              <select class="form-input" multiple id="brandFilter" onchange="updateBrandFilter()" style="height: 100px;">
+                ${brands.filter(b => b.active).map(b => `
+                  <option value="${b.name}" ${activeFilters.brands.includes(b.name) ? 'selected' : ''}>
+                    ${b.name}
+                  </option>
+                `).join('')}
+              </select>
+            </div>
+
+            <!-- Stock Status Filter -->
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Stock Status</label>
+              <select class="form-input" multiple id="stockStatusFilter" onchange="updateStockStatusFilter()" style="height: 100px;">
+                <option value="In Stock" ${activeFilters.stockStatus.includes('In Stock') ? 'selected' : ''}>In Stock</option>
+                <option value="Low Stock" ${activeFilters.stockStatus.includes('Low Stock') ? 'selected' : ''}>Low Stock</option>
+                <option value="Out of Stock" ${activeFilters.stockStatus.includes('Out of Stock') ? 'selected' : ''}>Out of Stock</option>
+                <option value="Overstock" ${activeFilters.stockStatus.includes('Overstock') ? 'selected' : ''}>Overstock</option>
+              </select>
+            </div>
+
+            <!-- Product Status Filter -->
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Product Status</label>
+              <select class="form-input" multiple id="productStatusFilter" onchange="updateProductStatusFilter()" style="height: 100px;">
+                <option value="active" ${activeFilters.productStatus.includes('active') ? 'selected' : ''}>Active</option>
+                <option value="inactive" ${activeFilters.productStatus.includes('inactive') ? 'selected' : ''}>Inactive</option>
+                <option value="draft" ${activeFilters.productStatus.includes('draft') ? 'selected' : ''}>Draft</option>
+                <option value="discontinued" ${activeFilters.productStatus.includes('discontinued') ? 'selected' : ''}>Discontinued</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Price Range -->
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Min Price</label>
+              <input type="number" class="form-input" id="minPrice" value="${activeFilters.priceRange.min}" onchange="updatePriceRange()" placeholder="0" />
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Max Price</label>
+              <input type="number" class="form-input" id="maxPrice" value="${activeFilters.priceRange.max}" onchange="updatePriceRange()" placeholder="1000000" />
+            </div>
+          </div>
+
+          <!-- Advanced Filters Toggle -->
+          <details style="margin-top: 16px;">
+            <summary style="cursor: pointer; font-weight: 500; margin-bottom: 16px;">Advanced Filters</summary>
+            <div class="grid grid-cols-3 gap-4">
+              <!-- Date Added -->
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Date Added From</label>
+                <input type="date" class="form-input" id="dateAddedStart" value="${activeFilters.dateAdded.start || ''}" onchange="updateDateRange()" />
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Date Added To</label>
+                <input type="date" class="form-input" id="dateAddedEnd" value="${activeFilters.dateAdded.end || ''}" onchange="updateDateRange()" />
+              </div>
+
+              <!-- Product Type -->
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Product Type</label>
+                <select class="form-input" multiple id="productTypeFilter" onchange="updateProductTypeFilter()" style="height: 80px;">
+                  <option value="simple" ${activeFilters.productType.includes('simple') ? 'selected' : ''}>Simple</option>
+                  <option value="variable" ${activeFilters.productType.includes('variable') ? 'selected' : ''}>Variable</option>
+                  <option value="bundle" ${activeFilters.productType.includes('bundle') ? 'selected' : ''}>Bundle</option>
+                  <option value="serial" ${activeFilters.productType.includes('serial') ? 'selected' : ''}>Serial Tracked</option>
+                </select>
+              </div>
+
+              <!-- Has Images -->
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Has Images</label>
+                <select class="form-input" id="hasImagesFilter" onchange="updateHasImagesFilter()">
+                  <option value="">All</option>
+                  <option value="true" ${activeFilters.hasImages === 'true' ? 'selected' : ''}>With Images</option>
+                  <option value="false" ${activeFilters.hasImages === 'false' ? 'selected' : ''}>Without Images</option>
+                </select>
+              </div>
+            </div>
+          </details>
+
+          <!-- Filter Actions -->
+          <div style="display: flex; gap: 8px; margin-top: 16px;">
+            <button class="btn btn-primary btn-sm" onclick="applyFilters()">Apply Filters</button>
+            <button class="btn btn-outline btn-sm" onclick="clearAllFilters()">Clear All</button>
+            <button class="btn btn-outline btn-sm" onclick="saveFilterPreset()">Save as Preset</button>
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- Active Filters Display -->
+      ${renderActiveFilters()}
     </div>
 
     <div class="table-container">
@@ -3449,19 +3551,27 @@ function viewProduct(productId) {
   }
 }
 
-// Placeholder for advanced filter state
+// Advanced filter state
 let activeFilters = {
   categories: [],
   brands: [],
   models: [],
-  stockStatus: [], // e.g., ['In Stock', 'Low Stock']
+  stockStatus: [],
   priceRange: { min: 0, max: 1000000 },
-  productStatus: [], // e.g., ['Active', 'Inactive']
-  productType: [], // e.g., ['simple', 'variable']
-  hasImages: null, // true, false, or null
+  suppliers: [],
+  locations: [],
+  productStatus: [],
   dateAdded: { start: null, end: null },
-  tags: []
+  tags: [],
+  productType: [],
+  hasImages: null,
+  warranty: null
 };
+
+// Filter presets
+let filterPresets = JSON.parse(localStorage.getItem('filterPresets') || '[]');
+let defaultPreset = localStorage.getItem('defaultPreset') || 'all-products';
+let showAdvancedFilters = false;
 
 function getProductStockStatus(product) {
   if (product.stockQuantity === 0) return 'Out of Stock';
@@ -3513,8 +3623,398 @@ function loadFiltersFromURL() {
 }
 
 function toggleAdvancedFilters() {
-  // This function would toggle the visibility of the advanced filter panel
-  alert('Advanced filters UI not yet implemented.');
+  showAdvancedFilters = !showAdvancedFilters;
+  updateTabContent();
+}
+
+function renderActiveFilters() {
+  const activeFilterChips = [];
+  
+  // Category filters
+  activeFilters.categories.forEach(cat => {
+    activeFilterChips.push(`
+      <span class="badge badge-primary" style="padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">
+        Category: ${cat}
+        <button onclick="removeFilter('categories', '${cat}')" style="background: none; border: none; cursor: pointer; padding: 0; color: inherit;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </span>
+    `);
+  });
+
+  // Brand filters
+  activeFilters.brands.forEach(brand => {
+    activeFilterChips.push(`
+      <span class="badge badge-primary" style="padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">
+        Brand: ${brand}
+        <button onclick="removeFilter('brands', '${brand}')" style="background: none; border: none; cursor: pointer; padding: 0; color: inherit;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </span>
+    `);
+  });
+
+  // Stock status filters
+  activeFilters.stockStatus.forEach(status => {
+    activeFilterChips.push(`
+      <span class="badge badge-warning" style="padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">
+        ${status}
+        <button onclick="removeFilter('stockStatus', '${status}')" style="background: none; border: none; cursor: pointer; padding: 0; color: inherit;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </span>
+    `);
+  });
+
+  // Product status filters
+  activeFilters.productStatus.forEach(status => {
+    activeFilterChips.push(`
+      <span class="badge badge-info" style="padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">
+        Status: ${status}
+        <button onclick="removeFilter('productStatus', '${status}')" style="background: none; border: none; cursor: pointer; padding: 0; color: inherit;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </span>
+    `);
+  });
+
+  // Price range
+  if (activeFilters.priceRange.min > 0 || activeFilters.priceRange.max < 1000000) {
+    activeFilterChips.push(`
+      <span class="badge badge-success" style="padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">
+        Price: ${formatCurrency(activeFilters.priceRange.min)} - ${formatCurrency(activeFilters.priceRange.max)}
+        <button onclick="removeFilter('priceRange', null)" style="background: none; border: none; cursor: pointer; padding: 0; color: inherit;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </span>
+    `);
+  }
+
+  // Product type filters
+  activeFilters.productType.forEach(type => {
+    activeFilterChips.push(`
+      <span class="badge badge-secondary" style="padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">
+        Type: ${type}
+        <button onclick="removeFilter('productType', '${type}')" style="background: none; border: none; cursor: pointer; padding: 0; color: inherit;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </span>
+    `);
+  });
+
+  // Has images filter
+  if (activeFilters.hasImages !== null) {
+    activeFilterChips.push(`
+      <span class="badge badge-info" style="padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">
+        ${activeFilters.hasImages === 'true' ? 'With Images' : 'Without Images'}
+        <button onclick="removeFilter('hasImages', null)" style="background: none; border: none; cursor: pointer; padding: 0; color: inherit;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </span>
+    `);
+  }
+
+  if (activeFilterChips.length === 0) {
+    return '';
+  }
+
+  return `
+    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 12px; background: var(--bg-secondary); border-radius: 8px; margin-top: 16px;">
+      <span style="font-size: 0.875rem; font-weight: 500; color: var(--text-secondary);">
+        Active Filters (${activeFilterChips.length}):
+      </span>
+      ${activeFilterChips.join('')}
+      <button class="btn btn-error btn-sm" onclick="clearAllFilters()">Clear All</button>
+    </div>
+  `;
+}
+
+function removeFilter(filterType, value) {
+  if (filterType === 'categories') {
+    activeFilters.categories = activeFilters.categories.filter(c => c !== value);
+  } else if (filterType === 'brands') {
+    activeFilters.brands = activeFilters.brands.filter(b => b !== value);
+  } else if (filterType === 'stockStatus') {
+    activeFilters.stockStatus = activeFilters.stockStatus.filter(s => s !== value);
+  } else if (filterType === 'productStatus') {
+    activeFilters.productStatus = activeFilters.productStatus.filter(s => s !== value);
+  } else if (filterType === 'productType') {
+    activeFilters.productType = activeFilters.productType.filter(t => t !== value);
+  } else if (filterType === 'priceRange') {
+    activeFilters.priceRange = { min: 0, max: 1000000 };
+  } else if (filterType === 'hasImages') {
+    activeFilters.hasImages = null;
+  }
+  
+  filterProducts();
+  updateTabContent();
+}
+
+function clearAllFilters() {
+  activeFilters = {
+    categories: [],
+    brands: [],
+    models: [],
+    stockStatus: [],
+    priceRange: { min: 0, max: 1000000 },
+    suppliers: [],
+    locations: [],
+    productStatus: [],
+    dateAdded: { start: null, end: null },
+    tags: [],
+    productType: [],
+    hasImages: null,
+    warranty: null
+  };
+  
+  document.getElementById('searchInput').value = '';
+  filterProducts();
+  updateTabContent();
+}
+
+function updateCategoryFilter() {
+  const select = document.getElementById('categoryFilter');
+  activeFilters.categories = Array.from(select.selectedOptions).map(opt => opt.value);
+  filterProducts();
+  updateTabContent();
+}
+
+function updateBrandFilter() {
+  const select = document.getElementById('brandFilter');
+  activeFilters.brands = Array.from(select.selectedOptions).map(opt => opt.value);
+  filterProducts();
+  updateTabContent();
+}
+
+function updateStockStatusFilter() {
+  const select = document.getElementById('stockStatusFilter');
+  activeFilters.stockStatus = Array.from(select.selectedOptions).map(opt => opt.value);
+  filterProducts();
+  updateTabContent();
+}
+
+function updateProductStatusFilter() {
+  const select = document.getElementById('productStatusFilter');
+  activeFilters.productStatus = Array.from(select.selectedOptions).map(opt => opt.value);
+  filterProducts();
+  updateTabContent();
+}
+
+function updatePriceRange() {
+  const min = parseFloat(document.getElementById('minPrice').value) || 0;
+  const max = parseFloat(document.getElementById('maxPrice').value) || 1000000;
+  activeFilters.priceRange = { min, max };
+  filterProducts();
+  updateTabContent();
+}
+
+function updateDateRange() {
+  activeFilters.dateAdded.start = document.getElementById('dateAddedStart').value;
+  activeFilters.dateAdded.end = document.getElementById('dateAddedEnd').value;
+  filterProducts();
+  updateTabContent();
+}
+
+function updateProductTypeFilter() {
+  const select = document.getElementById('productTypeFilter');
+  activeFilters.productType = Array.from(select.selectedOptions).map(opt => opt.value);
+  filterProducts();
+  updateTabContent();
+}
+
+function updateHasImagesFilter() {
+  const value = document.getElementById('hasImagesFilter').value;
+  activeFilters.hasImages = value || null;
+  filterProducts();
+  updateTabContent();
+}
+
+function applyFilters() {
+  filterProducts();
+  showToast('Filters applied', 'success');
+}
+
+function applyQuickFilter(type) {
+  clearAllFilters();
+  
+  switch (type) {
+    case 'all':
+      // No filters
+      break;
+    case 'low-stock':
+      activeFilters.stockStatus = ['Low Stock'];
+      break;
+    case 'out-of-stock':
+      activeFilters.stockStatus = ['Out of Stock'];
+      break;
+    case 'featured':
+      // Would filter by featured flag when implemented
+      break;
+    case 'new-arrivals':
+      // Filter last 30 days
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      activeFilters.dateAdded.start = thirtyDaysAgo.toISOString().split('T')[0];
+      break;
+    case 'high-value':
+      activeFilters.priceRange = { min: 50000, max: 1000000 };
+      break;
+    case 'no-images':
+      activeFilters.hasImages = 'false';
+      break;
+  }
+  
+  filterProducts();
+  updateTabContent();
+}
+
+// Filter Presets
+function renderPresetsMenu() {
+  const presets = [
+    { id: 'all-products', name: 'All Products', isDefault: true },
+    { id: 'low-stock', name: 'Low Stock Items', isDefault: true },
+    { id: 'mobile-phones', name: 'Mobile Phones Only', isDefault: true },
+    { id: 'high-value', name: 'High Value Items', isDefault: true },
+    ...filterPresets
+  ];
+
+  return `
+    <div id="presetsMenu" class="hidden" style="position: absolute; top: 100%; right: 0; margin-top: 4px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: var(--shadow-md); min-width: 220px; z-index: 100;">
+      ${presets.map(preset => `
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--border-color-light);">
+          <button onclick="loadFilterPreset('${preset.id}')" style="flex: 1; text-align: left; background: none; border: none; cursor: pointer; color: var(--text-primary);">
+            ${preset.name}
+            ${preset.id === defaultPreset ? '<span class="badge badge-primary" style="margin-left: 8px; font-size: 0.7rem;">Default</span>' : ''}
+          </button>
+          ${!preset.isDefault ? `
+            <div style="display: flex; gap: 4px;">
+              <button onclick="setDefaultPreset('${preset.id}')" class="btn btn-icon btn-sm" title="Set as default" style="width: 24px; height: 24px; padding: 0;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+              </button>
+              <button onclick="deleteFilterPreset('${preset.id}')" class="btn btn-icon btn-sm" title="Delete" style="width: 24px; height: 24px; padding: 0;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+          ` : ''}
+        </div>
+      `).join('')}
+      <div style="padding: 12px 16px; border-top: 1px solid var(--border-color);">
+        <button class="btn btn-outline btn-sm" style="width: 100%;" onclick="managePresets()">Manage Saved Views</button>
+      </div>
+    </div>
+  `;
+}
+
+function togglePresetsMenu() {
+  const menu = document.getElementById('presetsMenu');
+  if (menu) {
+    menu.classList.toggle('hidden');
+  }
+}
+
+function loadFilterPreset(presetId) {
+  togglePresetsMenu();
+  
+  // Clear current filters
+  clearAllFilters();
+  
+  // Apply preset
+  switch (presetId) {
+    case 'all-products':
+      // No filters
+      break;
+    case 'low-stock':
+      activeFilters.stockStatus = ['Low Stock'];
+      break;
+    case 'mobile-phones':
+      activeFilters.categories = ['Mobiles', 'Smartphones'];
+      break;
+    case 'high-value':
+      activeFilters.priceRange = { min: 50000, max: 1000000 };
+      break;
+    default:
+      // Load custom preset
+      const preset = filterPresets.find(p => p.id === presetId);
+      if (preset) {
+        activeFilters = { ...preset.filters };
+      }
+      break;
+  }
+  
+  filterProducts();
+  updateTabContent();
+  showToast(`Loaded preset: ${presetId}`, 'success');
+}
+
+function saveFilterPreset() {
+  const name = prompt('Enter a name for this filter preset:');
+  if (!name) return;
+  
+  const preset = {
+    id: 'custom-' + Date.now(),
+    name: name,
+    filters: { ...activeFilters },
+    isDefault: false
+  };
+  
+  filterPresets.push(preset);
+  localStorage.setItem('filterPresets', JSON.stringify(filterPresets));
+  
+  showToast('Filter preset saved', 'success');
+  updateTabContent();
+}
+
+function setDefaultPreset(presetId) {
+  defaultPreset = presetId;
+  localStorage.setItem('defaultPreset', presetId);
+  showToast('Default preset updated', 'success');
+  updateTabContent();
+}
+
+function deleteFilterPreset(presetId) {
+  if (!confirm('Delete this preset?')) return;
+  
+  filterPresets = filterPresets.filter(p => p.id !== presetId);
+  localStorage.setItem('filterPresets', JSON.stringify(filterPresets));
+  
+  if (defaultPreset === presetId) {
+    defaultPreset = 'all-products';
+    localStorage.setItem('defaultPreset', defaultPreset);
+  }
+  
+  showToast('Preset deleted', 'success');
+  updateTabContent();
+}
+
+function managePresets() {
+  togglePresetsMenu();
+  showToast('Preset management panel coming soon', 'info');
 }
 
 
@@ -3631,10 +4131,45 @@ export async function init(app) {
   window.handleImageDragOver = handleImageDragOver;
   window.handleImageDrop = handleImageDrop;
   window.loadBrandModels = loadBrandModels;
-  window.toggleAdvancedFilters = toggleAdvancedFilters; // Expose the new function
+  window.toggleAdvancedFilters = toggleAdvancedFilters;
+  window.renderActiveFilters = renderActiveFilters;
+  window.removeFilter = removeFilter;
+  window.clearAllFilters = clearAllFilters;
+  window.updateCategoryFilter = updateCategoryFilter;
+  window.updateBrandFilter = updateBrandFilter;
+  window.updateStockStatusFilter = updateStockStatusFilter;
+  window.updateProductStatusFilter = updateProductStatusFilter;
+  window.updatePriceRange = updatePriceRange;
+  window.updateDateRange = updateDateRange;
+  window.updateProductTypeFilter = updateProductTypeFilter;
+  window.updateHasImagesFilter = updateHasImagesFilter;
+  window.applyFilters = applyFilters;
+  window.applyQuickFilter = applyQuickFilter;
+  window.togglePresetsMenu = togglePresetsMenu;
+  window.loadFilterPreset = loadFilterPreset;
+  window.saveFilterPreset = saveFilterPreset;
+  window.setDefaultPreset = setDefaultPreset;
+  window.deleteFilterPreset = deleteFilterPreset;
+  window.managePresets = managePresets;
 
   // Load filters from URL on initialization
   loadFiltersFromURL();
+  
+  // Load default preset on first load
+  if (defaultPreset && defaultPreset !== 'all-products') {
+    loadFilterPreset(defaultPreset);
+  }
+  
+  // Close presets menu when clicking outside
+  document.addEventListener('click', (e) => {
+    const presetsMenu = document.getElementById('presetsMenu');
+    if (presetsMenu && !presetsMenu.classList.contains('hidden')) {
+      const target = e.target;
+      if (!target.closest('#presetsMenu') && !target.closest('button[onclick="togglePresetsMenu()"]')) {
+        presetsMenu.classList.add('hidden');
+      }
+    }
+  });
 
   // Load initial data
   try {
