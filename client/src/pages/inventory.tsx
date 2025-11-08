@@ -72,13 +72,18 @@ export default function Inventory() {
     const query = searchQuery.toLowerCase().trim();
     if (!query) return true;
     
+    const name = p.name?.toLowerCase() || '';
+    const brand = p.brand?.toLowerCase() || '';
+    const model = p.model?.toLowerCase() || '';
+    const category = p.category?.toLowerCase() || '';
+    const imei = p.imeiNumber?.toLowerCase() || '';
+    
     return (
-      (p.name && p.name.toLowerCase().includes(query)) ||
-      (p.brand && p.brand.toLowerCase().includes(query)) ||
-      (p.model && p.model.toLowerCase().includes(query)) ||
-      (p.productCode && p.productCode.toLowerCase().includes(query)) ||
-      (p.imeiNumber && p.imeiNumber.toLowerCase().includes(query)) ||
-      (p.category && p.category.toLowerCase().includes(query))
+      name.includes(query) ||
+      brand.includes(query) ||
+      model.includes(query) ||
+      category.includes(query) ||
+      imei.includes(query)
     );
   });
 
