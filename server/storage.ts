@@ -23,7 +23,7 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  
+
   // Product operations
   getProducts(filters?: any): Promise<Product[]>;
   getProduct(id: number): Promise<Product | undefined>;
@@ -31,20 +31,20 @@ export interface IStorage {
   updateProduct(id: number, product: Partial<InsertProduct>): Promise<Product | undefined>;
   deleteProduct(id: number): Promise<boolean>;
   getLowStockProducts(): Promise<Product[]>;
-  
+
   // Customer operations
   getCustomers(filters?: any): Promise<Customer[]>;
   getCustomer(id: number): Promise<Customer | undefined>;
   createCustomer(customer: InsertCustomer): Promise<Customer>;
   updateCustomer(id: number, customer: Partial<InsertCustomer>): Promise<Customer | undefined>;
   getCustomerPurchases(customerId: number): Promise<Sale[]>;
-  
+
   // Sales operations
   createSale(saleData: InsertSale & { items: InsertSaleItem[] }): Promise<Sale>;
   getSales(filters?: any): Promise<Sale[]>;
   getSale(id: number): Promise<Sale | undefined>;
   getSaleWithItems(id: number): Promise<(Sale & { items: any[] }) | undefined>;
-  
+
   // Reports
   getDashboardStats(): Promise<any>;
   getSalesReport(startDate: string, endDate: string): Promise<any>;
@@ -75,11 +75,11 @@ export class DatabaseStorage implements IStorage {
   // Product operations
   async getProducts(filters?: any): Promise<Product[]> {
     let query = db.select().from(products);
-    
+
     if (filters?.isActive !== undefined) {
       query = query.where(eq(products.isActive, filters.isActive)) as any;
     }
-    
+
     const result = await query.orderBy(desc(products.createdAt));
     return result;
   }
@@ -90,11 +90,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createProduct(product: InsertProduct): Promise<Product> {
-    const [newProduct] = await db
-      .insert(products)
-      .values(product)
-      .returning();
-    return newProduct;
+    console.log('Creating product with data:', product);
+    try {
+      const [newProduct] = await db
+        .insert(products)
+        .values(product)
+        .returning();
+      console.log('Product created successfully:', newProduct);
+      return newProduct;
+    } catch (error) {
+      console.error('Error creating product:', error);
+      throw error;
+    }
   }
 
   async updateProduct(id: number, product: Partial<InsertProduct>): Promise<Product | undefined> {
@@ -129,11 +136,11 @@ export class DatabaseStorage implements IStorage {
   // Customer operations
   async getCustomers(filters?: any): Promise<Customer[]> {
     let query = db.select().from(customers);
-    
+
     if (filters?.phone) {
       query = query.where(eq(customers.phone, filters.phone)) as any;
     }
-    
+
     const result = await query.orderBy(desc(customers.createdAt));
     return result;
   }
@@ -172,7 +179,7 @@ export class DatabaseStorage implements IStorage {
   // Sales operations
   async createSale(saleData: InsertSale & { items: InsertSaleItem[] }): Promise<Sale> {
     const { items, ...saleInfo } = saleData;
-    
+
     // Use database transaction to ensure atomicity
     const result = await db.transaction(async (tx) => {
       // Insert sale
@@ -180,16 +187,16 @@ export class DatabaseStorage implements IStorage {
         .insert(sales)
         .values(saleInfo)
         .returning();
-      
+
       // Insert sale items
       if (items && items.length > 0) {
         const saleItemsWithSaleId = items.map(item => ({
           ...item,
           saleId: sale.id,
         }));
-        
+
         await tx.insert(saleItems).values(saleItemsWithSaleId);
-        
+
         // Update product stock for all items
         for (const item of items) {
           await tx
@@ -199,7 +206,7 @@ export class DatabaseStorage implements IStorage {
             })
             .where(eq(products.id, item.productId));
         }
-        
+
         // Update customer total purchases if customer exists
         if (sale.customerId) {
           await tx
@@ -211,16 +218,16 @@ export class DatabaseStorage implements IStorage {
             .where(eq(customers.id, sale.customerId));
         }
       }
-      
+
       return sale;
     });
-    
+
     return result;
   }
 
   async getSales(filters?: any): Promise<Sale[]> {
     let query = db.select().from(sales);
-    
+
     if (filters?.startDate && filters?.endDate) {
       query = query.where(
         and(
@@ -229,20 +236,20 @@ export class DatabaseStorage implements IStorage {
         )
       ) as any;
     }
-    
+
     const result = await query.orderBy(desc(sales.createdAt));
-    
+
     // Add item count and customer name
     const salesWithDetails = await Promise.all(
       result.map(async (sale) => {
         const items = await db.select().from(saleItems).where(eq(saleItems.saleId, sale.id));
-        
+
         let customerName = null;
         if (sale.customerId) {
           const [customer] = await db.select().from(customers).where(eq(customers.id, sale.customerId));
           customerName = customer?.name || null;
         }
-        
+
         return {
           ...sale,
           itemCount: items.length,
@@ -250,7 +257,7 @@ export class DatabaseStorage implements IStorage {
         };
       })
     );
-    
+
     return salesWithDetails as any;
   }
 
@@ -262,7 +269,7 @@ export class DatabaseStorage implements IStorage {
   async getSaleWithItems(id: number): Promise<(Sale & { items: any[] }) | undefined> {
     const [sale] = await db.select().from(sales).where(eq(sales.id, id));
     if (!sale) return undefined;
-    
+
     const items = await db
       .select({
         id: saleItems.id,
@@ -275,13 +282,13 @@ export class DatabaseStorage implements IStorage {
       .from(saleItems)
       .leftJoin(products, eq(saleItems.productId, products.id))
       .where(eq(saleItems.saleId, id));
-    
+
     let customerName = null;
     if (sale.customerId) {
       const [customer] = await db.select().from(customers).where(eq(customers.id, sale.customerId));
       customerName = customer?.name || null;
     }
-    
+
     return {
       ...sale,
       customerName,
@@ -294,7 +301,7 @@ export class DatabaseStorage implements IStorage {
     // Today's sales
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     const [todaySalesResult] = await db
       .select({
         total: sql<number>`COALESCE(SUM(${sales.totalAmount}), 0)`,
@@ -302,17 +309,17 @@ export class DatabaseStorage implements IStorage {
       })
       .from(sales)
       .where(gte(sales.createdAt, today));
-    
+
     // Monthly revenue
     const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-    
+
     const [monthlyRevenueResult] = await db
       .select({
         total: sql<number>`COALESCE(SUM(${sales.totalAmount}), 0)`,
       })
       .from(sales)
       .where(gte(sales.createdAt, monthStart));
-    
+
     // Total products and low stock count
     const [productsStats] = await db
       .select({
@@ -320,16 +327,16 @@ export class DatabaseStorage implements IStorage {
       })
       .from(products)
       .where(eq(products.isActive, true));
-    
+
     const lowStockProducts = await this.getLowStockProducts();
-    
+
     // Total customers
     const [customersStats] = await db
       .select({
         total: count(),
       })
       .from(customers);
-    
+
     // New customers this month
     const [newCustomersResult] = await db
       .select({
@@ -337,19 +344,19 @@ export class DatabaseStorage implements IStorage {
       })
       .from(customers)
       .where(gte(customers.createdAt, monthStart));
-    
+
     // Sales data for chart (last 7 days)
     const salesData = {
       labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
       values: [12000, 15000, 13000, 18000, 22000, 25000, Number(todaySalesResult.total) || 28000],
     };
-    
+
     // Top products (mock data for now)
     const topProducts = {
       labels: ['iPhone 14', 'Samsung S23', 'OnePlus 11', 'Redmi Note 12', 'Realme 10'],
       values: [45, 38, 32, 28, 24],
     };
-    
+
     return {
       todaySales: Number(todaySalesResult.total) || 0,
       salesGrowth: 15,
@@ -375,19 +382,19 @@ export class DatabaseStorage implements IStorage {
           lte(sales.createdAt, new Date(endDate))
         )
       );
-    
+
     const totalSales = salesInPeriod.length;
     const totalRevenue = salesInPeriod.reduce((sum, sale) => sum + Number(sale.totalAmount), 0);
     const totalProfit = salesInPeriod.reduce((sum, sale) => sum + (Number(sale.totalAmount) - Number(sale.subtotal) * 0.7), 0);
     const avgOrderValue = totalSales > 0 ? totalRevenue / totalSales : 0;
-    
+
     // Top products (mock data)
     const topProducts = [
       { id: 1, name: 'iPhone 14 Pro', unitsSold: 45, revenue: 2250000, profit: 450000 },
       { id: 2, name: 'Samsung Galaxy S23', unitsSold: 38, revenue: 1900000, profit: 380000 },
       { id: 3, name: 'OnePlus 11', unitsSold: 32, revenue: 1600000, profit: 320000 },
     ];
-    
+
     return {
       totalSales,
       totalRevenue,
@@ -400,11 +407,11 @@ export class DatabaseStorage implements IStorage {
   async getInventoryReport(): Promise<any> {
     const allProducts = await this.getProducts({ isActive: true });
     const lowStockProducts = await this.getLowStockProducts();
-    
+
     const totalProducts = allProducts.length;
     const totalStock = allProducts.reduce((sum, p) => sum + (p.stockQuantity || 0), 0);
     const stockValue = allProducts.reduce((sum, p) => sum + (Number(p.costPrice) * (p.stockQuantity || 0)), 0);
-    
+
     return {
       totalProducts,
       totalStock,
@@ -416,10 +423,10 @@ export class DatabaseStorage implements IStorage {
 
   async getCustomerReport(): Promise<any> {
     const allCustomers = await this.getCustomers();
-    
+
     const totalCustomers = allCustomers.length;
     const avgCustomerValue = allCustomers.reduce((sum, c) => sum + Number(c.totalPurchases), 0) / (totalCustomers || 1);
-    
+
     // Top customers
     const topCustomers = allCustomers
       .sort((a, b) => Number(b.totalPurchases) - Number(a.totalPurchases))
@@ -428,7 +435,7 @@ export class DatabaseStorage implements IStorage {
         ...c,
         lastPurchase: new Date(),
       }));
-    
+
     return {
       totalCustomers,
       newCustomers: 0,

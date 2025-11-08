@@ -35,8 +35,10 @@ export default function Inventory() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const { data: products = [] } = useQuery<Product[]>({
+  const { data: products = [], refetch } = useQuery<Product[]>({
     queryKey: ["/api/products"],
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   const form = useForm({

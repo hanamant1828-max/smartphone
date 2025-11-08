@@ -40,7 +40,19 @@ export default function AddProduct() {
 
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
-      const res = await apiRequest("POST", "/api/products", data);
+      // Ensure all numeric fields are properly formatted
+      const productData = {
+        ...data,
+        price: parseFloat(data.price) || 0,
+        costPrice: parseFloat(data.costPrice) || 0,
+        stockQuantity: parseInt(data.stockQuantity) || 0,
+        minStockLevel: parseInt(data.minStockLevel) || 5,
+        warrantyMonths: parseInt(data.warrantyMonths) || 12,
+        isActive: true,
+      };
+      
+      console.log('Sending product data:', productData);
+      const res = await apiRequest("POST", "/api/products", productData);
       if (!res.ok) {
         const error = await res.json();
         throw new Error(error.message || "Failed to create product");
@@ -54,6 +66,7 @@ export default function AddProduct() {
       setLocation("/inventory");
     },
     onError: (error: Error) => {
+      console.error('Create product error:', error);
       toast({ 
         title: "Failed to add product", 
         description: error.message,
