@@ -49,7 +49,10 @@ export default function AddProduct() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
       toast({ title: "Product added successfully" });
-      setLocation("/inventory");
+      form.reset();
+      setTimeout(() => {
+        setLocation("/inventory");
+      }, 100);
     },
     onError: (error: Error) => {
       toast({ 
@@ -60,8 +63,12 @@ export default function AddProduct() {
     },
   });
 
-  const onSubmit = (data: any) => {
-    createMutation.mutate(data);
+  const onSubmit = async (data: any) => {
+    try {
+      await createMutation.mutateAsync(data);
+    } catch (error) {
+      console.error('Submit error:', error);
+    }
   };
 
   return (
