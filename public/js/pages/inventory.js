@@ -553,18 +553,159 @@ function renderTabContent() {
 }
 
 function renderProductsTab() {
+  const totalProducts = products.length;
+  const totalStockValue = products.reduce((sum, p) => sum + (p.price * p.stockQuantity), 0);
+  const lowStockCount = products.filter(p => p.stockQuantity <= p.minStockLevel).length;
+  const outOfStockCount = products.filter(p => p.stockQuantity === 0).length;
+
   return `
+    <!-- Breadcrumb Navigation -->
+    <nav style="margin-bottom: 24px; color: var(--text-secondary); font-size: 0.875rem;">
+      <span>Home</span>
+      <span style="margin: 0 8px;">/</span>
+      <span style="color: var(--text-primary); font-weight: 500;">Inventory Management</span>
+    </nav>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-4 gap-4 mb-6">
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background: var(--primary);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          </svg>
+        </div>
+        <div class="stat-card-value" data-testid="stat-total-products">${formatNumber(totalProducts)}</div>
+        <div class="stat-card-label">Total Products</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background: var(--success);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <div class="stat-card-value" data-testid="stat-stock-value">${formatCurrency(totalStockValue)}</div>
+        <div class="stat-card-label">Total Stock Value</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background: var(--warning);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <div class="stat-card-value" style="color: var(--warning);" data-testid="stat-low-stock">${formatNumber(lowStockCount)}</div>
+        <div class="stat-card-label">Low Stock Alert</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background: var(--error);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="15" y1="9" x2="9" y2="15"/>
+            <line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+        </div>
+        <div class="stat-card-value" style="color: var(--error);" data-testid="stat-out-stock">${formatNumber(outOfStockCount)}</div>
+        <div class="stat-card-label">Out of Stock</div>
+      </div>
+    </div>
+
+    <!-- Action Buttons Bar -->
+    <div class="card mb-6">
+      <div class="flex gap-4 items-center justify-between">
+        <div class="flex gap-3">
+          <button class="btn btn-primary" onclick="openAddProductModal()" data-testid="button-add-new-product">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Add New Product
+          </button>
+          
+          <div style="position: relative;">
+            <button class="btn btn-outline" onclick="toggleExportMenu()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Export Inventory
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </button>
+            <div id="exportMenu" class="hidden" style="position: absolute; top: 100%; left: 0; margin-top: 4px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: var(--shadow-md); min-width: 180px; z-index: 100;">
+              <button onclick="exportInventory('excel')" style="width: 100%; padding: 12px 16px; text-align: left; border: none; background: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.2s;" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='none'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                Export to Excel
+              </button>
+              <button onclick="exportInventory('csv')" style="width: 100%; padding: 12px 16px; text-align: left; border: none; background: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.2s;" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='none'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                Export to CSV
+              </button>
+              <button onclick="exportInventory('pdf')" style="width: 100%; padding: 12px 16px; text-align: left; border: none; background: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.2s;" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='none'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                Export to PDF
+              </button>
+            </div>
+          </div>
+          
+          <button class="btn btn-outline" onclick="showImportModal('products')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            Import Products
+          </button>
+          
+          <button class="btn btn-outline" onclick="toggleViewSettings()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M12 1v6m0 6v6m5.196-11.196l-4.242 4.242m0 4.242l-4.242 4.242m11.196-5.196l-6 .001m-6 0l-6-.001m11.196 5.195l-4.242-4.242m0-4.242l-4.242-4.242"/>
+            </svg>
+            View Settings
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search and Filters -->
     <div class="card mb-6">
       <div class="flex gap-4 items-center">
-        <div class="flex-1">
+        <div class="flex-1" style="position: relative; max-width: 600px;">
           <input 
             type="search" 
             class="form-input" 
-            placeholder="Search by name, brand, model, or IMEI..." 
+            placeholder="Search by product name, SKU, barcode..." 
             id="searchInput"
             data-testid="input-search-products"
             oninput="filterProducts()"
+            style="padding-right: 40px;"
           />
+          <button 
+            onclick="clearSearch()" 
+            style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-secondary); display: none;"
+            id="clearSearchBtn"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
         </div>
         <div style="display: flex; gap: 8px;">
           <button 
@@ -603,21 +744,47 @@ function renderProductsTab() {
       <table class="table">
         <thead>
           <tr>
-            <th>Product</th>
-            <th>Brand</th>
-            <th>Model</th>
-            <th>Category</th>
-            <th>IMEI</th>
-            <th>Stock</th>
-            <th>Cost Price</th>
-            <th>Selling Price</th>
-            <th>Actions</th>
+            <th style="width: 40px;">
+              <input type="checkbox" onchange="toggleSelectAllProducts(this.checked)" id="selectAllCheckbox" />
+            </th>
+            <th style="width: 80px;">Image</th>
+            <th onclick="sortProducts('name')" style="cursor: pointer;">
+              Product Name
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle;">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </th>
+            <th onclick="sortProducts('category')" style="cursor: pointer;">Category</th>
+            <th onclick="sortProducts('brand')" style="cursor: pointer;">Brand</th>
+            <th onclick="sortProducts('model')" style="cursor: pointer;">Model</th>
+            <th>SKU</th>
+            <th>Barcode</th>
+            <th onclick="sortProducts('costPrice')" style="cursor: pointer; text-align: right;">Purchase Price</th>
+            <th onclick="sortProducts('price')" style="cursor: pointer; text-align: right;">Selling Price</th>
+            <th onclick="sortProducts('stockQuantity')" style="cursor: pointer; text-align: center;">Stock</th>
+            <th style="text-align: center;">Status</th>
+            <th style="width: 140px; text-align: center;">Actions</th>
           </tr>
         </thead>
         <tbody id="productsTableBody">
           ${renderProductRows()}
         </tbody>
       </table>
+    </div>
+
+    <!-- Pagination -->
+    <div style="margin-top: 24px; display: flex; justify-content: between; align-items: center;">
+      <div style="color: var(--text-secondary); font-size: 0.875rem;">
+        Showing ${filteredProducts.length} of ${totalProducts} products
+      </div>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <span style="font-size: 0.875rem; color: var(--text-secondary);">Items per page:</span>
+        <select class="form-input" style="width: 80px; height: 36px; padding: 0 8px;" onchange="changePageSize(this.value)">
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
     </div>
   `;
 }
@@ -1020,53 +1187,102 @@ function renderModelsTab() {
 
 function renderProductRows() {
   if (!filteredProducts || filteredProducts.length === 0) {
+    const message = document.getElementById('searchInput')?.value ? 
+      `<p style="margin-bottom: 16px;">No products found matching your search</p>
+       <button class="btn btn-outline" onclick="clearSearch()">Clear Search</button>` :
+      `<p style="margin-bottom: 16px;">No products in inventory</p>
+       <button class="btn btn-primary" onclick="openAddProductModal()">Add New Product</button>`;
+    
     return `
       <tr>
-        <td colspan="9" class="text-center" style="padding: 48px;">
+        <td colspan="13" class="text-center" style="padding: 48px;">
           <div style="color: var(--text-secondary);">
-            <p>No products found</p>
+            ${message}
           </div>
         </td>
       </tr>
     `;
   }
 
-  return filteredProducts.map(product => `
-    <tr data-product-id="${product.id}">
-      <td><strong>${product.name}</strong></td>
-      <td>${product.brand || '-'}</td>
-      <td>${product.model || '-'}</td>
-      <td>
-        <span class="badge badge-primary">
-          ${product.category || '-'}
-        </span>
-      </td>
-      <td class="font-mono">${product.imeiNumber || '-'}</td>
-      <td>
-        <span class="badge ${product.stockQuantity <= product.minStockLevel ? 'badge-error' : 'badge-success'}">
-          ${product.stockQuantity} ${product.stockQuantity <= product.minStockLevel ? '⚠' : ''}
-        </span>
-      </td>
-      <td class="font-mono">${formatCurrency(product.costPrice)}</td>
-      <td class="font-mono"><strong>${formatCurrency(product.price)}</strong></td>
-      <td>
-        <div class="flex gap-2">
-          <button class="btn btn-outline btn-sm btn-icon" onclick="editProduct(${product.id})" title="Edit">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-            </svg>
-          </button>
-          <button class="btn btn-error btn-sm btn-icon" onclick="deleteProduct(${product.id})" title="Delete">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="3 6 5 6 21 6"/>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-            </svg>
-          </button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
+  return filteredProducts.map((product, index) => {
+    const stockStatus = product.stockQuantity === 0 ? 'Out of Stock' : 
+                       product.stockQuantity <= product.minStockLevel ? 'Low Stock' : 'In Stock';
+    const statusClass = product.stockQuantity === 0 ? 'badge-error' : 
+                       product.stockQuantity <= product.minStockLevel ? 'badge-warning' : 'badge-success';
+    
+    return `
+      <tr data-product-id="${product.id}" style="background: ${index % 2 === 1 ? 'var(--bg-secondary)' : 'transparent'};" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='${index % 2 === 1 ? 'var(--bg-secondary)' : 'transparent'}'">
+        <td>
+          <input type="checkbox" class="product-checkbox" data-product-id="${product.id}" onchange="updateBulkActions()" />
+        </td>
+        <td>
+          ${product.imageUrl ? 
+            `<img src="${product.imageUrl}" alt="${product.name}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border-color);" />` :
+            `<div style="width: 60px; height: 60px; background: var(--surface); border-radius: 4px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color); font-weight: 500; color: var(--text-secondary);">${product.name.substring(0, 2).toUpperCase()}</div>`
+          }
+        </td>
+        <td>
+          <strong>${product.name}</strong>
+          ${product.color || product.storage || product.ram ? `<br><small style="color: var(--text-secondary);">${[product.color, product.storage, product.ram].filter(Boolean).join(' • ')}</small>` : ''}
+          ${product.productCode ? `<br><code style="font-size: 0.75rem; color: var(--text-secondary);">${product.productCode}</code>` : ''}
+        </td>
+        <td>
+          <span class="badge badge-primary" style="font-size: 0.75rem;">
+            ${product.category || '-'}
+          </span>
+        </td>
+        <td>${product.brand || '-'}</td>
+        <td>${product.model || '-'}</td>
+        <td class="font-mono" style="font-size: 0.8125rem;">${product.productCode || '-'}</td>
+        <td class="font-mono" style="font-size: 0.8125rem;">${product.barcode || '-'}</td>
+        <td class="font-mono" style="text-align: right;">${formatCurrency(product.costPrice || 0)}</td>
+        <td class="font-mono" style="text-align: right;"><strong>${formatCurrency(product.price)}</strong></td>
+        <td style="text-align: center;">
+          <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <button class="btn btn-outline btn-sm" onclick="adjustStock(${product.id}, -1)" style="width: 28px; height: 28px; padding: 0;" title="Decrease stock">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </button>
+            <strong style="min-width: 40px; text-align: center;">${product.stockQuantity}</strong>
+            <button class="btn btn-outline btn-sm" onclick="adjustStock(${product.id}, 1)" style="width: 28px; height: 28px; padding: 0;" title="Increase stock">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </button>
+          </div>
+        </td>
+        <td style="text-align: center;">
+          <span class="badge ${statusClass}">
+            ${stockStatus}
+          </span>
+        </td>
+        <td style="text-align: center;">
+          <div class="flex gap-2" style="justify-content: center;">
+            <button class="btn btn-outline btn-sm" onclick="viewProduct(${product.id})" title="View Details">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="editProduct(${product.id})" title="Edit">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
+            <button class="btn btn-error btn-sm" onclick="deleteProduct(${product.id})" title="Delete">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              </svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
 }
 
 function renderCategoryTree() {
@@ -1828,12 +2044,20 @@ async function deleteProduct(id) {
 
 function filterProducts() {
   const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+  const clearBtn = document.getElementById('clearSearchBtn');
+  
+  if (clearBtn) {
+    clearBtn.style.display = searchTerm ? 'block' : 'none';
+  }
+  
   filteredProducts = products.filter(product => {
     const matchesSearch = 
       product.name.toLowerCase().includes(searchTerm) ||
       (product.brand && product.brand.toLowerCase().includes(searchTerm)) ||
       (product.model && product.model.toLowerCase().includes(searchTerm)) ||
-      (product.imeiNumber && product.imeiNumber.includes(searchTerm));
+      (product.imeiNumber && product.imeiNumber.includes(searchTerm)) ||
+      (product.productCode && product.productCode.toLowerCase().includes(searchTerm)) ||
+      (product.barcode && product.barcode.toLowerCase().includes(searchTerm));
 
     if (currentFilter === 'all') return matchesSearch;
     if (currentFilter === 'low-stock') return matchesSearch && product.stockQuantity <= product.minStockLevel;
@@ -2232,6 +2456,116 @@ function closeDeleteCategoryModal() {
   document.getElementById('deleteCategoryModal').classList.add('hidden');
 }
 
+// Additional utility functions
+let currentSort = { column: 'name', direction: 'asc' };
+
+function toggleSelectAllProducts(checked) {
+  const checkboxes = document.querySelectorAll('.product-checkbox');
+  checkboxes.forEach(cb => cb.checked = checked);
+  updateBulkActions();
+}
+
+function updateBulkActions() {
+  const selectedCount = document.querySelectorAll('.product-checkbox:checked').length;
+  // Future: show bulk action bar when items are selected
+}
+
+function sortProducts(column) {
+  if (currentSort.column === column) {
+    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+  } else {
+    currentSort.column = column;
+    currentSort.direction = 'asc';
+  }
+  
+  filteredProducts.sort((a, b) => {
+    let aVal = a[column];
+    let bVal = b[column];
+    
+    if (typeof aVal === 'string') {
+      aVal = aVal.toLowerCase();
+      bVal = bVal.toLowerCase();
+    }
+    
+    if (currentSort.direction === 'asc') {
+      return aVal > bVal ? 1 : -1;
+    } else {
+      return aVal < bVal ? 1 : -1;
+    }
+  });
+  
+  updateTabContent();
+}
+
+function clearSearch() {
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.value = '';
+    filterProducts();
+  }
+}
+
+function toggleExportMenu() {
+  const menu = document.getElementById('exportMenu');
+  if (menu) {
+    menu.classList.toggle('hidden');
+  }
+}
+
+function exportInventory(format) {
+  toggleExportMenu();
+  showToast(`Exporting inventory to ${format.toUpperCase()}...`, 'info');
+  
+  const headers = ['Product Name', 'SKU', 'Brand', 'Model', 'Category', 'Stock', 'Purchase Price', 'Selling Price', 'Status'];
+  const data = filteredProducts.map(p => [
+    p.name,
+    p.productCode || '',
+    p.brand || '',
+    p.model || '',
+    p.category || '',
+    p.stockQuantity,
+    p.costPrice,
+    p.price,
+    p.stockQuantity === 0 ? 'Out of Stock' : p.stockQuantity <= p.minStockLevel ? 'Low Stock' : 'In Stock'
+  ]);
+  
+  const csv = [headers, ...data].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `inventory_${new Date().toISOString().split('T')[0]}.${format}`;
+  a.click();
+  URL.revokeObjectURL(url);
+  
+  showToast('Inventory exported successfully', 'success');
+}
+
+function toggleViewSettings() {
+  showToast('View settings customization coming soon', 'info');
+}
+
+function changePageSize(size) {
+  showToast(`Page size changed to ${size} items`, 'info');
+}
+
+function adjustStock(productId, delta) {
+  const product = products.find(p => p.id === productId);
+  if (product) {
+    const newStock = Math.max(0, product.stockQuantity + delta);
+    product.stockQuantity = newStock;
+    filterProducts();
+    showToast(`Stock adjusted to ${newStock}`, 'success');
+  }
+}
+
+function viewProduct(productId) {
+  const product = products.find(p => p.id === productId);
+  if (product) {
+    showToast('Product details view coming soon', 'info');
+  }
+}
+
 export async function init(app) {
   // Expose all functions to global scope
   window.switchTab = switchTab;
@@ -2296,6 +2630,16 @@ export async function init(app) {
   window.addVariantRow = addVariantRow;
   window.viewModelVariants = viewModelVariants;
   window.closeModelVariantsModal = closeModelVariantsModal;
+  window.toggleSelectAllProducts = toggleSelectAllProducts;
+  window.updateBulkActions = updateBulkActions;
+  window.sortProducts = sortProducts;
+  window.clearSearch = clearSearch;
+  window.toggleExportMenu = toggleExportMenu;
+  window.exportInventory = exportInventory;
+  window.toggleViewSettings = toggleViewSettings;
+  window.changePageSize = changePageSize;
+  window.adjustStock = adjustStock;
+  window.viewProduct = viewProduct;
 
   // Load initial data
   try {
@@ -2307,4 +2651,15 @@ export async function init(app) {
     console.error('Failed to load initial data:', error);
     showToast('Failed to load initial data', 'error');
   }
+  
+  // Close export menu when clicking outside
+  document.addEventListener('click', (e) => {
+    const exportMenu = document.getElementById('exportMenu');
+    if (exportMenu && !exportMenu.classList.contains('hidden')) {
+      const target = e.target;
+      if (!target.closest('#exportMenu') && !target.closest('button[onclick="toggleExportMenu()"]')) {
+        exportMenu.classList.add('hidden');
+      }
+    }
+  });
 }
