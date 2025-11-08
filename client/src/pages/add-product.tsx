@@ -1,21 +1,27 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ArrowLeft, ArrowRight, Save, X, Plus, Trash2, Upload, Star, AlertCircle } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "wouter";
+
+// Sample suppliers - in production, this would come from the database
+const suppliers = [
+  { id: 1, name: "ABC Electronics", code: "ABC001" },
+  { id: 2, name: "XYZ Distributors", code: "XYZ002" },
+  { id: 3, name: "Global Tech Suppliers", code: "GTS003" },
+  { id: 4, name: "Mobile World Wholesale", code: "MWW004" },
+  { id: 5, name: "Smart Devices Inc", code: "SDI005" },
+];
 
 const productSchema = z.object({
   // Step 1: Basic Information
@@ -26,19 +32,19 @@ const productSchema = z.object({
   productCode: z.string().optional(),
   imeiNumber: z.string().optional(),
   description: z.string().max(500, "Description must be 500 characters or less").optional(),
-  
+
   // Step 2: Pricing
   costPrice: z.number().min(0, "Cost price must be positive"),
   price: z.number().min(0, "Selling price must be positive"),
   salesDiscount: z.number().min(0).max(100).optional(),
   hsnCode: z.string().optional(),
-  
+
   // Step 3: Stock
   stockQuantity: z.number().min(0, "Stock quantity cannot be negative"),
   minStockLevel: z.number().min(0).optional(),
   purchaseUnit: z.string().optional(),
   salesUnit: z.string().optional(),
-  
+
   // Step 4: Additional Details
   warrantyMonths: z.number().min(0).optional(),
   color: z.string().optional(),
@@ -46,6 +52,9 @@ const productSchema = z.object({
   ram: z.string().optional(),
   imageUrl: z.string().optional(),
   isActive: z.boolean().optional(),
+
+  // Supplier Information
+  supplierId: z.string().optional(),
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
@@ -61,7 +70,7 @@ const CATEGORIES = [
 ];
 
 const BRANDS = [
-  "Apple", "Samsung", "Xiaomi", "Oppo", "Vivo", "Realme", 
+  "Apple", "Samsung", "Xiaomi", "Oppo", "Vivo", "Realme",
   "OnePlus", "Motorola", "Nokia", "Google", "Others"
 ];
 
@@ -83,6 +92,7 @@ export default function AddProduct() {
       warrantyMonths: 12,
       salesDiscount: 0,
       isActive: true,
+      supplierId: "",
     },
   });
 
@@ -125,7 +135,7 @@ export default function AddProduct() {
   const handleNext = async () => {
     const fieldsToValidate = getStepFields(currentStep);
     const isValid = await form.trigger(fieldsToValidate);
-    
+
     if (isValid && currentStep < 5) {
       setCurrentStep(currentStep + 1);
     }
@@ -202,9 +212,9 @@ export default function AddProduct() {
   const calculateProfitMargin = () => {
     const costPrice = form.watch("costPrice") || 0;
     const sellingPrice = form.watch("price") || 0;
-    
+
     if (costPrice === 0) return 0;
-    
+
     const margin = ((sellingPrice - costPrice) / costPrice) * 100;
     return margin;
   };
@@ -221,7 +231,7 @@ export default function AddProduct() {
             Back to Inventory
           </Button>
         </div>
-        
+
         <h1 className="text-3xl font-bold mb-2">Add New Product</h1>
         <p className="text-muted-foreground">Fill in the details to add a new product to your inventory</p>
       </div>
