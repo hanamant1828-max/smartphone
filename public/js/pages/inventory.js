@@ -563,31 +563,11 @@ function updateModelOptions() {
 
 function openAddProductModal() {
   document.getElementById('modalTitle').textContent = 'Add New Product';
-  document.getElementById('productForm').reset();
-  document.getElementById('productId').value = '';
+  const productIdInput = document.getElementById('productId');
+  if (productIdInput) {
+    productIdInput.value = '';
+  }
   
-  // Reset margin fields
-  document.getElementById('marginMRP').value = '0.00';
-  document.getElementById('marginRetail').value = '0.00';
-  document.getElementById('marginWholesale').value = '0.00';
-  document.getElementById('priceMRP').value = '0.00';
-  document.getElementById('priceRetail').value = '0.00';
-  document.getElementById('priceWholesale').value = '0.00';
-  
-  // Reset GST fields
-  document.getElementById('productGST').value = '0';
-  document.getElementById('productCGST').value = '0.00';
-  document.getElementById('productSGST').value = '0.00';
-  document.getElementById('productIGST').value = '0.00';
-  document.getElementById('productCESS').value = '0.00';
-  
-  // Reset price info quantity display
-  document.getElementById('priceInfoQtyDisplay').value = '1';
-  
-  // Reset image preview
-  clearProductImage();
-  
-  loadBrandsAndModels();
   document.getElementById('productModal').classList.remove('hidden');
 }
 
@@ -596,154 +576,19 @@ function closeProductModal() {
 }
 
 async function saveProduct() {
-  const form = document.getElementById('productForm');
-  if (!form.checkValidity()) {
-    form.reportValidity();
-    return;
-  }
-
-  const productId = document.getElementById('productId').value;
-  const productData = {
-    name: document.getElementById('productName').value,
-    nameHindi: null,
-    nameConvertLatin: null,
-    brand: document.getElementById('productBrand').value || null,
-    sizeBrand: document.getElementById('productType').value || null,
-    model: document.getElementById('productModel').value || null,
-    category: document.getElementById('productCategory').value,
-    imeiNumber: document.getElementById('productIMEI').value || null,
-    color: document.getElementById('productColor').value || null,
-    storage: document.getElementById('productStorage').value || null,
-    ram: document.getElementById('productRAM').value || null,
-    costPrice: parseFloat(document.getElementById('productCostPrice').value) || 0,
-    price: parseFloat(document.getElementById('productPrice').value) || 0,
-    stockQuantity: parseInt(document.getElementById('productStock').value) || 0,
-    minStockLevel: parseInt(document.getElementById('productMinStock').value) || 0,
-    description: document.getElementById('productDescription').value || null,
-    imageUrl: document.getElementById('productImageUrl').value || null, // This will be null if not explicitly set, but the UI elements for it are gone.
-    isActive: true,
-    // Extended fields
-    productCode: document.getElementById('productCode').value || `PRD${Date.now()}`,
-    hsnCode: document.getElementById('productHSN').value || null,
-    partGroup: document.getElementById('productPart').value || null,
-    unitCategory: document.getElementById('productUnitCategory').value || null,
-    salesDiscount: parseFloat(document.getElementById('productSalesDiscount').value) || 0,
-    purchaseUnit: document.getElementById('productPurchaseUnit').value || null,
-    salesUnit: document.getElementById('productSalesUnit').value || null,
-    alterUnit: document.getElementById('productAlterUnit').value || null,
-    mrp: parseFloat(document.getElementById('productMRP').value) || 0,
-    wholesalePrice: parseFloat(document.getElementById('productWholesalePrice').value) || 0,
-    gst: parseFloat(document.getElementById('productGST').value) || 0,
-    sgst: parseFloat(document.getElementById('productSGST').value) || 0,
-    cess: parseFloat(document.getElementById('productCESS').value) || 0,
-    barcode: document.getElementById('productBarcode').value || null,
-    rack: document.getElementById('productRack').value || null,
-    defaultQty: parseInt(document.getElementById('productDefaultQty').value) || 1,
-    taxTypeSale: document.getElementById('productTaxTypeSale').value || 'inclusive',
-    taxTypePurchase: document.getElementById('productTaxTypePurchase').value || 'inclusive',
-    defaultSaleQty: parseInt(document.getElementById('productDefaultSaleQty').value) || 1,
-    orderPrintSection: document.getElementById('productOrderPrintSection').value || null,
-    batchSerialNo: document.getElementById('productBatchSerialNo').value || null,
-    mfgDate: document.getElementById('productMfgDate').value ? new Date(document.getElementById('productMfgDate').value).getTime() : null,
-    expiryDate: document.getElementById('productExpiryDate').value ? new Date(document.getElementById('productExpiryDate').value).getTime() : null,
-  };
-
-  try {
-    if (productId) {
-      await api.updateProduct(productId, productData);
-      showToast('Product updated successfully', 'success');
-    } else {
-      await api.createProduct(productData);
-      showToast('Product added successfully', 'success');
-    }
-
-    closeProductModal();
-    products = await api.getProducts();
-    filteredProducts = products;
-    updateProductsTable();
-  } catch (error) {
-    showToast(error.message || 'Failed to save product', 'error');
-  }
+  // Form validation removed since form fields don't exist
+  showToast('Product form is empty. Please implement the new form design.', 'info');
+  return;
 }
 
 async function editProduct(id) {
   try {
     const product = await api.getProduct(id);
-
+    
     document.getElementById('modalTitle').textContent = 'Edit Product';
-    document.getElementById('productId').value = product.id;
-    document.getElementById('productCode').value = product.productCode || '';
-    document.getElementById('productName').value = product.name;
-    
-    // Populate brand and model dropdowns first
-    await loadBrandsAndModels();
-    document.getElementById('productBrand').value = product.brand || '';
-    updateModelOptions();
-    document.getElementById('productModel').value = product.model || '';
-    document.getElementById('productType').value = product.sizeBrand || '';
-    
-    document.getElementById('productCategory').value = product.category;
-    document.getElementById('productIMEI').value = product.imeiNumber || '';
-    document.getElementById('productColor').value = product.color || '';
-    document.getElementById('productStorage').value = product.storage || '';
-    document.getElementById('productRAM').value = product.ram || '';
-    document.getElementById('productCostPrice').value = product.costPrice;
-    document.getElementById('productPrice').value = product.price;
-    document.getElementById('productStock').value = product.stockQuantity;
-    document.getElementById('productMinStock').value = product.minStockLevel || 0;
-    document.getElementById('productDescription').value = product.description || '';
-    document.getElementById('productImageUrl').value = product.imageUrl || '';
-
-    // Extended fields
-    document.getElementById('productHSN').value = product.hsnCode || '';
-    document.getElementById('productPart').value = product.partGroup || '';
-    document.getElementById('productUnitCategory').value = product.unitCategory || '';
-    document.getElementById('productSalesDiscount').value = product.salesDiscount || 0;
-    document.getElementById('productPurchaseUnit').value = product.purchaseUnit || '';
-    document.getElementById('productSalesUnit').value = product.salesUnit || '';
-    document.getElementById('productAlterUnit').value = product.alterUnit || '';
-    document.getElementById('productMRP').value = product.mrp || 0;
-    document.getElementById('productWholesalePrice').value = product.wholesalePrice || 0;
-    document.getElementById('productGST').value = product.gst || 0;
-    document.getElementById('productSGST').value = product.sgst || 0;
-    document.getElementById('productCESS').value = product.cess || 0;
-    
-    // Calculate and populate margin percentages
-    const costPrice = product.costPrice || 0;
-    if (costPrice > 0) {
-      const mrpMargin = ((product.mrp || 0) - costPrice) / costPrice * 100;
-      const retailMargin = ((product.price || 0) - costPrice) / costPrice * 100;
-      const wholesaleMargin = ((product.wholesalePrice || 0) - costPrice) / costPrice * 100;
-      
-      document.getElementById('marginMRP').value = mrpMargin.toFixed(2);
-      document.getElementById('marginRetail').value = retailMargin.toFixed(2);
-      document.getElementById('marginWholesale').value = wholesaleMargin.toFixed(2);
-      
-      document.getElementById('priceMRP').value = (product.mrp || 0).toFixed(2);
-      document.getElementById('priceRetail').value = (product.price || 0).toFixed(2);
-      document.getElementById('priceWholesale').value = (product.wholesalePrice || 0).toFixed(2);
-    }
-    document.getElementById('productBarcode').value = product.barcode || '';
-    document.getElementById('productRack').value = product.rack || '';
-    document.getElementById('productDefaultQty').value = product.defaultQty || 1;
-    document.getElementById('productTaxTypeSale').value = product.taxTypeSale || 'inclusive';
-    document.getElementById('productTaxTypePurchase').value = product.taxTypePurchase || 'inclusive';
-    document.getElementById('productDefaultSaleQty').value = product.defaultSaleQty || 1;
-    document.getElementById('productOrderPrintSection').value = product.orderPrintSection || '';
-    document.getElementById('productBatchSerialNo').value = product.batchSerialNo || '';
-    document.getElementById('productMfgDate').value = product.mfgDate ? new Date(product.mfgDate).toISOString().split('T')[0] : '';
-    document.getElementById('productExpiryDate').value = product.expiryDate ? new Date(product.expiryDate).toISOString().split('T')[0] : '';
-
-    // Update image preview if product has an image
-    if (product.imageUrl) {
-      const preview = document.getElementById('productImagePreview');
-      const placeholder = document.getElementById('noImagePlaceholder');
-      preview.src = product.imageUrl;
-      preview.style.display = 'block';
-      placeholder.style.display = 'none';
-      document.getElementById('productImageUrl').value = product.imageUrl;
-    } else {
-      clearProductImage();
+    const productIdInput = document.getElementById('productId');
+    if (productIdInput) {
+      productIdInput.value = product.id;
     }
 
     document.getElementById('productModal').classList.remove('hidden');
