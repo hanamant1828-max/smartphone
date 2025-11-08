@@ -1833,7 +1833,7 @@ function getFilteredBrands() {
   if (brandFilter) {
     filtered = filtered.filter(b => 
       b.name.toLowerCase().includes(brandFilter.toLowerCase()) ||
-      b.code.toLowerCase().includes(brandFilter.toLowerCase()) ||
+      (b.code && b.code.toLowerCase().includes(brandFilter.toLowerCase())) ||
       (b.description && b.description.toLowerCase().includes(brandFilter.toLowerCase()))
     );
   }
@@ -4088,7 +4088,6 @@ export async function init(app) {
   window.editProduct = editProduct;
   window.deleteProduct = deleteProduct;
   window.filterProducts = filterProducts;
-  window.setFilter = setFilter;
   window.handleOpenModelModal = handleOpenModelModal;
   window.closeModelModal = closeModelModal;
   window.saveModel = saveModel;
