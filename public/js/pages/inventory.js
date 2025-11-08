@@ -9,6 +9,11 @@ let currentTab = 'products';
 let categories = [];
 let brands = [];
 let models = [];
+let expandedCategories = new Set();
+let categoryFilter = '';
+let categoryStatusFilter = 'all';
+let categoryToDelete = null;
+let draggedCategory = null;
 
 export function render(app) {
   return wrapWithLayout(`
@@ -74,7 +79,7 @@ export function render(app) {
 
     <!-- Category Modal -->
     <div id="categoryModal" class="modal-backdrop hidden">
-      <div class="modal">
+      <div class="modal" style="max-width: 900px;">
         <div class="modal-header">
           <h3 class="modal-title" id="categoryModalTitle">Add Category</h3>
           <button class="modal-close" onclick="closeCategoryModal()">
@@ -87,10 +92,12 @@ export function render(app) {
         <div class="modal-body">
           <form id="categoryForm">
             <input type="hidden" id="categoryId" />
+            
+            <h4 style="font-size: 1rem; font-weight: 500; margin-bottom: 16px; color: var(--text-primary);">Basic Information</h4>
             <div class="grid grid-cols-2 gap-4">
               <div class="form-group">
                 <label class="form-label">Category Name *</label>
-                <input type="text" id="categoryName" class="form-input" required />
+                <input type="text" id="categoryName" class="form-input" required placeholder="e.g., Smartphones" />
               </div>
               <div class="form-group">
                 <label class="form-label">Parent Category</label>
@@ -100,17 +107,40 @@ export function render(app) {
               </div>
               <div class="form-group">
                 <label class="form-label">Category Code</label>
-                <input type="text" id="categoryCode" class="form-input" />
+                <input type="text" id="categoryCode" class="form-input" placeholder="e.g., MOB-SMART" />
               </div>
               <div class="form-group">
                 <label class="form-label">Display Order</label>
                 <input type="number" id="categoryOrder" class="form-input" value="0" />
               </div>
             </div>
+            
             <div class="form-group">
               <label class="form-label">Description</label>
-              <textarea id="categoryDescription" class="form-input" rows="3"></textarea>
+              <textarea id="categoryDescription" class="form-input" rows="3" placeholder="Brief description of this category"></textarea>
             </div>
+            
+            <div class="form-group">
+              <label class="form-label">Category Icon/Image</label>
+              <div style="display: flex; gap: 12px; align-items: center;">
+                <input type="file" id="categoryImage" accept="image/*" onchange="handleCategoryImageSelect(event)" style="display: none;" />
+                <button type="button" class="btn btn-outline" onclick="document.getElementById('categoryImage').click()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21 15 16 10 5 21"/>
+                  </svg>
+                  Choose Image
+                </button>
+                <div id="categoryImagePreview" style="display: none;">
+                  <img id="categoryImagePreviewImg" style="max-width: 100px; max-height: 100px; border-radius: 4px; border: 1px solid var(--border-color);" />
+                  <button type="button" class="btn btn-outline btn-sm" onclick="clearCategoryImage()" style="margin-left: 8px;">Remove</button>
+                </div>
+                <input type="hidden" id="categoryImageUrl" />
+              </div>
+            </div>
+            
+            <h4 style="font-size: 1rem; font-weight: 500; margin: 24px 0 16px 0; color: var(--text-primary);">Display Settings</h4>
             <div class="grid grid-cols-3 gap-4">
               <div class="form-group">
                 <label class="flex items-center gap-2">
@@ -131,11 +161,93 @@ export function render(app) {
                 </label>
               </div>
             </div>
+            
+            <h4 style="font-size: 1rem; font-weight: 500; margin: 24px 0 16px 0; color: var(--text-primary);">SEO Settings (Optional)</h4>
+            <div class="form-group">
+              <label class="form-label">Meta Title</label>
+              <input type="text" id="categoryMetaTitle" class="form-input" placeholder="SEO meta title" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Meta Description</label>
+              <textarea id="categoryMetaDescription" class="form-input" rows="2" placeholder="SEO meta description"></textarea>
+            </div>
           </form>
         </div>
         <div class="modal-footer">
           <button class="btn btn-outline" onclick="closeCategoryModal()">Cancel</button>
           <button class="btn btn-primary" onclick="saveCategory()">Save Category</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Import Modal -->
+    <div id="importModal" class="modal-backdrop hidden">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Import Categories</h3>
+          <button class="modal-close" onclick="closeImportModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Select CSV/Excel File</label>
+            <input type="file" id="importFile" accept=".csv,.xlsx,.xls" class="form-input" />
+            <p class="form-helper">File should contain columns: Name, Code, ParentCode, Description, Active, ShowInMenu, ShowInPOS</p>
+          </div>
+          <div class="alert alert-info">
+            <strong>Import Format:</strong> The file should have these columns:<br/>
+            - Name (required)<br/>
+            - Code (optional)<br/>
+            - ParentCode (optional - code of parent category)<br/>
+            - Description (optional)<br/>
+            - Active (optional - true/false)<br/>
+            - ShowInMenu (optional - true/false)<br/>
+            - ShowInPOS (optional - true/false)
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" onclick="closeImportModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="importCategories()">Import</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteCategoryModal" class="modal-backdrop hidden">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Delete Category</h3>
+          <button class="modal-close" onclick="closeDeleteCategoryModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="deleteCategoryWarning"></div>
+          <div id="deleteCategoryOptions" style="display: none;">
+            <div class="form-group">
+              <label class="form-label">What would you like to do with the products?</label>
+              <select id="deleteProductAction" class="form-input">
+                <option value="cancel">Cancel deletion</option>
+                <option value="moveToParent">Move products to parent category</option>
+                <option value="moveToOther">Move products to another category</option>
+              </select>
+            </div>
+            <div id="moveToOtherCategory" style="display: none;" class="form-group">
+              <label class="form-label">Select target category</label>
+              <select id="targetCategory" class="form-input"></select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" onclick="closeDeleteCategoryModal()">Cancel</button>
+          <button class="btn btn-error" onclick="confirmDeleteCategory()">Delete Category</button>
         </div>
       </div>
     </div>
@@ -374,39 +486,65 @@ function renderProductsTab() {
 }
 
 function renderCategoriesTab() {
+  const selectedCount = categories.filter(c => c.selected).length;
   return `
     <div class="flex justify-between items-center mb-6">
-      <input 
-        type="search" 
-        class="form-input" 
-        placeholder="Search categories..." 
-        style="max-width: 400px;"
-        oninput="filterCategories(this.value)"
-      />
-      <button class="btn btn-primary" onclick="openCategoryModal()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="12" y1="5" x2="12" y2="19"/>
-          <line x1="5" y1="12" x2="19" y2="12"/>
-        </svg>
-        Add Category
-      </button>
+      <div class="flex gap-4 items-center">
+        <input 
+          type="search" 
+          class="form-input" 
+          placeholder="Search categories..." 
+          style="max-width: 400px;"
+          id="categorySearchInput"
+          oninput="filterCategories(this.value)"
+        />
+        <select class="form-input" style="max-width: 200px;" onchange="filterCategoriesByStatus(this.value)">
+          <option value="all">All Status</option>
+          <option value="active">Active Only</option>
+          <option value="inactive">Inactive Only</option>
+        </select>
+      </div>
+      <div class="flex gap-2">
+        ${selectedCount > 0 ? `
+          <button class="btn btn-outline" onclick="bulkActivateCategories()">
+            Activate Selected (${selectedCount})
+          </button>
+          <button class="btn btn-outline" onclick="bulkDeactivateCategories()">
+            Deactivate Selected (${selectedCount})
+          </button>
+          <button class="btn btn-error" onclick="bulkDeleteCategories()">
+            Delete Selected (${selectedCount})
+          </button>
+        ` : ''}
+        <button class="btn btn-outline" onclick="exportCategories()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Export
+        </button>
+        <button class="btn btn-outline" onclick="showImportModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          Import
+        </button>
+        <button class="btn btn-primary" onclick="openCategoryModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Add Category
+        </button>
+      </div>
     </div>
-    <div class="table-container">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Category Name</th>
-            <th>Code</th>
-            <th>Parent</th>
-            <th>Products</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="categoriesTableBody">
-          ${renderCategoryRows()}
-        </tbody>
-      </table>
+    <div class="card" style="padding: 0;">
+      <div id="categoryTreeContainer" style="padding: 24px;">
+        ${renderCategoryTree()}
+      </div>
     </div>
   `;
 }
@@ -554,25 +692,81 @@ function renderProductRows() {
   `).join('');
 }
 
-function renderCategoryRows() {
-  if (!categories || categories.length === 0) {
-    return '<tr><td colspan="6" class="text-center" style="padding: 48px;">No categories found</td></tr>';
+function renderCategoryTree() {
+  const rootCategories = categories.filter(c => !c.parentId && (!categoryFilter || matchesFilter(c)));
+  
+  if (rootCategories.length === 0) {
+    return '<div style="text-align: center; padding: 48px; color: var(--text-secondary);">No categories found</div>';
   }
-  return categories.map(cat => `
-    <tr>
-      <td><strong>${cat.name}</strong></td>
-      <td>${cat.code || '-'}</td>
-      <td>${cat.parentId ? (categories.find(c => c.id === cat.parentId)?.name || '-') : 'Top Level'}</td>
-      <td>${cat.productCount || 0}</td>
-      <td><span class="badge ${cat.active ? 'badge-success' : 'badge-secondary'}">${cat.active ? 'Active' : 'Inactive'}</span></td>
-      <td>
-        <div class="flex gap-2">
-          <button class="btn btn-outline btn-sm" onclick="editCategory(${cat.id})">Edit</button>
-          <button class="btn btn-error btn-sm" onclick="deleteCategory(${cat.id})">Delete</button>
+  
+  return `
+    <div class="category-tree">
+      ${rootCategories.map(cat => renderCategoryNode(cat, 0)).join('')}
+    </div>
+  `;
+}
+
+function renderCategoryNode(category, level) {
+  const children = categories.filter(c => c.parentId === category.id && (!categoryFilter || matchesFilter(c)));
+  const hasChildren = children.length > 0;
+  const isExpanded = expandedCategories.has(category.id);
+  
+  return `
+    <div class="category-node" data-category-id="${category.id}" data-level="${level}" draggable="true" ondragstart="handleCategoryDragStart(event, ${category.id})" ondragover="handleCategoryDragOver(event)" ondrop="handleCategoryDrop(event, ${category.id})" ondragend="handleCategoryDragEnd(event)">
+      <div class="category-node-content" style="padding-left: ${level * 24}px;">
+        <div class="flex items-center gap-2" style="flex: 1;">
+          <input type="checkbox" ${category.selected ? 'checked' : ''} onchange="toggleCategorySelection(${category.id})" onclick="event.stopPropagation();" />
+          ${hasChildren ? `
+            <button class="btn btn-icon btn-sm" onclick="toggleCategoryExpand(${category.id})" style="width: 24px; height: 24px; padding: 0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transform: rotate(${isExpanded ? '90deg' : '0deg'}); transition: transform 0.2s;">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+          ` : '<span style="width: 24px;"></span>'}
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          </svg>
+          <strong>${category.name}</strong>
+          ${category.code ? `<span class="badge badge-secondary" style="font-size: 0.7rem;">${category.code}</span>` : ''}
+          <span class="badge badge-primary" style="font-size: 0.7rem; margin-left: 8px;">${category.productCount || 0} products</span>
+          <span class="badge ${category.active ? 'badge-success' : 'badge-secondary'}" style="font-size: 0.7rem;">${category.active ? 'Active' : 'Inactive'}</span>
         </div>
-      </td>
-    </tr>
-  `).join('');
+        <div class="flex gap-2">
+          <button class="btn btn-outline btn-sm" onclick="openCategoryModal(${category.id})" title="Add Subcategory">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Sub
+          </button>
+          <button class="btn btn-outline btn-sm" onclick="editCategory(${category.id})">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </button>
+          <button class="btn btn-error btn-sm" onclick="deleteCategory(${category.id})">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      ${hasChildren && isExpanded ? `
+        <div class="category-children">
+          ${children.map(child => renderCategoryNode(child, level + 1)).join('')}
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+function matchesFilter(category) {
+  if (!categoryFilter) return true;
+  return category.name.toLowerCase().includes(categoryFilter.toLowerCase()) ||
+         (category.code && category.code.toLowerCase().includes(categoryFilter.toLowerCase())) ||
+         (category.description && category.description.toLowerCase().includes(categoryFilter.toLowerCase()));
 }
 
 function renderBrandRows() {
@@ -613,7 +807,7 @@ function updateTabContent() {
 
 // Category Management Functions
 function openCategoryModal(parentId = null) {
-  document.getElementById('categoryModalTitle').textContent = 'Add Category';
+  document.getElementById('categoryModalTitle').textContent = parentId ? 'Add Subcategory' : 'Add Category';
   document.getElementById('categoryId').value = '';
   document.getElementById('categoryName').value = '';
   document.getElementById('categoryCode').value = '';
@@ -622,13 +816,15 @@ function openCategoryModal(parentId = null) {
   document.getElementById('categoryActive').checked = true;
   document.getElementById('categoryShowMenu').checked = true;
   document.getElementById('categoryShowPOS').checked = true;
+  document.getElementById('categoryMetaTitle').value = '';
+  document.getElementById('categoryMetaDescription').value = '';
+  document.getElementById('categoryImageUrl').value = '';
+  document.getElementById('categoryImagePreview').style.display = 'none';
   
   // Populate parent category dropdown
   const parentSelect = document.getElementById('categoryParent');
   parentSelect.innerHTML = '<option value="">None (Top Level)</option>';
-  categories.filter(c => c.active).forEach(cat => {
-    parentSelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
-  });
+  buildCategoryDropdown(parentSelect, null, '');
   
   if (parentId) {
     parentSelect.value = parentId;
@@ -637,8 +833,52 @@ function openCategoryModal(parentId = null) {
   document.getElementById('categoryModal').classList.remove('hidden');
 }
 
+function buildCategoryDropdown(select, excludeId, prefix) {
+  const topLevel = categories.filter(c => !c.parentId && c.id !== excludeId);
+  topLevel.forEach(cat => {
+    const option = document.createElement('option');
+    option.value = cat.id;
+    option.textContent = prefix + cat.name;
+    select.appendChild(option);
+    
+    // Add children recursively
+    addChildrenToDropdown(select, cat.id, excludeId, prefix + '  ');
+  });
+}
+
+function addChildrenToDropdown(select, parentId, excludeId, prefix) {
+  const children = categories.filter(c => c.parentId === parentId && c.id !== excludeId);
+  children.forEach(cat => {
+    const option = document.createElement('option');
+    option.value = cat.id;
+    option.textContent = prefix + cat.name;
+    select.appendChild(option);
+    
+    addChildrenToDropdown(select, cat.id, excludeId, prefix + '  ');
+  });
+}
+
 function closeCategoryModal() {
   document.getElementById('categoryModal').classList.add('hidden');
+}
+
+function handleCategoryImageSelect(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      document.getElementById('categoryImageUrl').value = e.target.result;
+      document.getElementById('categoryImagePreviewImg').src = e.target.result;
+      document.getElementById('categoryImagePreview').style.display = 'flex';
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function clearCategoryImage() {
+  document.getElementById('categoryImageUrl').value = '';
+  document.getElementById('categoryImage').value = '';
+  document.getElementById('categoryImagePreview').style.display = 'none';
 }
 
 function saveCategory() {
@@ -653,7 +893,11 @@ function saveCategory() {
     active: document.getElementById('categoryActive').checked,
     showInMenu: document.getElementById('categoryShowMenu').checked,
     showInPOS: document.getElementById('categoryShowPOS').checked,
-    productCount: 0
+    metaTitle: document.getElementById('categoryMetaTitle').value,
+    metaDescription: document.getElementById('categoryMetaDescription').value,
+    imageUrl: document.getElementById('categoryImageUrl').value,
+    productCount: 0,
+    selected: false
   };
   
   if (!categoryData.name) {
@@ -664,6 +908,7 @@ function saveCategory() {
   if (id) {
     const index = categories.findIndex(c => c.id === parseInt(id));
     if (index !== -1) {
+      categoryData.productCount = categories[index].productCount;
       categories[index] = { ...categories[index], ...categoryData };
     }
   } else {
@@ -689,12 +934,20 @@ function editCategory(id) {
   document.getElementById('categoryActive').checked = category.active;
   document.getElementById('categoryShowMenu').checked = category.showInMenu;
   document.getElementById('categoryShowPOS').checked = category.showInPOS;
+  document.getElementById('categoryMetaTitle').value = category.metaTitle || '';
+  document.getElementById('categoryMetaDescription').value = category.metaDescription || '';
+  document.getElementById('categoryImageUrl').value = category.imageUrl || '';
+  
+  if (category.imageUrl) {
+    document.getElementById('categoryImagePreviewImg').src = category.imageUrl;
+    document.getElementById('categoryImagePreview').style.display = 'flex';
+  } else {
+    document.getElementById('categoryImagePreview').style.display = 'none';
+  }
   
   const parentSelect = document.getElementById('categoryParent');
   parentSelect.innerHTML = '<option value="">None (Top Level)</option>';
-  categories.filter(c => c.active && c.id !== id).forEach(cat => {
-    parentSelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
-  });
+  buildCategoryDropdown(parentSelect, id, '');
   parentSelect.value = category.parentId || '';
   
   document.getElementById('categoryModal').classList.remove('hidden');
@@ -704,21 +957,342 @@ function deleteCategory(id) {
   const category = categories.find(c => c.id === id);
   if (!category) return;
   
-  if (category.productCount > 0) {
-    if (!confirm(`This category has ${category.productCount} products. Are you sure you want to delete it?`)) {
+  categoryToDelete = id;
+  const productCount = category.productCount || 0;
+  
+  if (productCount > 0) {
+    document.getElementById('deleteCategoryWarning').innerHTML = `
+      <div class="alert alert-warning">
+        <strong>Warning:</strong> This category has ${productCount} product(s). What would you like to do with them?
+      </div>
+    `;
+    document.getElementById('deleteCategoryOptions').style.display = 'block';
+    
+    const targetSelect = document.getElementById('targetCategory');
+    targetSelect.innerHTML = '<option value="">Select category</option>';
+    buildCategoryDropdown(targetSelect, id, '');
+    
+    document.getElementById('deleteProductAction').addEventListener('change', function() {
+      document.getElementById('moveToOtherCategory').style.display = 
+        this.value === 'moveToOther' ? 'block' : 'none';
+    });
+  } else {
+    document.getElementById('deleteCategoryWarning').innerHTML = `
+      <div class="alert alert-info">
+        Are you sure you want to delete the category "${category.name}"?
+      </div>
+    `;
+    document.getElementById('deleteCategoryOptions').style.display = 'none';
+  }
+  
+  document.getElementById('deleteCategoryModal').classList.remove('hidden');
+}
+
+function closeDeleteCategoryModal() {
+  document.getElementById('deleteCategoryModal').classList.add('hidden');
+  categoryToDelete = null;
+}
+
+function confirmDeleteCategory() {
+  if (!categoryToDelete) return;
+  
+  const category = categories.find(c => c.id === categoryToDelete);
+  if (!category) return;
+  
+  const productCount = category.productCount || 0;
+  
+  if (productCount > 0) {
+    const action = document.getElementById('deleteProductAction').value;
+    
+    if (action === 'cancel') {
+      closeDeleteCategoryModal();
       return;
+    }
+    
+    if (action === 'moveToOther') {
+      const targetId = document.getElementById('targetCategory').value;
+      if (!targetId) {
+        showToast('Please select a target category', 'error');
+        return;
+      }
+      // In a real app, you would update products here
+      showToast(`Products will be moved to selected category`, 'info');
+    } else if (action === 'moveToParent') {
+      if (category.parentId) {
+        showToast(`Products will be moved to parent category`, 'info');
+      } else {
+        showToast('This is a top-level category with no parent', 'error');
+        return;
+      }
     }
   }
   
-  categories = categories.filter(c => c.id !== id);
+  // Delete all child categories recursively
+  deleteChildCategories(categoryToDelete);
+  
+  // Delete the category itself
+  categories = categories.filter(c => c.id !== categoryToDelete);
   localStorage.setItem('categories', JSON.stringify(categories));
+  
+  closeDeleteCategoryModal();
   showToast('Category deleted successfully', 'success');
   updateTabContent();
 }
 
+function deleteChildCategories(parentId) {
+  const children = categories.filter(c => c.parentId === parentId);
+  children.forEach(child => {
+    deleteChildCategories(child.id);
+    categories = categories.filter(c => c.id !== child.id);
+  });
+}
+
 function filterCategories(searchTerm) {
-  // Implement category filtering logic
+  categoryFilter = searchTerm;
   updateTabContent();
+}
+
+function filterCategoriesByStatus(status) {
+  categoryStatusFilter = status;
+  if (status === 'active') {
+    categories.forEach(c => {
+      if (!c.active) c.hidden = true;
+      else c.hidden = false;
+    });
+  } else if (status === 'inactive') {
+    categories.forEach(c => {
+      if (c.active) c.hidden = true;
+      else c.hidden = false;
+    });
+  } else {
+    categories.forEach(c => c.hidden = false);
+  }
+  updateTabContent();
+}
+
+function toggleCategoryExpand(id) {
+  if (expandedCategories.has(id)) {
+    expandedCategories.delete(id);
+  } else {
+    expandedCategories.add(id);
+  }
+  updateTabContent();
+}
+
+function toggleCategorySelection(id) {
+  const category = categories.find(c => c.id === id);
+  if (category) {
+    category.selected = !category.selected;
+    updateTabContent();
+  }
+}
+
+function bulkActivateCategories() {
+  const selectedIds = categories.filter(c => c.selected).map(c => c.id);
+  if (selectedIds.length === 0) {
+    showToast('No categories selected', 'warning');
+    return;
+  }
+  
+  selectedIds.forEach(id => {
+    const category = categories.find(c => c.id === id);
+    if (category) {
+      category.active = true;
+      category.selected = false;
+    }
+  });
+  
+  localStorage.setItem('categories', JSON.stringify(categories));
+  showToast(`${selectedIds.length} categories activated`, 'success');
+  updateTabContent();
+}
+
+function bulkDeactivateCategories() {
+  const selectedIds = categories.filter(c => c.selected).map(c => c.id);
+  if (selectedIds.length === 0) {
+    showToast('No categories selected', 'warning');
+    return;
+  }
+  
+  selectedIds.forEach(id => {
+    const category = categories.find(c => c.id === id);
+    if (category) {
+      category.active = false;
+      category.selected = false;
+    }
+  });
+  
+  localStorage.setItem('categories', JSON.stringify(categories));
+  showToast(`${selectedIds.length} categories deactivated`, 'success');
+  updateTabContent();
+}
+
+function bulkDeleteCategories() {
+  const selectedIds = categories.filter(c => c.selected).map(c => c.id);
+  if (selectedIds.length === 0) {
+    showToast('No categories selected', 'warning');
+    return;
+  }
+  
+  if (!confirm(`Are you sure you want to delete ${selectedIds.length} categories?`)) {
+    return;
+  }
+  
+  selectedIds.forEach(id => {
+    deleteChildCategories(id);
+    categories = categories.filter(c => c.id !== id);
+  });
+  
+  localStorage.setItem('categories', JSON.stringify(categories));
+  showToast(`${selectedIds.length} categories deleted`, 'success');
+  updateTabContent();
+}
+
+function exportCategories() {
+  const csvData = [
+    ['Name', 'Code', 'Parent Code', 'Description', 'Active', 'Show In Menu', 'Show In POS', 'Display Order']
+  ];
+  
+  categories.forEach(cat => {
+    const parent = cat.parentId ? categories.find(c => c.id === cat.parentId) : null;
+    csvData.push([
+      cat.name,
+      cat.code || '',
+      parent?.code || '',
+      cat.description || '',
+      cat.active ? 'true' : 'false',
+      cat.showInMenu ? 'true' : 'false',
+      cat.showInPOS ? 'true' : 'false',
+      cat.displayOrder || 0
+    ]);
+  });
+  
+  const csv = csvData.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `categories_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  
+  showToast('Categories exported successfully', 'success');
+}
+
+function showImportModal() {
+  document.getElementById('importModal').classList.remove('hidden');
+}
+
+function closeImportModal() {
+  document.getElementById('importModal').classList.add('hidden');
+}
+
+function importCategories() {
+  const fileInput = document.getElementById('importFile');
+  const file = fileInput.files[0];
+  
+  if (!file) {
+    showToast('Please select a file', 'error');
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const text = e.target.result;
+      const lines = text.split('\n');
+      const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+      
+      let imported = 0;
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        
+        const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+        const categoryData = {
+          id: Date.now() + i,
+          name: values[0],
+          code: values[1] || '',
+          description: values[3] || '',
+          active: values[4]?.toLowerCase() === 'true',
+          showInMenu: values[5]?.toLowerCase() === 'true',
+          showInPOS: values[6]?.toLowerCase() === 'true',
+          displayOrder: parseInt(values[7]) || 0,
+          productCount: 0,
+          selected: false,
+          parentId: null
+        };
+        
+        // Find parent by code
+        if (values[2]) {
+          const parent = categories.find(c => c.code === values[2]);
+          if (parent) {
+            categoryData.parentId = parent.id;
+          }
+        }
+        
+        categories.push(categoryData);
+        imported++;
+      }
+      
+      localStorage.setItem('categories', JSON.stringify(categories));
+      closeImportModal();
+      showToast(`${imported} categories imported successfully`, 'success');
+      updateTabContent();
+    } catch (error) {
+      showToast('Failed to import categories: ' + error.message, 'error');
+    }
+  };
+  
+  reader.readAsText(file);
+}
+
+// Drag and drop handlers
+function handleCategoryDragStart(event, categoryId) {
+  draggedCategory = categoryId;
+  event.target.style.opacity = '0.5';
+}
+
+function handleCategoryDragOver(event) {
+  event.preventDefault();
+  event.dataTransfer.dropEffect = 'move';
+}
+
+function handleCategoryDrop(event, targetId) {
+  event.preventDefault();
+  
+  if (draggedCategory === targetId) return;
+  
+  const draggedCat = categories.find(c => c.id === draggedCategory);
+  const targetCat = categories.find(c => c.id === targetId);
+  
+  if (!draggedCat || !targetCat) return;
+  
+  // Check if target is a child of dragged (prevent circular reference)
+  if (isChildOf(targetId, draggedCategory)) {
+    showToast('Cannot move a category into its own child', 'error');
+    return;
+  }
+  
+  // Move dragged category to be child of target
+  draggedCat.parentId = targetId;
+  
+  localStorage.setItem('categories', JSON.stringify(categories));
+  showToast('Category moved successfully', 'success');
+  updateTabContent();
+}
+
+function handleCategoryDragEnd(event) {
+  event.target.style.opacity = '1';
+  draggedCategory = null;
+}
+
+function isChildOf(categoryId, potentialParentId) {
+  let current = categories.find(c => c.id === categoryId);
+  while (current && current.parentId) {
+    if (current.parentId === potentialParentId) return true;
+    current = categories.find(c => c.id === current.parentId);
+  }
+  return false;
 }
 
 // Brand Management Functions
