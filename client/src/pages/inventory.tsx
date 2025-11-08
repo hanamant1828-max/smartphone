@@ -64,7 +64,7 @@ export default function Inventory() {
   const [showBulkStockModal, setShowBulkStockModal] = useState(false);
   const [stockProduct, setStockProduct] = useState<Product | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showBulkActionDialog, setShowBulkActionDialog] = useState<'category' | 'status' | 'price' | 'tags' | 'barcode' | 'export' | null>(null);
+  const [showBulkActionDialog, setShowBulkActionDialog] = useState<'category' | 'status' | 'price' | 'tags' | 'barcode' | 'export' | 'edit' | null>(null);
   const [showBulkPreview, setShowBulkPreview] = useState(false);
   const [bulkPreviewData, setBulkPreviewData] = useState<any[]>([]);
   const [selectAllPages, setSelectAllPages] = useState(false);
@@ -125,6 +125,14 @@ export default function Inventory() {
       field: "price",
       operation: "increase",
       value: 0,
+    },
+  });
+
+  const bulkEditForm = useForm({
+    defaultValues: {
+      warrantyMonths: "",
+      minStockLevel: "",
+      costPrice: "",
     },
   });
 
@@ -368,7 +376,7 @@ export default function Inventory() {
     bulkStockAdjustMutation.mutate({
       productIds: Array.from(selectedIds),
       ...data,
-      quantity: parseInt(data.quantity),
+      quantity: parseInt(String(data.quantity)),
     });
     setShowBulkPreview(false);
   };
@@ -388,6 +396,23 @@ export default function Inventory() {
         operation: data.operation,
         value: parseFloat(data.value),
       },
+    });
+  };
+
+  const onBulkEditSubmit = (data: any) => {
+    const updates: any = {};
+    if (data.warrantyMonths !== "") updates.warrantyMonths = parseInt(data.warrantyMonths);
+    if (data.minStockLevel !== "") updates.minStockLevel = parseInt(data.minStockLevel);
+    if (data.costPrice !== "") updates.costPrice = parseFloat(data.costPrice);
+    
+    if (Object.keys(updates).length === 0) {
+      toast({ title: "No fields to update", variant: "destructive" });
+      return;
+    }
+    
+    bulkUpdateMutation.mutate({
+      productIds: Array.from(selectedIds),
+      updates,
     });
   };
 
@@ -445,7 +470,7 @@ export default function Inventory() {
   };
 
   const calculateNewStock = () => {
-    if (!stockProduct) return stockProduct?.stockQuantity || 0;
+    if (!stockProduct) return 0;
     
     const current = stockProduct.stockQuantity || 0;
     const qty = parseInt(stockForm.watch("quantity") as any) || 0;
@@ -494,14 +519,12 @@ export default function Inventory() {
                 <div className="flex flex-col">
                   <span className="font-medium">{selectedIds.size} selected</span>
                   {!selectAllPages && selectedIds.size === filteredProducts.length && filteredProducts.length < products.length && (
-                    <Button
-                      variant="link"
-                      size="sm"
-                      className="h-auto p-0 text-xs"
+                    <button
+                      className="h-auto p-0 text-xs text-primary hover:underline cursor-pointer bg-transparent border-none"
                       onClick={selectAllAcrossPages}
                     >
                       Select all {products.length} products
-                    </Button>
+                    </button>
                   )}
                   {selectAllPages && (
                     <span className="text-xs text-muted-foreground">All {products.length} products selected</span>
@@ -528,6 +551,9 @@ export default function Inventory() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => setShowBulkActionDialog('edit')}>
+                      Edit Selected
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => setShowBulkActionDialog('category')}>
                       Change Category
                     </DropdownMenuItem>
@@ -996,6 +1022,88 @@ export default function Inventory() {
               <DialogFooter>
                 <Button type="submit" data-testid="button-submit-bulk-stock-adjust">
                   Adjust Stock for {selectedIds.size} Products
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Edit Dialog */}
+      <Dialog open={showBulkActionDialog === 'edit'} onOpenChange={() => setShowBulkActionDialog(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Selected Products</DialogTitle>
+            <DialogDescription>
+              Edit common fields for {selectedIds.size} selected products. Only filled fields will be updated.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...bulkEditForm}>
+            <form onSubmit={bulkEditForm.handleSubmit(onBulkEditSubmit)} className="space-y-4">
+              <FormField
+                control={bulkEditForm.control}
+                name="costPrice"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cost Price (₹)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number"
+                        step="0.01"
+                        placeholder="Leave empty to keep unchanged" 
+                        {...field} 
+                        data-testid="input-bulk-cost-price"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={bulkEditForm.control}
+                name="warrantyMonths"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Warranty (months)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number"
+                        placeholder="Leave empty to keep unchanged" 
+                        {...field} 
+                        data-testid="input-bulk-warranty"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={bulkEditForm.control}
+                name="minStockLevel"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Minimum Stock Level</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number"
+                        placeholder="Leave empty to keep unchanged" 
+                        {...field} 
+                        data-testid="input-bulk-min-stock"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setShowBulkActionDialog(null)} type="button">
+                  Cancel
+                </Button>
+                <Button type="submit" data-testid="button-submit-bulk-edit">
+                  Update {selectedIds.size} Products
                 </Button>
               </DialogFooter>
             </form>
