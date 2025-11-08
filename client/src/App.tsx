@@ -8,6 +8,7 @@ import Dashboard from "@/pages/dashboard";
 import Inventory from "@/pages/inventory";
 import AddProduct from "@/pages/add-product";
 import ImportProducts from "@/pages/import-products";
+import MasterData from "@/pages/master-data";
 import AppLayout from "@/components/layout/app-layout";
 import { useEffect, useState } from "react";
 
@@ -28,6 +29,7 @@ function Router() {
         <Route path="/inventory" component={Inventory} />
         <Route path="/inventory/add" component={AddProduct} />
         <Route path="/inventory/import" component={ImportProducts} />
+        <Route path="/master-data" component={MasterData} />
         {/* Fallback to 404 */}
         <Route component={NotFound} />
       </Switch>

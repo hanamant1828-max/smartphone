@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ArrowLeft, ArrowRight, Save, X, Plus, Trash2, Upload, Star, AlertCircle } from "lucide-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -67,21 +67,6 @@ const productSchema = z.object({
 
 type ProductFormData = z.infer<typeof productSchema>;
 
-const CATEGORIES = [
-  "Smartphones",
-  "Feature Phones",
-  "Accessories",
-  "Spare Parts",
-  "Tablets",
-  "Smartwatches",
-  "Audio Devices"
-];
-
-const BRANDS = [
-  "Apple", "Samsung", "Xiaomi", "Oppo", "Vivo", "Realme",
-  "OnePlus", "Motorola", "Nokia", "Google", "Others"
-];
-
 const UNITS = ["Piece", "Box", "Set", "Pair", "Pack"];
 
 export default function AddProduct() {
@@ -91,6 +76,15 @@ export default function AddProduct() {
   const queryClient = useQueryClient();
   const [imageFiles, setImageFiles] = useState<Array<{ id: string; file: File; preview: string; isPrimary: boolean }>>([]);
   const [specifications, setSpecifications] = useState<Array<{ key: string; value: string }>>([]);
+
+  // Fetch categories and brands from database
+  const { data: categories } = useQuery({
+    queryKey: ["/api/categories"],
+  });
+
+  const { data: brands } = useQuery({
+    queryKey: ["/api/brands"],
+  });
 
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
@@ -327,12 +321,12 @@ export default function AddProduct() {
                 <div className="space-y-2">
                   <Label htmlFor="category">Category *</Label>
                   <Select onValueChange={(value) => form.setValue("category", value)}>
-                    <SelectTrigger>
+                    <SelectTrigger data-testid="select-category">
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {CATEGORIES.map((cat) => (
-                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                      {categories && Array.isArray(categories) && categories.map((cat: any) => (
+                        <SelectItem key={cat.id} value={cat.name}>{cat.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -344,12 +338,12 @@ export default function AddProduct() {
                 <div className="space-y-2">
                   <Label htmlFor="brand">Brand *</Label>
                   <Select onValueChange={(value) => form.setValue("brand", value)}>
-                    <SelectTrigger>
+                    <SelectTrigger data-testid="select-brand">
                       <SelectValue placeholder="Select brand" />
                     </SelectTrigger>
                     <SelectContent>
-                      {BRANDS.map((brand) => (
-                        <SelectItem key={brand} value={brand}>{brand}</SelectItem>
+                      {brands && Array.isArray(brands) && brands.map((brand: any) => (
+                        <SelectItem key={brand.id} value={brand.name}>{brand.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
