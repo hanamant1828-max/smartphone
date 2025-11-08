@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useForm } from "react-hook-form";
-import { Plus, Search, Edit, Trash2, Package, MoreVertical, X, Plus as PlusIcon, Minus, Calendar as CalendarIcon } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Package, MoreVertical, X, Plus as PlusIcon, Minus, Calendar as CalendarIcon, Upload } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -70,7 +70,7 @@ export default function Inventory() {
   const [showBulkPreview, setShowBulkPreview] = useState(false);
   const [bulkPreviewData, setBulkPreviewData] = useState<any[]>([]);
   const [selectAllPages, setSelectAllPages] = useState(false);
-  
+
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -263,13 +263,13 @@ export default function Inventory() {
   const filteredProducts = products.filter((p) => {
     const query = searchQuery.toLowerCase().trim();
     if (!query) return true;
-    
+
     const name = p.name?.toLowerCase() || '';
     const brand = p.brand?.toLowerCase() || '';
     const model = p.model?.toLowerCase() || '';
     const category = p.category?.toLowerCase() || '';
     const imei = p.imeiNumber?.toLowerCase() || '';
-    
+
     return (
       name.includes(query) ||
       brand.includes(query) ||
@@ -292,7 +292,7 @@ export default function Inventory() {
 
   const toggleSelection = (id: number, index: number, shiftKey: boolean) => {
     const newSelection = new Set(selectedIds);
-    
+
     if (shiftKey && lastSelectedIndex !== null) {
       // Range selection
       const start = Math.min(lastSelectedIndex, index);
@@ -308,7 +308,7 @@ export default function Inventory() {
         newSelection.add(id);
       }
     }
-    
+
     setSelectedIds(newSelection);
     setLastSelectedIndex(index);
   };
@@ -347,7 +347,7 @@ export default function Inventory() {
 
   const onStockSubmit = (data: any) => {
     if (!stockProduct) return;
-    
+
     stockAdjustMutation.mutate({
       productId: stockProduct.id,
       ...data,
@@ -361,7 +361,7 @@ export default function Inventory() {
       const currentStock = product.stockQuantity || 0;
       const qty = parseInt(data.quantity) || 0;
       let newStock = currentStock;
-      
+
       switch (data.adjustmentType) {
         case "add":
           newStock = currentStock + qty;
@@ -373,7 +373,7 @@ export default function Inventory() {
           newStock = qty;
           break;
       }
-      
+
       return {
         id: product.id,
         name: product.name,
@@ -382,7 +382,7 @@ export default function Inventory() {
         change: newStock - currentStock,
       };
     });
-    
+
     setBulkPreviewData(preview);
     setShowBulkPreview(true);
   };
@@ -424,12 +424,12 @@ export default function Inventory() {
     if (data.warrantyMonths !== "") updates.warrantyMonths = parseInt(data.warrantyMonths);
     if (data.minStockLevel !== "") updates.minStockLevel = parseInt(data.minStockLevel);
     if (data.costPrice !== "") updates.costPrice = parseFloat(data.costPrice);
-    
+
     if (Object.keys(updates).length === 0) {
       toast({ title: "No fields to update", variant: "destructive" });
       return;
     }
-    
+
     bulkUpdateMutation.mutate({
       productIds: Array.from(selectedIds),
       updates,
@@ -445,7 +445,7 @@ export default function Inventory() {
 
   const exportSelected = (format: 'csv' | 'excel' | 'pdf') => {
     const selectedProducts = products.filter(p => selectedIds.has(p.id));
-    
+
     if (format === 'csv') {
       const headers = ['Name', 'Brand', 'Model', 'Category', 'Price', 'Cost Price', 'Stock', 'Status'];
       const rows = selectedProducts.map(p => [
@@ -458,11 +458,11 @@ export default function Inventory() {
         p.stockQuantity,
         p.isActive ? 'Active' : 'Inactive'
       ]);
-      
+
       const csv = [headers, ...rows]
         .map(row => row.map(cell => `"${cell}"`).join(','))
         .join('\n');
-      
+
       const blob = new Blob([csv], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -470,12 +470,12 @@ export default function Inventory() {
       a.download = `products_export_${new Date().toISOString().split('T')[0]}.csv`;
       a.click();
       URL.revokeObjectURL(url);
-      
+
       toast({ title: `Exported ${selectedProducts.length} products to CSV` });
     } else {
       toast({ title: `${format.toUpperCase()} export coming soon`, variant: "default" });
     }
-    
+
     setShowBulkActionDialog(null);
   };
 
@@ -491,11 +491,11 @@ export default function Inventory() {
 
   const calculateNewStock = () => {
     if (!stockProduct) return 0;
-    
+
     const current = stockProduct.stockQuantity || 0;
     const qty = parseInt(stockForm.watch("quantity") as any) || 0;
     const type = stockForm.watch("adjustmentType");
-    
+
     switch (type) {
       case "add":
         return current + qty;
@@ -516,10 +516,16 @@ export default function Inventory() {
           <h1 className="text-3xl font-medium tracking-tight">Inventory</h1>
           <p className="text-muted-foreground">Manage your product inventory</p>
         </div>
-        <Button onClick={() => setLocation("/add-product")} data-testid="button-add-product">
-          <Plus className="mr-2 h-4 w-4" />
-          Add Product
-        </Button>
+        <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setLocation("/inventory/import")}>
+              <Upload className="h-4 w-4 mr-2" />
+              Import Products
+            </Button>
+            <Button onClick={() => setLocation("/add-product")} data-testid="button-add-product">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Product
+            </Button>
+          </div>
       </div>
 
       {/* Selection Toolbar */}
@@ -551,7 +557,7 @@ export default function Inventory() {
                   )}
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
@@ -562,7 +568,7 @@ export default function Inventory() {
                   <Package className="mr-2 h-4 w-4" />
                   Adjust Stock
                 </Button>
-                
+
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm" data-testid="button-bulk-actions">
@@ -755,7 +761,7 @@ export default function Inventory() {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={stockForm.control}
                 name="quantity"
@@ -829,7 +835,7 @@ export default function Inventory() {
                   -10
                 </Button>
               </div>
-              
+
               <FormField
                 control={stockForm.control}
                 name="reason"
@@ -855,7 +861,7 @@ export default function Inventory() {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={stockForm.control}
                 name="notes"
@@ -873,7 +879,7 @@ export default function Inventory() {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={stockForm.control}
                 name="referenceNumber"
@@ -891,7 +897,7 @@ export default function Inventory() {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={stockForm.control}
                 name="adjustmentDate"
@@ -930,7 +936,7 @@ export default function Inventory() {
                   </FormItem>
                 )}
               />
-              
+
               <DialogFooter>
                 <Button type="submit" data-testid="button-submit-stock-adjust">
                   Adjust Stock
@@ -974,7 +980,7 @@ export default function Inventory() {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={bulkStockForm.control}
                 name="quantity"
@@ -994,7 +1000,7 @@ export default function Inventory() {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={bulkStockForm.control}
                 name="reason"
@@ -1020,7 +1026,7 @@ export default function Inventory() {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={bulkStockForm.control}
                 name="notes"
@@ -1038,7 +1044,7 @@ export default function Inventory() {
                   </FormItem>
                 )}
               />
-              
+
               <DialogFooter>
                 <Button type="submit" data-testid="button-submit-bulk-stock-adjust">
                   Adjust Stock for {selectedIds.size} Products
@@ -1079,7 +1085,7 @@ export default function Inventory() {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={bulkEditForm.control}
                 name="warrantyMonths"
@@ -1098,7 +1104,7 @@ export default function Inventory() {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={bulkEditForm.control}
                 name="minStockLevel"
@@ -1117,7 +1123,7 @@ export default function Inventory() {
                   </FormItem>
                 )}
               />
-              
+
               <DialogFooter>
                 <Button variant="outline" onClick={() => setShowBulkActionDialog(null)} type="button">
                   Cancel
@@ -1209,7 +1215,7 @@ export default function Inventory() {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={bulkPriceForm.control}
                 name="operation"
@@ -1234,7 +1240,7 @@ export default function Inventory() {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={bulkPriceForm.control}
                 name="value"
@@ -1254,7 +1260,7 @@ export default function Inventory() {
                   </FormItem>
                 )}
               />
-              
+
               <DialogFooter>
                 <Button type="submit" data-testid="button-submit-bulk-price">
                   Update Prices
