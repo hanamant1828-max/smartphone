@@ -20,6 +20,10 @@ let brandFilter = '';
 let brandStatusFilter = 'all';
 let brandViewMode = 'table'; // 'table' or 'grid'
 let brandSortBy = 'name'; // 'name', 'productCount', 'recent'
+let modelFilter = '';
+let modelBrandFilter = '';
+let modelStatusFilter = 'all';
+let editingModelId = null;
 
 // Initialize with default categories if empty
 const storedCategories = localStorage.getItem('categories');
@@ -51,6 +55,98 @@ if (!storedBrands) {
   localStorage.setItem('brands', JSON.stringify(brands));
 } else {
   brands = JSON.parse(storedBrands);
+}
+
+// Initialize models if empty
+const storedModels = localStorage.getItem('models');
+if (!storedModels) {
+  models = [
+    {
+      id: 1,
+      brandId: 1,
+      name: 'Galaxy S24 Ultra',
+      modelNumber: 'SM-S928B',
+      modelCode: 'SAMS-GS24U',
+      description: 'Premium flagship smartphone with AI features',
+      imageUrl: '',
+      launchDate: '2024-01-17',
+      discontinued: false,
+      baseSpecs: {
+        display: '6.8" Dynamic AMOLED 2X',
+        processor: 'Snapdragon 8 Gen 3',
+        camera: '200MP + 50MP + 12MP + 10MP',
+        battery: '5000mAh',
+        os: 'Android 14'
+      },
+      warrantyMonths: 12,
+      active: true,
+      displayOrder: 1,
+      variants: [
+        { ram: '12GB', storage: '256GB', color: 'Titanium Gray', sku: 'SAMS-GS24U-12-256-GRAY' },
+        { ram: '12GB', storage: '256GB', color: 'Titanium Black', sku: 'SAMS-GS24U-12-256-BLK' },
+        { ram: '12GB', storage: '512GB', color: 'Titanium Gray', sku: 'SAMS-GS24U-12-512-GRAY' },
+        { ram: '16GB', storage: '1TB', color: 'Titanium Gray', sku: 'SAMS-GS24U-16-1TB-GRAY' }
+      ],
+      selected: false
+    },
+    {
+      id: 2,
+      brandId: 1,
+      name: 'Galaxy S24+',
+      modelNumber: 'SM-S926B',
+      modelCode: 'SAMS-GS24P',
+      description: 'Premium smartphone with larger display',
+      imageUrl: '',
+      launchDate: '2024-01-17',
+      discontinued: false,
+      baseSpecs: {
+        display: '6.7" Dynamic AMOLED 2X',
+        processor: 'Snapdragon 8 Gen 3',
+        camera: '50MP + 12MP + 10MP',
+        battery: '4900mAh',
+        os: 'Android 14'
+      },
+      warrantyMonths: 12,
+      active: true,
+      displayOrder: 2,
+      variants: [
+        { ram: '8GB', storage: '256GB', color: 'Onyx Black', sku: 'SAMS-GS24P-8-256-BLK' },
+        { ram: '12GB', storage: '512GB', color: 'Onyx Black', sku: 'SAMS-GS24P-12-512-BLK' }
+      ],
+      selected: false
+    },
+    {
+      id: 3,
+      brandId: 2,
+      name: 'iPhone 15 Pro Max',
+      modelNumber: 'A2849',
+      modelCode: 'APPL-IP15PM',
+      description: 'Premium iPhone with titanium design',
+      imageUrl: '',
+      launchDate: '2023-09-22',
+      discontinued: false,
+      baseSpecs: {
+        display: '6.7" Super Retina XDR',
+        processor: 'A17 Pro',
+        camera: '48MP + 12MP + 12MP',
+        battery: '4441mAh',
+        os: 'iOS 17'
+      },
+      warrantyMonths: 12,
+      active: true,
+      displayOrder: 3,
+      variants: [
+        { ram: '8GB', storage: '256GB', color: 'Natural Titanium', sku: 'APPL-IP15PM-8-256-NAT' },
+        { ram: '8GB', storage: '256GB', color: 'Blue Titanium', sku: 'APPL-IP15PM-8-256-BLU' },
+        { ram: '8GB', storage: '512GB', color: 'Natural Titanium', sku: 'APPL-IP15PM-8-512-NAT' },
+        { ram: '8GB', storage: '1TB', color: 'Natural Titanium', sku: 'APPL-IP15PM-8-1TB-NAT' }
+      ],
+      selected: false
+    }
+  ];
+  localStorage.setItem('models', JSON.stringify(models));
+} else {
+  models = JSON.parse(storedModels);
 }
 
 export function render(app) {
@@ -283,6 +379,132 @@ export function render(app) {
         <div class="modal-footer">
           <button class="btn btn-outline" onclick="closeDeleteCategoryModal()">Cancel</button>
           <button class="btn btn-error" id="confirmDeleteBtn">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Model Modal -->
+    <div id="modelModal" class="modal-backdrop hidden">
+      <div class="modal" style="max-width: 1000px;">
+        <div class="modal-header">
+          <h3 class="modal-title" id="modelModalTitle">Add Model</h3>
+          <button class="modal-close" onclick="closeModelModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="modelForm">
+            <div class="grid grid-cols-2 gap-4">
+              <div class="form-group">
+                <label class="form-label">Brand *</label>
+                <select id="modelBrand" class="form-input" required>
+                  <option value="">Select Brand</option>
+                  ${brands.filter(b => b.active).map(b => `<option value="${b.id}">${b.name}</option>`).join('')}
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Model Name *</label>
+                <input type="text" id="modelName" class="form-input" placeholder="e.g., Galaxy S24 Ultra" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Model Number</label>
+                <input type="text" id="modelNumber" class="form-input" placeholder="e.g., SM-S928B" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Model Code</label>
+                <input type="text" id="modelCode" class="form-input" placeholder="Auto-generated" readonly style="background-color: var(--surface);" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Launch Date</label>
+                <input type="date" id="modelLaunchDate" class="form-input" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Warranty Period (months)</label>
+                <input type="number" id="modelWarranty" class="form-input" value="12" min="0" />
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Description</label>
+              <textarea id="modelDescription" class="form-input" rows="3" placeholder="Model description"></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Model Image URL</label>
+              <input type="text" id="modelImage" class="form-input" placeholder="https://example.com/image.jpg" />
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Base Specifications</label>
+              <div class="grid grid-cols-2 gap-4">
+                <input type="text" id="modelSpecDisplay" class="form-input" placeholder="Display" />
+                <input type="text" id="modelSpecProcessor" class="form-input" placeholder="Processor" />
+                <input type="text" id="modelSpecCamera" class="form-input" placeholder="Camera" />
+                <input type="text" id="modelSpecBattery" class="form-input" placeholder="Battery" />
+                <input type="text" id="modelSpecOS" class="form-input" placeholder="OS" />
+                <input type="number" id="modelDisplayOrder" class="form-input" placeholder="Display Order" value="1" min="0" />
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-4">
+              <div class="form-group">
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" id="modelActive" checked />
+                  <span>Active</span>
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" id="modelDiscontinued" />
+                  <span>Discontinued</span>
+                </label>
+              </div>
+            </div>
+            
+            <div class="form-group mt-6">
+              <div class="flex justify-between items-center mb-4">
+                <h4 class="font-semibold">Model Variants</h4>
+                <button type="button" class="btn btn-outline btn-sm" onclick="addVariantRow()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                  Add Variant
+                </button>
+              </div>
+              <div id="variantsContainer">
+                <!-- Variants will be added here -->
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" onclick="closeModelModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveModel()">Save Model</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Model Variants Modal -->
+    <div id="modelVariantsModal" class="modal-backdrop hidden">
+      <div class="modal" style="max-width: 900px;">
+        <div class="modal-header">
+          <h3 class="modal-title" id="modelVariantsModalTitle">Model Variants</h3>
+          <button class="modal-close" onclick="closeModelVariantsModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body" id="modelVariantsContent">
+          <!-- Variants content will be loaded here -->
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" onclick="closeModelVariantsModal()">Close</button>
         </div>
       </div>
     </div>
@@ -663,10 +885,13 @@ function renderBrandsGridView(filteredBrands) {
 }
 
 function renderModelsTab() {
+  const filteredModels = getFilteredModels();
+  const selectedCount = models.filter(m => m.selected).length;
+
   return `
     <div class="flex justify-between items-center mb-6">
-      <div class="flex gap-4" style="flex: 1;">
-        <select class="form-input" style="max-width: 200px;" onchange="filterModelsByBrand(this.value)">
+      <div class="flex gap-4 items-center">
+        <select class="form-input" style="max-width: 200px;" value="${modelBrandFilter}" onchange="handleFilterModelsByBrand(this.value)">
           <option value="">All Brands</option>
           ${brands.filter(b => b.active).map(b => `<option value="${b.id}">${b.name}</option>`).join('')}
         </select>
@@ -675,47 +900,113 @@ function renderModelsTab() {
           class="form-input" 
           placeholder="Search models..." 
           style="max-width: 400px;"
-          oninput="filterModels(this.value)"
+          value="${modelFilter}"
+          oninput="handleFilterModels(this.value)"
         />
+        <select class="form-input" style="max-width: 200px;" value="${modelStatusFilter}" onchange="handleFilterModelsByStatus(this.value)">
+          <option value="all">All Status</option>
+          <option value="active">Active Only</option>
+          <option value="inactive">Inactive Only</option>
+        </select>
       </div>
-      <button class="btn btn-primary" onclick="openModelModal()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="12" y1="5" x2="12" y2="19"/>
-          <line x1="5" y1="12" x2="19" y2="12"/>
-        </svg>
-        Add Model
-      </button>
+      <div class="flex gap-2">
+        ${selectedCount > 0 ? `
+          <button class="btn btn-outline" onclick="bulkActivateModels()">
+            Activate (${selectedCount})
+          </button>
+          <button class="btn btn-outline" onclick="bulkDeactivateModels()">
+            Deactivate (${selectedCount})
+          </button>
+          <button class="btn btn-error" onclick="bulkDeleteModels()">
+            Delete (${selectedCount})
+          </button>
+        ` : ''}
+        <button class="btn btn-outline" onclick="exportModels()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Export
+        </button>
+        <button class="btn btn-outline" onclick="showImportModal('models')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          Import
+        </button>
+        <button class="btn btn-primary" onclick="handleOpenModelModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Add Model
+        </button>
+      </div>
     </div>
     <div class="table-container">
       <table class="table">
         <thead>
           <tr>
+            <th style="width: 40px;">
+              <input type="checkbox" onchange="toggleSelectAllModels(this.checked)" />
+            </th>
             <th>Brand</th>
             <th>Model Name</th>
             <th>Model Number</th>
-            <th>Launch Date</th>
+            <th>Variants</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          ${models.length === 0 ? `
+          ${filteredModels.length === 0 ? `
             <tr>
-              <td colspan="6" class="text-center" style="padding: 48px;">No models found</td>
+              <td colspan="7" class="text-center" style="padding: 48px;">
+                <div style="color: var(--text-secondary);">
+                  <p>No models found</p>
+                </div>
+              </td>
             </tr>
-          ` : models.map(model => {
+          ` : filteredModels.map(model => {
             const brand = brands.find(b => b.id === model.brandId);
+            const variantCount = model.variants ? model.variants.length : 0;
             return `
-              <tr>
-                <td>${brand?.name || '-'}</td>
-                <td><strong>${model.name}</strong></td>
+              <tr data-model-id="${model.id}">
+                <td>
+                  <input type="checkbox" ${model.selected ? 'checked' : ''} onchange="toggleModelSelection(${model.id})" />
+                </td>
+                <td><strong>${brand?.name || '-'}</strong></td>
+                <td>
+                  <strong>${model.name}</strong>
+                  ${model.modelCode ? `<br><code style="font-size: 0.75rem;">${model.modelCode}</code>` : ''}
+                </td>
                 <td class="font-mono">${model.modelNumber || '-'}</td>
-                <td>${model.launchDate || '-'}</td>
-                <td><span class="badge badge-${model.active ? 'success' : 'secondary'}">${model.active ? 'Active' : 'Inactive'}</span></td>
+                <td>
+                  <span class="badge badge-primary">${variantCount} variant${variantCount !== 1 ? 's' : ''}</span>
+                  ${variantCount > 0 ? `<button class="btn btn-outline btn-sm ml-2" onclick="viewModelVariants(${model.id})">View</button>` : ''}
+                </td>
+                <td>
+                  <span class="badge badge-${model.active ? 'success' : 'secondary'}">
+                    ${model.active ? '🟢 Active' : '🔴 Inactive'}
+                  </span>
+                </td>
                 <td>
                   <div class="flex gap-2">
-                    <button class="btn btn-outline btn-sm" onclick="editModel(${model.id})">Edit</button>
-                    <button class="btn btn-error btn-sm" onclick="deleteModel(${model.id})">Delete</button>
+                    <button class="btn btn-outline btn-sm" onclick="handleEditModel(${model.id})" title="Edit">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                      </svg>
+                    </button>
+                    <button class="btn btn-error btn-sm" onclick="handleDeleteModel(${model.id})" title="Delete">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                      </svg>
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -1556,25 +1847,385 @@ function setFilter(filter) {
   filterProducts();
 }
 
-// Model Functions (placeholders)
-function openModelModal() {
-  showToast('Model form coming soon', 'info');
+// Model Functions
+function getFilteredModels() {
+  let filtered = [...models];
+
+  // Apply brand filter
+  if (modelBrandFilter) {
+    filtered = filtered.filter(m => m.brandId === parseInt(modelBrandFilter));
+  }
+
+  // Apply search filter
+  if (modelFilter) {
+    filtered = filtered.filter(m => 
+      m.name.toLowerCase().includes(modelFilter.toLowerCase()) ||
+      (m.modelNumber && m.modelNumber.toLowerCase().includes(modelFilter.toLowerCase())) ||
+      (m.modelCode && m.modelCode.toLowerCase().includes(modelFilter.toLowerCase()))
+    );
+  }
+
+  // Apply status filter
+  if (modelStatusFilter === 'active') {
+    filtered = filtered.filter(m => m.active);
+  } else if (modelStatusFilter === 'inactive') {
+    filtered = filtered.filter(m => !m.active);
+  }
+
+  return filtered;
 }
 
-function editModel(id) {
-  showToast('Model edit coming soon', 'info');
+function autoGenerateModelCode(brandId, modelName) {
+  const brand = brands.find(b => b.id === parseInt(brandId));
+  if (!brand) return '';
+  
+  const brandCode = brand.code || brand.name.substring(0, 4).toUpperCase();
+  const modelCode = modelName.split(' ').map(w => w.charAt(0)).join('').toUpperCase();
+  return `${brandCode}-${modelCode}`;
 }
 
-function deleteModel(id) {
-  showToast('Model delete coming soon', 'info');
+function handleOpenModelModal() {
+  editingModelId = null;
+  document.getElementById('modelModalTitle').textContent = 'Add Model';
+  document.getElementById('modelBrand').value = '';
+  document.getElementById('modelName').value = '';
+  document.getElementById('modelNumber').value = '';
+  document.getElementById('modelCode').value = '';
+  document.getElementById('modelLaunchDate').value = '';
+  document.getElementById('modelWarranty').value = '12';
+  document.getElementById('modelDescription').value = '';
+  document.getElementById('modelImage').value = '';
+  document.getElementById('modelSpecDisplay').value = '';
+  document.getElementById('modelSpecProcessor').value = '';
+  document.getElementById('modelSpecCamera').value = '';
+  document.getElementById('modelSpecBattery').value = '';
+  document.getElementById('modelSpecOS').value = '';
+  document.getElementById('modelDisplayOrder').value = '1';
+  document.getElementById('modelActive').checked = true;
+  document.getElementById('modelDiscontinued').checked = false;
+  document.getElementById('variantsContainer').innerHTML = '';
+
+  // Add event listeners
+  const modelBrandSelect = document.getElementById('modelBrand');
+  const modelNameInput = document.getElementById('modelName');
+  const modelCodeInput = document.getElementById('modelCode');
+  
+  const updateModelCode = () => {
+    if (!editingModelId && modelBrandSelect.value && modelNameInput.value) {
+      modelCodeInput.value = autoGenerateModelCode(modelBrandSelect.value, modelNameInput.value);
+    }
+  };
+  
+  modelBrandSelect.onchange = updateModelCode;
+  modelNameInput.oninput = updateModelCode;
+
+  document.getElementById('modelModal').classList.remove('hidden');
 }
 
-function filterModels(query) {
+function closeModelModal() {
+  document.getElementById('modelModal').classList.add('hidden');
+}
+
+function addVariantRow() {
+  const container = document.getElementById('variantsContainer');
+  const variantId = Date.now();
+  
+  const variantRow = document.createElement('div');
+  variantRow.className = 'variant-row';
+  variantRow.style.cssText = 'display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 40px; gap: 8px; margin-bottom: 8px; padding: 12px; background: var(--surface); border-radius: 8px;';
+  variantRow.innerHTML = `
+    <input type="text" class="form-input variant-ram" placeholder="RAM (e.g., 8GB)" />
+    <input type="text" class="form-input variant-storage" placeholder="Storage (e.g., 256GB)" />
+    <input type="text" class="form-input variant-color" placeholder="Color" />
+    <input type="text" class="form-input variant-sku" placeholder="SKU (optional)" />
+    <button type="button" class="btn btn-error btn-sm" onclick="this.parentElement.remove()" style="padding: 8px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+      </svg>
+    </button>
+  `;
+  
+  container.appendChild(variantRow);
+}
+
+function getVariantsFromForm() {
+  const variants = [];
+  const variantRows = document.querySelectorAll('.variant-row');
+  
+  variantRows.forEach(row => {
+    const ram = row.querySelector('.variant-ram').value.trim();
+    const storage = row.querySelector('.variant-storage').value.trim();
+    const color = row.querySelector('.variant-color').value.trim();
+    const sku = row.querySelector('.variant-sku').value.trim();
+    
+    if (ram || storage || color) {
+      variants.push({ ram, storage, color, sku });
+    }
+  });
+  
+  return variants;
+}
+
+function saveModel() {
+  const brandId = document.getElementById('modelBrand').value;
+  const name = document.getElementById('modelName').value.trim();
+  
+  if (!brandId) {
+    showToast('Please select a brand', 'error');
+    return;
+  }
+  
+  if (!name) {
+    showToast('Model name is required', 'error');
+    return;
+  }
+
+  const modelCode = document.getElementById('modelCode').value.trim() || 
+                     autoGenerateModelCode(brandId, name);
+
+  const modelData = {
+    id: editingModelId || Date.now(),
+    brandId: parseInt(brandId),
+    name: name,
+    modelNumber: document.getElementById('modelNumber').value.trim(),
+    modelCode: modelCode,
+    description: document.getElementById('modelDescription').value.trim(),
+    imageUrl: document.getElementById('modelImage').value.trim(),
+    launchDate: document.getElementById('modelLaunchDate').value,
+    discontinued: document.getElementById('modelDiscontinued').checked,
+    baseSpecs: {
+      display: document.getElementById('modelSpecDisplay').value.trim(),
+      processor: document.getElementById('modelSpecProcessor').value.trim(),
+      camera: document.getElementById('modelSpecCamera').value.trim(),
+      battery: document.getElementById('modelSpecBattery').value.trim(),
+      os: document.getElementById('modelSpecOS').value.trim()
+    },
+    warrantyMonths: parseInt(document.getElementById('modelWarranty').value) || 12,
+    active: document.getElementById('modelActive').checked,
+    displayOrder: parseInt(document.getElementById('modelDisplayOrder').value) || 1,
+    variants: getVariantsFromForm(),
+    selected: false
+  };
+
+  const existingIndex = models.findIndex(m => m.id === modelData.id);
+
+  if (existingIndex !== -1) {
+    models[existingIndex] = { ...models[existingIndex], ...modelData };
+    showToast('Model updated successfully', 'success');
+  } else {
+    models.push(modelData);
+    showToast('Model added successfully', 'success');
+  }
+
+  editingModelId = null;
+  localStorage.setItem('models', JSON.stringify(models));
+  closeModelModal();
   updateTabContent();
 }
 
-function filterModelsByBrand(brandId) {
+function handleEditModel(id) {
+  const model = models.find(m => m.id === id);
+  if (!model) return;
+
+  editingModelId = id;
+  document.getElementById('modelModalTitle').textContent = 'Edit Model';
+  document.getElementById('modelBrand').value = model.brandId;
+  document.getElementById('modelName').value = model.name;
+  document.getElementById('modelNumber').value = model.modelNumber || '';
+  document.getElementById('modelCode').value = model.modelCode || '';
+  document.getElementById('modelLaunchDate').value = model.launchDate || '';
+  document.getElementById('modelWarranty').value = model.warrantyMonths || 12;
+  document.getElementById('modelDescription').value = model.description || '';
+  document.getElementById('modelImage').value = model.imageUrl || '';
+  document.getElementById('modelSpecDisplay').value = model.baseSpecs?.display || '';
+  document.getElementById('modelSpecProcessor').value = model.baseSpecs?.processor || '';
+  document.getElementById('modelSpecCamera').value = model.baseSpecs?.camera || '';
+  document.getElementById('modelSpecBattery').value = model.baseSpecs?.battery || '';
+  document.getElementById('modelSpecOS').value = model.baseSpecs?.os || '';
+  document.getElementById('modelDisplayOrder').value = model.displayOrder || 1;
+  document.getElementById('modelActive').checked = model.active;
+  document.getElementById('modelDiscontinued').checked = model.discontinued || false;
+
+  // Load variants
+  const container = document.getElementById('variantsContainer');
+  container.innerHTML = '';
+  if (model.variants && model.variants.length > 0) {
+    model.variants.forEach(variant => {
+      addVariantRow();
+      const lastRow = container.lastElementChild;
+      lastRow.querySelector('.variant-ram').value = variant.ram || '';
+      lastRow.querySelector('.variant-storage').value = variant.storage || '';
+      lastRow.querySelector('.variant-color').value = variant.color || '';
+      lastRow.querySelector('.variant-sku').value = variant.sku || '';
+    });
+  }
+
+  document.getElementById('modelModal').classList.remove('hidden');
+}
+
+function handleDeleteModel(id) {
+  const model = models.find(m => m.id === id);
+  if (!model) return;
+
+  const variantCount = model.variants ? model.variants.length : 0;
+  
+  if (variantCount > 0) {
+    if (!confirm(`This model has ${variantCount} variants. Are you sure you want to delete it?`)) {
+      return;
+    }
+  }
+
+  models = models.filter(m => m.id !== id);
+  localStorage.setItem('models', JSON.stringify(models));
+  showToast('Model deleted successfully', 'success');
   updateTabContent();
+}
+
+function handleFilterModels(query) {
+  modelFilter = query;
+  updateTabContent();
+}
+
+function handleFilterModelsByBrand(brandId) {
+  modelBrandFilter = brandId;
+  updateTabContent();
+}
+
+function handleFilterModelsByStatus(status) {
+  modelStatusFilter = status;
+  updateTabContent();
+}
+
+function toggleModelSelection(id) {
+  const model = models.find(m => m.id === id);
+  if (model) {
+    model.selected = !model.selected;
+    localStorage.setItem('models', JSON.stringify(models));
+    updateTabContent();
+  }
+}
+
+function toggleSelectAllModels(checked) {
+  const filteredModels = getFilteredModels();
+  models.forEach(m => {
+    if (filteredModels.find(fm => fm.id === m.id)) {
+      m.selected = checked;
+    }
+  });
+  localStorage.setItem('models', JSON.stringify(models));
+  updateTabContent();
+}
+
+function bulkActivateModels() {
+  models.forEach(m => {
+    if (m.selected) {
+      m.active = true;
+      m.selected = false;
+    }
+  });
+  localStorage.setItem('models', JSON.stringify(models));
+  showToast('Models activated', 'success');
+  updateTabContent();
+}
+
+function bulkDeactivateModels() {
+  models.forEach(m => {
+    if (m.selected) {
+      m.active = false;
+      m.selected = false;
+    }
+  });
+  localStorage.setItem('models', JSON.stringify(models));
+  showToast('Models deactivated', 'success');
+  updateTabContent();
+}
+
+function bulkDeleteModels() {
+  const selectedIds = models.filter(m => m.selected).map(m => m.id);
+  if (!confirm(`Delete ${selectedIds.length} models?`)) return;
+
+  models = models.filter(m => !m.selected);
+  localStorage.setItem('models', JSON.stringify(models));
+  showToast('Models deleted', 'success');
+  updateTabContent();
+}
+
+function exportModels() {
+  const csv = [
+    ['Brand', 'Model Name', 'Model Number', 'Model Code', 'Launch Date', 'Warranty (months)', 'Active', 'Variants']
+  ];
+
+  models.forEach(model => {
+    const brand = brands.find(b => b.id === model.brandId);
+    const variantCount = model.variants ? model.variants.length : 0;
+    csv.push([
+      brand?.name || '',
+      model.name,
+      model.modelNumber || '',
+      model.modelCode || '',
+      model.launchDate || '',
+      model.warrantyMonths || 12,
+      model.active ? 'true' : 'false',
+      variantCount
+    ]);
+  });
+
+  const csvContent = csv.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `models_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  showToast('Models exported', 'success');
+}
+
+function viewModelVariants(id) {
+  const model = models.find(m => m.id === id);
+  if (!model) return;
+
+  const brand = brands.find(b => b.id === model.brandId);
+  document.getElementById('modelVariantsModalTitle').textContent = `${brand?.name || ''} ${model.name} - Variants`;
+
+  const content = document.getElementById('modelVariantsContent');
+  
+  if (!model.variants || model.variants.length === 0) {
+    content.innerHTML = '<p class="text-center" style="padding: 48px; color: var(--text-secondary);">No variants defined for this model</p>';
+  } else {
+    content.innerHTML = `
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>RAM</th>
+              <th>Storage</th>
+              <th>Color</th>
+              <th>SKU</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${model.variants.map(variant => `
+              <tr>
+                <td><strong>${variant.ram || '-'}</strong></td>
+                <td>${variant.storage || '-'}</td>
+                <td>${variant.color || '-'}</td>
+                <td class="font-mono">${variant.sku || '-'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  document.getElementById('modelVariantsModal').classList.remove('hidden');
+}
+
+function closeModelVariantsModal() {
+  document.getElementById('modelVariantsModal').classList.add('hidden');
 }
 
 function closeDeleteCategoryModal() {
@@ -1628,11 +2279,23 @@ export async function init(app) {
   window.deleteProduct = deleteProduct;
   window.filterProducts = filterProducts;
   window.setFilter = setFilter;
-  window.openModelModal = openModelModal;
-  window.editModel = editModel;
-  window.deleteModel = deleteModel;
-  window.filterModels = filterModels;
-  window.filterModelsByBrand = filterModelsByBrand;
+  window.handleOpenModelModal = handleOpenModelModal;
+  window.closeModelModal = closeModelModal;
+  window.saveModel = saveModel;
+  window.handleEditModel = handleEditModel;
+  window.handleDeleteModel = handleDeleteModel;
+  window.handleFilterModels = handleFilterModels;
+  window.handleFilterModelsByBrand = handleFilterModelsByBrand;
+  window.handleFilterModelsByStatus = handleFilterModelsByStatus;
+  window.toggleModelSelection = toggleModelSelection;
+  window.toggleSelectAllModels = toggleSelectAllModels;
+  window.bulkActivateModels = bulkActivateModels;
+  window.bulkDeactivateModels = bulkDeactivateModels;
+  window.bulkDeleteModels = bulkDeleteModels;
+  window.exportModels = exportModels;
+  window.addVariantRow = addVariantRow;
+  window.viewModelVariants = viewModelVariants;
+  window.closeModelVariantsModal = closeModelVariantsModal;
 
   // Load initial data
   try {
