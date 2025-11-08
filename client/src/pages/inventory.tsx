@@ -38,6 +38,8 @@ import { apiRequest } from "@/lib/queryClient";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface Product {
   id: number;
@@ -128,7 +130,23 @@ export default function Inventory() {
     },
   });
 
+  const bulkEditSchema = z.object({
+    costPrice: z.string().optional().refine(
+      (val) => !val || (!isNaN(parseFloat(val)) && parseFloat(val) >= 0),
+      { message: "Cost price must be a valid positive number" }
+    ),
+    warrantyMonths: z.string().optional().refine(
+      (val) => !val || (!isNaN(parseInt(val)) && parseInt(val) >= 0),
+      { message: "Warranty must be a valid positive number" }
+    ),
+    minStockLevel: z.string().optional().refine(
+      (val) => !val || (!isNaN(parseInt(val)) && parseInt(val) >= 0),
+      { message: "Min stock level must be a valid positive number" }
+    ),
+  });
+
   const bulkEditForm = useForm({
+    resolver: zodResolver(bulkEditSchema),
     defaultValues: {
       warrantyMonths: "",
       minStockLevel: "",
@@ -311,6 +329,8 @@ export default function Inventory() {
 
   const clearSelection = () => {
     setSelectedIds(new Set());
+    setLastSelectedIndex(null);
+    setSelectAllPages(false);
   };
 
   const handleStockAdjust = (product: Product) => {
