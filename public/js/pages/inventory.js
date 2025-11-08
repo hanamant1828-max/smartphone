@@ -1426,12 +1426,12 @@ function renderBrandsTableView(filteredBrands) {
               </td>
               <td>
                 ${brand.logoUrl ? 
-                  `<img src="${brand.logoUrl}" alt="${brand.name}" style="width: 50px; height: 50px; object-fit: contain; border-radius: 4px; border: 1px solid var(--border);" />` :
-                  `<div style="width: 50px; height: 50px; background: var(--surface); border-radius: 4px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); font-weight: 500; color: var(--text-secondary);">${brand.name.substring(0, 2).toUpperCase()}</div>`
+                  `<img src="${brand.logoUrl}" alt="${brand.name || 'Brand'}" style="width: 50px; height: 50px; object-fit: contain; border-radius: 4px; border: 1px solid var(--border);" />` :
+                  `<div style="width: 50px; height: 50px; background: var(--surface); border-radius: 4px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); font-weight: 500; color: var(--text-secondary);">${(brand.name || '??').substring(0, 2).toUpperCase()}</div>`
                 }
               </td>
               <td>
-                <strong>${brand.name}</strong>
+                <strong>${brand.name || '-'}</strong>
                 ${brand.featured ? '<span class="badge badge-warning ml-2">Featured</span>' : ''}
               </td>
               <td><code>${brand.code}</code></td>
@@ -1832,7 +1832,7 @@ function getFilteredBrands() {
   // Apply search filter
   if (brandFilter) {
     filtered = filtered.filter(b => 
-      b.name.toLowerCase().includes(brandFilter.toLowerCase()) ||
+      (b.name && b.name.toLowerCase().includes(brandFilter.toLowerCase())) ||
       (b.code && b.code.toLowerCase().includes(brandFilter.toLowerCase())) ||
       (b.description && b.description.toLowerCase().includes(brandFilter.toLowerCase()))
     );
@@ -1848,7 +1848,9 @@ function getFilteredBrands() {
   // Apply sorting
   filtered.sort((a, b) => {
     if (brandSortBy === 'name') {
-      return a.name.localeCompare(b.name);
+      const nameA = a.name || '';
+      const nameB = b.name || '';
+      return nameA.localeCompare(nameB);
     } else if (brandSortBy === 'productCount') {
       return (b.productCount || 0) - (a.productCount || 0);
     } else if (brandSortBy === 'recent') {
