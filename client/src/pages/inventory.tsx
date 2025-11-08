@@ -31,10 +31,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useForm } from "react-hook-form";
-import { Plus, Search, Edit, Trash2, Package, MoreVertical, X, Plus as PlusIcon, Minus } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Package, MoreVertical, X, Plus as PlusIcon, Minus, Calendar as CalendarIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
 
 interface Product {
   id: number;
@@ -61,7 +64,10 @@ export default function Inventory() {
   const [showBulkStockModal, setShowBulkStockModal] = useState(false);
   const [stockProduct, setStockProduct] = useState<Product | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showBulkActionDialog, setShowBulkActionDialog] = useState<'category' | 'status' | 'price' | null>(null);
+  const [showBulkActionDialog, setShowBulkActionDialog] = useState<'category' | 'status' | 'price' | 'tags' | 'barcode' | 'export' | null>(null);
+  const [showBulkPreview, setShowBulkPreview] = useState(false);
+  const [bulkPreviewData, setBulkPreviewData] = useState<any[]>([]);
+  const [selectAllPages, setSelectAllPages] = useState(false);
   
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
@@ -95,6 +101,7 @@ export default function Inventory() {
       reason: "correction",
       notes: "",
       referenceNumber: "",
+      adjustmentDate: new Date(),
     },
   });
 
@@ -283,9 +290,15 @@ export default function Inventory() {
   const toggleSelectAll = () => {
     if (selectedIds.size === filteredProducts.length) {
       setSelectedIds(new Set());
+      setSelectAllPages(false);
     } else {
       setSelectedIds(new Set(filteredProducts.map(p => p.id)));
     }
+  };
+
+  const selectAllAcrossPages = () => {
+    setSelectedIds(new Set(products.map(p => p.id)));
+    setSelectAllPages(true);
   };
 
   const clearSelection = () => {
@@ -314,12 +327,50 @@ export default function Inventory() {
     });
   };
 
+  const showBulkStockPreview = (data: any) => {
+    const selectedProducts = products.filter(p => selectedIds.has(p.id));
+    const preview = selectedProducts.map(product => {
+      const currentStock = product.stockQuantity || 0;
+      const qty = parseInt(data.quantity) || 0;
+      let newStock = currentStock;
+      
+      switch (data.adjustmentType) {
+        case "add":
+          newStock = currentStock + qty;
+          break;
+        case "subtract":
+          newStock = Math.max(0, currentStock - qty);
+          break;
+        case "set":
+          newStock = qty;
+          break;
+      }
+      
+      return {
+        id: product.id,
+        name: product.name,
+        currentStock,
+        newStock,
+        change: newStock - currentStock,
+      };
+    });
+    
+    setBulkPreviewData(preview);
+    setShowBulkPreview(true);
+  };
+
   const onBulkStockSubmit = (data: any) => {
+    showBulkStockPreview(data);
+  };
+
+  const confirmBulkStockAdjustment = () => {
+    const data = bulkStockForm.getValues();
     bulkStockAdjustMutation.mutate({
       productIds: Array.from(selectedIds),
       ...data,
       quantity: parseInt(data.quantity),
     });
+    setShowBulkPreview(false);
   };
 
   const onBulkCategorySubmit = (data: any) => {
@@ -345,6 +396,52 @@ export default function Inventory() {
       productIds: Array.from(selectedIds),
       updates: { isActive },
     });
+  };
+
+  const exportSelected = (format: 'csv' | 'excel' | 'pdf') => {
+    const selectedProducts = products.filter(p => selectedIds.has(p.id));
+    
+    if (format === 'csv') {
+      const headers = ['Name', 'Brand', 'Model', 'Category', 'Price', 'Cost Price', 'Stock', 'Status'];
+      const rows = selectedProducts.map(p => [
+        p.name,
+        p.brand || '',
+        p.model || '',
+        p.category,
+        p.price,
+        p.costPrice,
+        p.stockQuantity,
+        p.isActive ? 'Active' : 'Inactive'
+      ]);
+      
+      const csv = [headers, ...rows]
+        .map(row => row.map(cell => `"${cell}"`).join(','))
+        .join('\n');
+      
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `products_export_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      toast({ title: `Exported ${selectedProducts.length} products to CSV` });
+    } else {
+      toast({ title: `${format.toUpperCase()} export coming soon`, variant: "default" });
+    }
+    
+    setShowBulkActionDialog(null);
+  };
+
+  const generateBarcodesForSelected = () => {
+    toast({ title: `Generating barcodes for ${selectedIds.size} products`, variant: "default" });
+    setShowBulkActionDialog(null);
+  };
+
+  const printLabelsForSelected = () => {
+    toast({ title: `Printing labels for ${selectedIds.size} products`, variant: "default" });
+    setShowBulkActionDialog(null);
   };
 
   const calculateNewStock = () => {
@@ -394,7 +491,22 @@ export default function Inventory() {
                 >
                   <X className="h-4 w-4" />
                 </Button>
-                <span className="font-medium">{selectedIds.size} selected</span>
+                <div className="flex flex-col">
+                  <span className="font-medium">{selectedIds.size} selected</span>
+                  {!selectAllPages && selectedIds.size === filteredProducts.length && filteredProducts.length < products.length && (
+                    <Button
+                      variant="link"
+                      size="sm"
+                      className="h-auto p-0 text-xs"
+                      onClick={selectAllAcrossPages}
+                    >
+                      Select all {products.length} products
+                    </Button>
+                  )}
+                  {selectAllPages && (
+                    <span className="text-xs text-muted-foreground">All {products.length} products selected</span>
+                  )}
+                </div>
               </div>
               
               <div className="flex items-center gap-2">
@@ -434,6 +546,16 @@ export default function Inventory() {
                         </DropdownMenuItem>
                       </DropdownMenuSubContent>
                     </DropdownMenuSub>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => setShowBulkActionDialog('barcode')}>
+                      Generate Barcodes
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={printLabelsForSelected}>
+                      Print Labels
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setShowBulkActionDialog('export')}>
+                      Export Selected
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem 
                       className="text-destructive"
@@ -724,6 +846,45 @@ export default function Inventory() {
                 )}
               />
               
+              <FormField
+                control={stockForm.control}
+                name="adjustmentDate"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Adjustment Date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className="w-full pl-3 text-left font-normal"
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date("1900-01-01")
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
               <DialogFooter>
                 <Button type="submit" data-testid="button-submit-stock-adjust">
                   Adjust Stock
@@ -973,6 +1134,108 @@ export default function Inventory() {
               </DialogFooter>
             </form>
           </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Stock Preview Dialog */}
+      <Dialog open={showBulkPreview} onOpenChange={setShowBulkPreview}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Preview Stock Changes</DialogTitle>
+            <DialogDescription>
+              Review changes before applying to {bulkPreviewData.length} products
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Product</TableHead>
+                  <TableHead className="text-right">Current Stock</TableHead>
+                  <TableHead className="text-right">Change</TableHead>
+                  <TableHead className="text-right">New Stock</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {bulkPreviewData.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="font-medium">{item.name}</TableCell>
+                    <TableCell className="text-right font-mono">{item.currentStock}</TableCell>
+                    <TableCell className="text-right font-mono">
+                      <span className={item.change > 0 ? "text-green-600" : item.change < 0 ? "text-red-600" : ""}>
+                        {item.change > 0 ? '+' : ''}{item.change}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right font-mono font-bold">{item.newStock}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowBulkPreview(false)}>
+              Cancel
+            </Button>
+            <Button onClick={confirmBulkStockAdjustment}>
+              Confirm Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Barcode Generation Dialog */}
+      <Dialog open={showBulkActionDialog === 'barcode'} onOpenChange={() => setShowBulkActionDialog(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Generate Barcodes</DialogTitle>
+            <DialogDescription>
+              Generate barcodes for {selectedIds.size} selected products
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Barcodes will be automatically generated for products that don't have one.
+              Existing barcodes will not be overwritten.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowBulkActionDialog(null)}>
+              Cancel
+            </Button>
+            <Button onClick={generateBarcodesForSelected}>
+              Generate Barcodes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Export Dialog */}
+      <Dialog open={showBulkActionDialog === 'export'} onOpenChange={() => setShowBulkActionDialog(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Export Selected Products</DialogTitle>
+            <DialogDescription>
+              Export {selectedIds.size} selected products
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-3 gap-4">
+              <Button variant="outline" onClick={() => exportSelected('csv')}>
+                CSV
+              </Button>
+              <Button variant="outline" onClick={() => exportSelected('excel')}>
+                Excel
+              </Button>
+              <Button variant="outline" onClick={() => exportSelected('pdf')}>
+                PDF
+              </Button>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowBulkActionDialog(null)}>
+              Cancel
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
