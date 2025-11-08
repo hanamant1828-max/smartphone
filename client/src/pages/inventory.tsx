@@ -71,7 +71,9 @@ export default function Inventory() {
   const filteredProducts = products.filter((p) =>
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (p.brand && p.brand.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    (p.model && p.model.toLowerCase().includes(searchQuery.toLowerCase()))
+    (p.model && p.model.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (p.productCode && p.productCode.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (p.imeiNumber && p.imeiNumber.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const onSubmit = (data: any) => {
@@ -210,10 +212,12 @@ export default function Inventory() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Search products by name, brand, or model..."
+                placeholder="Search products by name, brand, model, SKU, or IMEI..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
+                data-testid="input-search-products"
+                autoComplete="off"
               />
             </div>
           </CardContent>
