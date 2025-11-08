@@ -1,0 +1,64 @@
+Model Management (CRUD)
+Model List Page
+✓ Navigation: Settings > Models
+✓ Filter by Brand (required - models are brand-specific)
+✓ Display models in table:
+
+Brand	Model Name	Model Number	Variants	Status	Actions
+Samsung	Galaxy S24 Ultra	SM-S928B	12	🟢 Active	[Edit] [Delete]
+Samsung	Galaxy S24+	SM-S926B	8	🟢 Active	[Edit] [Delete]
+Samsung	Galaxy A54	SM-A546B	6	🟢 Active	[Edit] [Delete]
+Apple	iPhone 15 Pro Max	A2849	16	🟢 Active	[Edit] [Delete]
+
+Model Actions
+✓ "+ Add Model" button
+✓ Filter by Brand (dropdown)
+✓ Search models
+✓ Filter: Active/Inactive
+✓ View variants per model
+Add/Edit Model Form
+Form Fields:
+•	• Brand (dropdown - required) - e.g., "Samsung"
+•	• Model Name (required) - e.g., "Galaxy S24 Ultra"
+•	• Model Number (optional) - e.g., "SM-S928B"
+•	• Model Code (auto-generated) - e.g., "SAMS-GS24U"
+•	• Model Image (upload)
+•	• Description (rich text)
+•	• Launch Date
+•	• Discontinued (checkbox)
+•	• Base Specifications (key-value pairs):
+  - Display
+  - Processor
+  - Camera
+  - Battery
+  - OS
+•	• Default Warranty Period (months)
+•	• Status (Active/Inactive)
+•	• Display Order
+Variants Management (Within Model)
+⭐ IMPORTANT: Each model can have multiple variants (combinations of RAM, Storage, Color)
+
+
+Variant Configuration:
+• Define variant attributes for the model:
+  - RAM options: 8GB, 12GB, 16GB
+  - Storage options: 256GB, 512GB, 1TB
+  - Color options: Natural Titanium, Blue Titanium, Black Titanium
+
+• System generates all possible combinations:
+  - 8GB + 256GB - Natural Titanium
+  - 8GB + 256GB - Blue Titanium
+  - 8GB + 512GB - Natural Titanium
+  - ... (and so on)
+
+• Or manually add specific variants:
+  - Select which combinations are actually available
+  - Set different prices for different variants
+Model Features
+•	• Cannot delete model if products/variants exist
+•	• Cascade relationship: Brand → Model → Variant → Product
+•	• Bulk import models with variants (Excel/CSV)
+•	• Export models (Excel/CSV)
+•	• Model comparison view
+•	• Bulk activate/deactivate
+•	• Quick add product from model (pre-fills model data)
