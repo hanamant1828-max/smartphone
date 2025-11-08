@@ -205,7 +205,7 @@ export function render(app) {
               </div>
               <div class="form-group">
                 <label class="form-label">Brand Code</label>
-                <input type="text" id="brandCode" class="form-input" placeholder="Auto-generated" />
+                <input type="text" id="brandCode" class="form-input" placeholder="Auto-generated from name" readonly style="background-color: var(--surface);" />
               </div>
               <div class="form-group">
                 <label class="form-label">Website URL</label>
@@ -1151,6 +1151,16 @@ function handleOpenBrandModal() {
   document.getElementById('brandActive').checked = true;
   document.getElementById('brandShowMenu').checked = false;
   document.getElementById('brandFeatured').checked = false;
+
+  // Add event listener for auto-generating brand code
+  const brandNameInput = document.getElementById('brandName');
+  const brandCodeInput = document.getElementById('brandCode');
+  
+  brandNameInput.oninput = function() {
+    if (!editingBrandId) {
+      brandCodeInput.value = autoGenerateBrandCode(this.value);
+    }
+  };
 
   document.getElementById('brandModal').classList.remove('hidden');
 }
