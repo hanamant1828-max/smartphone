@@ -15,6 +15,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { apiRequest } from "@/lib/queryClient";
 
 
 // Sample suppliers - in production, this would come from the database
@@ -107,17 +108,7 @@ export default function AddProduct() {
 
   const createProduct = useMutation({
     mutationFn: async (data: ProductFormData) => {
-      const response = await fetch("/api/products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
+      const response = await apiRequest("POST", "/api/products", data);
       return response.json();
     },
     onSuccess: () => {
