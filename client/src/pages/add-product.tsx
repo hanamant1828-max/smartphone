@@ -60,6 +60,9 @@ const productSchema = z.object({
   supplierId: z.string().optional(),
   supplierProductCode: z.string().optional(),
   leadTime: z.number().min(0).optional(),
+  
+  // Image
+  imageUrl: z.string().optional(),
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
@@ -136,7 +139,14 @@ export default function AddProduct() {
   });
 
   const onSubmit = (data: ProductFormData) => {
-    createProduct.mutate(data);
+    // Add the primary image URL if available
+    const primaryImage = imageFiles.find(img => img.isPrimary);
+    const productData = {
+      ...data,
+      imageUrl: primaryImage?.preview || undefined,
+    };
+    
+    createProduct.mutate(productData);
   };
 
   const handleNext = async () => {
@@ -184,13 +194,29 @@ export default function AddProduct() {
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    const newImages = files.slice(0, 10 - imageFiles.length).map((file) => ({
-      id: Math.random().toString(36),
-      file,
-      preview: URL.createObjectURL(file),
-      isPrimary: imageFiles.length === 0,
-    }));
-    setImageFiles([...imageFiles, ...newImages]);
+    const filesToProcess = files.slice(0, 10 - imageFiles.length);
+    
+    filesToProcess.forEach((file) => {
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "Error",
+          description: `${file.name} is too large. Maximum size is 5MB.`,
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setImageFiles(prev => [...prev, {
+          id: Math.random().toString(36),
+          file,
+          preview: event.target?.result as string,
+          isPrimary: imageFiles.length === 0,
+        }]);
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
   const removeImage = (id: string) => {
