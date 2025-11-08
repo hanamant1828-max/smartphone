@@ -509,6 +509,356 @@ export function render(app) {
       </div>
     </div>
 
+    <!-- Product Modal -->
+    <div id="productModal" class="modal-backdrop hidden">
+      <div class="modal" style="max-width: 1200px; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-header">
+          <h3 class="modal-title" id="productModalTitle">Add New Product</h3>
+          <button class="modal-close" onclick="closeProductModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        
+        <!-- Step Indicators -->
+        <div style="display: flex; justify-content: space-between; padding: 24px 24px 0; gap: 8px;">
+          <div id="stepIndicator1" class="step-indicator active" onclick="jumpToProductStep(1)">
+            <div class="step-number">1</div>
+            <div class="step-label">Basic Info</div>
+          </div>
+          <div id="stepIndicator2" class="step-indicator" onclick="jumpToProductStep(2)">
+            <div class="step-number">2</div>
+            <div class="step-label">Pricing</div>
+          </div>
+          <div id="stepIndicator3" class="step-indicator" onclick="jumpToProductStep(3)">
+            <div class="step-number">3</div>
+            <div class="step-label">Stock</div>
+          </div>
+          <div id="stepIndicator4" class="step-indicator" onclick="jumpToProductStep(4)">
+            <div class="step-number">4</div>
+            <div class="step-label">Details</div>
+          </div>
+          <div id="stepIndicator5" class="step-indicator" onclick="jumpToProductStep(5)">
+            <div class="step-number">5</div>
+            <div class="step-label">Images</div>
+          </div>
+        </div>
+        
+        <div class="modal-body">
+          <form id="productForm">
+            <!-- Step 1: Basic Information -->
+            <div id="productStep1" class="product-step">
+              <h4 style="margin-bottom: 16px; font-size: 1.125rem; font-weight: 600;">Basic Information</h4>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                  <label class="form-label">Product Name *</label>
+                  <input type="text" id="productName" class="form-input" placeholder="e.g., Samsung Galaxy S24 Ultra" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Category *</label>
+                  <select id="productCategory" class="form-input" required>
+                    <option value="">Select Category</option>
+                    ${categories.filter(c => c.active).map(c => `<option value="${c.name}">${c.name}</option>`).join('')}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Brand *</label>
+                  <select id="productBrand" class="form-input" required onchange="loadBrandModels()">
+                    <option value="">Select Brand</option>
+                    ${brands.filter(b => b.active).map(b => `<option value="${b.name}">${b.name}</option>`).join('')}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Model</label>
+                  <select id="productModel" class="form-input">
+                    <option value="">Select Model</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Variant</label>
+                  <input type="text" id="productVariant" class="form-input" placeholder="e.g., 256GB, Black" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">SKU/Product Code</label>
+                  <div style="display: flex; gap: 8px;">
+                    <input type="text" id="productSKU" class="form-input" placeholder="Auto-generated" />
+                    <button type="button" class="btn btn-outline" onclick="generateSKU()">Generate</button>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Barcode</label>
+                  <div style="display: flex; gap: 8px;">
+                    <input type="text" id="productBarcode" class="form-input" placeholder="Scan or generate" />
+                    <button type="button" class="btn btn-outline" onclick="generateBarcode()">Generate</button>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Short Description (500 characters max)</label>
+                <textarea id="productShortDesc" class="form-input" rows="3" maxlength="500" placeholder="Brief product description"></textarea>
+              </div>
+            </div>
+            
+            <!-- Step 2: Pricing -->
+            <div id="productStep2" class="product-step" style="display: none;">
+              <h4 style="margin-bottom: 16px; font-size: 1.125rem; font-weight: 600;">Pricing Information</h4>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                  <label class="form-label">Purchase Price *</label>
+                  <input type="number" id="productPurchasePrice" class="form-input" placeholder="0.00" step="0.01" min="0" required oninput="calculateProfitMargin()" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Selling Price *</label>
+                  <input type="number" id="productSellingPrice" class="form-input" placeholder="0.00" step="0.01" min="0" required oninput="calculateProfitMargin()" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">MRP (Optional)</label>
+                  <input type="number" id="productMRP" class="form-input" placeholder="0.00" step="0.01" min="0" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Profit Margin</label>
+                  <div style="padding: 12px; background: var(--surface); border-radius: 8px;">
+                    <span id="profitMargin" style="font-size: 1.5rem; font-weight: 600;">0%</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Tax Type</label>
+                  <select id="productTaxType" class="form-input">
+                    <option value="inclusive">Inclusive</option>
+                    <option value="exclusive">Exclusive</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">GST Rate</label>
+                  <select id="productGST" class="form-input">
+                    <option value="0">0%</option>
+                    <option value="5">5%</option>
+                    <option value="12">12%</option>
+                    <option value="18" selected>18%</option>
+                    <option value="28">28%</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">HSN Code</label>
+                  <input type="text" id="productHSN" class="form-input" placeholder="e.g., 8517" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Discount Type</label>
+                  <select id="productDiscountType" class="form-input">
+                    <option value="percentage">Percentage</option>
+                    <option value="fixed">Fixed Amount</option>
+                  </select>
+                </div>
+                <div class="form-group col-span-2">
+                  <label class="form-label">Discount Amount</label>
+                  <input type="number" id="productDiscount" class="form-input" placeholder="0" step="0.01" min="0" />
+                </div>
+              </div>
+            </div>
+            
+            <!-- Step 3: Stock Management -->
+            <div id="productStep3" class="product-step" style="display: none;">
+              <h4 style="margin-bottom: 16px; font-size: 1.125rem; font-weight: 600;">Stock Management</h4>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                  <label class="form-label">Opening Stock *</label>
+                  <input type="number" id="productOpeningStock" class="form-input" placeholder="0" min="0" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Unit of Measurement</label>
+                  <select id="productUOM" class="form-input">
+                    <option value="pcs">Pieces (pcs)</option>
+                    <option value="box">Box</option>
+                    <option value="kg">Kilogram (kg)</option>
+                    <option value="ltr">Liter (ltr)</option>
+                    <option value="meter">Meter</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Minimum Stock Level</label>
+                  <input type="number" id="productMinStock" class="form-input" placeholder="0" min="0" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Maximum Stock Level</label>
+                  <input type="number" id="productMaxStock" class="form-input" placeholder="0" min="0" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Reorder Point</label>
+                  <input type="number" id="productReorderPoint" class="form-input" placeholder="0" min="0" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Reorder Quantity</label>
+                  <input type="number" id="productReorderQty" class="form-input" placeholder="0" min="0" />
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-4 mt-4">
+                <div class="form-group">
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" id="productTrackStock" checked />
+                    <span>Track Stock</span>
+                  </label>
+                </div>
+                <div class="form-group">
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" id="productAutoManage" />
+                    <span>Auto Manage Stock</span>
+                  </label>
+                </div>
+                <div class="form-group">
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" id="productAllowBackorder" />
+                    <span>Allow Backorders</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Step 4: Additional Details -->
+            <div id="productStep4" class="product-step" style="display: none;">
+              <h4 style="margin-bottom: 16px; font-size: 1.125rem; font-weight: 600;">Additional Details</h4>
+              
+              <h5 style="margin: 24px 0 12px; font-weight: 600;">Supplier Information</h5>
+              <div class="grid grid-cols-3 gap-4">
+                <div class="form-group">
+                  <label class="form-label">Primary Supplier</label>
+                  <select id="productSupplier" class="form-input">
+                    <option value="">Select Supplier</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Supplier Product Code</label>
+                  <input type="text" id="productSupplierCode" class="form-input" placeholder="Supplier SKU" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Lead Time (days)</label>
+                  <input type="number" id="productLeadTime" class="form-input" placeholder="0" min="0" />
+                </div>
+              </div>
+              
+              <h5 style="margin: 24px 0 12px; font-weight: 600;">Warranty Information</h5>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                  <label class="form-label">Warranty Period</label>
+                  <input type="text" id="productWarrantyPeriod" class="form-input" placeholder="e.g., 1 year" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Warranty Type</label>
+                  <select id="productWarrantyType" class="form-input">
+                    <option value="none">None</option>
+                    <option value="manufacturer">Manufacturer</option>
+                    <option value="seller">Seller</option>
+                    <option value="extended">Extended</option>
+                  </select>
+                </div>
+                <div class="form-group col-span-2">
+                  <label class="form-label">Warranty Description</label>
+                  <textarea id="productWarrantyDesc" class="form-input" rows="2" placeholder="Warranty terms and conditions"></textarea>
+                </div>
+              </div>
+              
+              <h5 style="margin: 24px 0 12px; font-weight: 600;">Product Configuration</h5>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                  <label class="form-label">Product Type</label>
+                  <select id="productType" class="form-input">
+                    <option value="simple">Simple Product</option>
+                    <option value="variable">Variable Product</option>
+                    <option value="bundle">Bundle</option>
+                    <option value="serial">Serial Tracked (IMEI)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Status</label>
+                  <select id="productStatus" class="form-input">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="draft">Draft</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="grid grid-cols-3 gap-4 mt-4">
+                <div class="form-group">
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" id="productShowPOS" checked />
+                    <span>Show in POS</span>
+                  </label>
+                </div>
+                <div class="form-group">
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" id="productOnlineSale" />
+                    <span>Available for Online Sale</span>
+                  </label>
+                </div>
+                <div class="form-group">
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" id="productFeatured" />
+                    <span>Featured Product</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div class="form-group mt-4">
+                <label class="form-label">Detailed Description</label>
+                <textarea id="productDetailedDesc" class="form-input" rows="4" placeholder="Detailed product description"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Internal Notes (Not visible to customers)</label>
+                <textarea id="productInternalNotes" class="form-input" rows="3" placeholder="Internal notes for staff"></textarea>
+              </div>
+            </div>
+            
+            <!-- Step 5: Images -->
+            <div id="productStep5" class="product-step" style="display: none;">
+              <h4 style="margin-bottom: 16px; font-size: 1.125rem; font-weight: 600;">Product Images</h4>
+              <div class="form-group">
+                <label class="form-label">Upload Images (Max 10, 5MB each - JPG, PNG, WebP)</label>
+                <div style="border: 2px dashed var(--border); border-radius: 8px; padding: 40px; text-align: center; background: var(--surface);" 
+                     ondrop="event.preventDefault(); handleImageUpload(event.dataTransfer.files);" 
+                     ondragover="event.preventDefault();">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin: 0 auto 16px; color: var(--text-secondary);">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21 15 16 10 5 21"/>
+                  </svg>
+                  <p style="margin-bottom: 12px; color: var(--text-secondary);">Drag & drop images here or</p>
+                  <label class="btn btn-outline" style="cursor: pointer;">
+                    <input type="file" accept="image/jpeg,image/png,image/webp" multiple onchange="handleImageUpload(this.files)" style="display: none;" />
+                    Browse Files
+                  </label>
+                </div>
+              </div>
+              <div id="productImagesContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; margin-top: 24px;">
+                <!-- Images will be rendered here -->
+              </div>
+            </div>
+          </form>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn btn-outline" onclick="closeProductModal()">Cancel</button>
+          <button class="btn btn-outline" onclick="saveDraft()">Save Draft</button>
+          <button id="productPrevBtn" class="btn btn-outline" onclick="prevProductStep()" style="display: none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            Previous
+          </button>
+          <button id="productNextBtn" class="btn btn-primary" onclick="nextProductStep()">
+            Next
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+          <button id="productSaveBtn" class="btn btn-primary" onclick="saveProduct()" style="display: none;">Save Product</button>
+          <button class="btn btn-success" onclick="saveProduct(true)" style="display: none;" id="productSaveAddBtn">Save & Add Another</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Import Modal -->
     <div id="importModal" class="modal-backdrop hidden">
       <div class="modal">
@@ -2016,17 +2366,492 @@ function handleCategoryDragEnd(event) {
   draggedCategory = null;
 }
 
+// Product Modal State
+let currentProductStep = 1;
+let editingProductId = null;
+let productFormData = {};
+let productImages = [];
+let autoSaveInterval = null;
+
 // Product Functions
 function openAddProductModal() {
-  showToast('Product form coming soon', 'info');
+  editingProductId = null;
+  currentProductStep = 1;
+  productFormData = {};
+  productImages = [];
+  
+  // Clear form
+  document.getElementById('productForm').reset();
+  document.getElementById('productModalTitle').textContent = 'Add New Product';
+  document.getElementById('productModal').classList.remove('hidden');
+  
+  updateProductStepIndicators();
+  showProductStep(1);
+  
+  // Start auto-save
+  startAutoSave();
 }
 
 function closeProductModal() {
-  showToast('Product form coming soon', 'info');
+  if (hasUnsavedChanges()) {
+    if (!confirm('You have unsaved changes. Are you sure you want to close?')) {
+      return;
+    }
+  }
+  
+  stopAutoSave();
+  document.getElementById('productModal').classList.add('hidden');
+  editingProductId = null;
+  currentProductStep = 1;
+  productFormData = {};
+  productImages = [];
 }
 
 async function editProduct(id) {
-  showToast('Product edit coming soon', 'info');
+  const product = products.find(p => p.id === id);
+  if (!product) return;
+  
+  editingProductId = id;
+  currentProductStep = 1;
+  productFormData = { ...product };
+  productImages = product.images || [];
+  
+  // Populate form
+  document.getElementById('productModalTitle').textContent = 'Edit Product';
+  populateProductForm(product);
+  
+  document.getElementById('productModal').classList.remove('hidden');
+  updateProductStepIndicators();
+  showProductStep(1);
+  
+  startAutoSave();
+}
+
+function populateProductForm(product) {
+  // Step 1: Basic Information
+  document.getElementById('productName').value = product.name || '';
+  document.getElementById('productCategory').value = product.category || '';
+  document.getElementById('productBrand').value = product.brand || '';
+  document.getElementById('productModel').value = product.model || '';
+  document.getElementById('productVariant').value = product.variant || '';
+  document.getElementById('productSKU').value = product.productCode || '';
+  document.getElementById('productBarcode').value = product.barcode || '';
+  document.getElementById('productShortDesc').value = product.shortDescription || '';
+  
+  // Step 2: Pricing
+  document.getElementById('productPurchasePrice').value = product.costPrice || '';
+  document.getElementById('productSellingPrice').value = product.price || '';
+  document.getElementById('productMRP').value = product.mrp || '';
+  document.getElementById('productTaxType').value = product.taxType || 'inclusive';
+  document.getElementById('productGST').value = product.gstRate || '18';
+  document.getElementById('productHSN').value = product.hsnCode || '';
+  document.getElementById('productDiscountType').value = product.discountType || 'percentage';
+  document.getElementById('productDiscount').value = product.discount || '0';
+  
+  // Step 3: Stock
+  document.getElementById('productOpeningStock').value = product.stockQuantity || '';
+  document.getElementById('productUOM').value = product.uom || 'pcs';
+  document.getElementById('productMinStock').value = product.minStockLevel || '';
+  document.getElementById('productMaxStock').value = product.maxStockLevel || '';
+  document.getElementById('productReorderPoint').value = product.reorderPoint || '';
+  document.getElementById('productReorderQty').value = product.reorderQty || '';
+  document.getElementById('productTrackStock').checked = product.trackStock !== false;
+  document.getElementById('productAutoManage').checked = product.autoManage || false;
+  document.getElementById('productAllowBackorder').checked = product.allowBackorder || false;
+  
+  // Step 4: Additional Details
+  document.getElementById('productSupplier').value = product.supplierId || '';
+  document.getElementById('productSupplierCode').value = product.supplierCode || '';
+  document.getElementById('productLeadTime').value = product.leadTime || '';
+  document.getElementById('productWarrantyPeriod').value = product.warrantyPeriod || '';
+  document.getElementById('productWarrantyType').value = product.warrantyType || 'none';
+  document.getElementById('productWarrantyDesc').value = product.warrantyDesc || '';
+  document.getElementById('productType').value = product.productType || 'simple';
+  document.getElementById('productStatus').value = product.status || 'active';
+  document.getElementById('productShowPOS').checked = product.showInPOS !== false;
+  document.getElementById('productOnlineSale').checked = product.availableOnline || false;
+  document.getElementById('productFeatured').checked = product.featured || false;
+  document.getElementById('productDetailedDesc').value = product.description || '';
+  document.getElementById('productInternalNotes').value = product.internalNotes || '';
+  
+  calculateProfitMargin();
+}
+
+function showProductStep(step) {
+  currentProductStep = step;
+  
+  // Hide all steps
+  for (let i = 1; i <= 5; i++) {
+    const stepEl = document.getElementById(`productStep${i}`);
+    if (stepEl) {
+      stepEl.style.display = i === step ? 'block' : 'none';
+    }
+  }
+  
+  updateProductStepIndicators();
+  updateProductNavigationButtons();
+}
+
+function updateProductStepIndicators() {
+  for (let i = 1; i <= 5; i++) {
+    const indicator = document.getElementById(`stepIndicator${i}`);
+    if (indicator) {
+      if (i < currentProductStep) {
+        indicator.className = 'step-indicator completed';
+      } else if (i === currentProductStep) {
+        indicator.className = 'step-indicator active';
+      } else {
+        indicator.className = 'step-indicator';
+      }
+    }
+  }
+}
+
+function updateProductNavigationButtons() {
+  const prevBtn = document.getElementById('productPrevBtn');
+  const nextBtn = document.getElementById('productNextBtn');
+  const saveBtn = document.getElementById('productSaveBtn');
+  
+  if (prevBtn) {
+    prevBtn.style.display = currentProductStep === 1 ? 'none' : 'inline-flex';
+  }
+  
+  if (nextBtn) {
+    nextBtn.style.display = currentProductStep === 5 ? 'none' : 'inline-flex';
+  }
+  
+  if (saveBtn) {
+    saveBtn.style.display = currentProductStep === 5 ? 'inline-flex' : 'none';
+  }
+}
+
+function nextProductStep() {
+  if (validateProductStep(currentProductStep)) {
+    saveStepData(currentProductStep);
+    if (currentProductStep < 5) {
+      showProductStep(currentProductStep + 1);
+    }
+  }
+}
+
+function prevProductStep() {
+  if (currentProductStep > 1) {
+    saveStepData(currentProductStep);
+    showProductStep(currentProductStep - 1);
+  }
+}
+
+function jumpToProductStep(step) {
+  saveStepData(currentProductStep);
+  showProductStep(step);
+}
+
+function validateProductStep(step) {
+  const errors = [];
+  
+  if (step === 1) {
+    const name = document.getElementById('productName').value.trim();
+    const category = document.getElementById('productCategory').value;
+    const brand = document.getElementById('productBrand').value;
+    
+    if (!name) errors.push('Product name is required');
+    if (!category) errors.push('Category is required');
+    if (!brand) errors.push('Brand is required');
+  }
+  
+  if (step === 2) {
+    const purchasePrice = parseFloat(document.getElementById('productPurchasePrice').value);
+    const sellingPrice = parseFloat(document.getElementById('productSellingPrice').value);
+    
+    if (!purchasePrice || purchasePrice <= 0) errors.push('Purchase price is required');
+    if (!sellingPrice || sellingPrice <= 0) errors.push('Selling price is required');
+    if (sellingPrice < purchasePrice) errors.push('Selling price cannot be less than purchase price');
+  }
+  
+  if (step === 3) {
+    const stock = document.getElementById('productOpeningStock').value;
+    if (!stock || stock < 0) errors.push('Opening stock is required');
+  }
+  
+  if (errors.length > 0) {
+    showToast(errors.join(', '), 'error');
+    return false;
+  }
+  
+  return true;
+}
+
+function saveStepData(step) {
+  if (step === 1) {
+    productFormData.name = document.getElementById('productName').value.trim();
+    productFormData.category = document.getElementById('productCategory').value;
+    productFormData.brand = document.getElementById('productBrand').value;
+    productFormData.model = document.getElementById('productModel').value;
+    productFormData.variant = document.getElementById('productVariant').value;
+    productFormData.productCode = document.getElementById('productSKU').value;
+    productFormData.barcode = document.getElementById('productBarcode').value;
+    productFormData.shortDescription = document.getElementById('productShortDesc').value;
+  } else if (step === 2) {
+    productFormData.costPrice = parseFloat(document.getElementById('productPurchasePrice').value) || 0;
+    productFormData.price = parseFloat(document.getElementById('productSellingPrice').value) || 0;
+    productFormData.mrp = parseFloat(document.getElementById('productMRP').value) || 0;
+    productFormData.taxType = document.getElementById('productTaxType').value;
+    productFormData.gstRate = document.getElementById('productGST').value;
+    productFormData.hsnCode = document.getElementById('productHSN').value;
+    productFormData.discountType = document.getElementById('productDiscountType').value;
+    productFormData.discount = parseFloat(document.getElementById('productDiscount').value) || 0;
+  } else if (step === 3) {
+    productFormData.stockQuantity = parseInt(document.getElementById('productOpeningStock').value) || 0;
+    productFormData.uom = document.getElementById('productUOM').value;
+    productFormData.minStockLevel = parseInt(document.getElementById('productMinStock').value) || 0;
+    productFormData.maxStockLevel = parseInt(document.getElementById('productMaxStock').value) || 0;
+    productFormData.reorderPoint = parseInt(document.getElementById('productReorderPoint').value) || 0;
+    productFormData.reorderQty = parseInt(document.getElementById('productReorderQty').value) || 0;
+    productFormData.trackStock = document.getElementById('productTrackStock').checked;
+    productFormData.autoManage = document.getElementById('productAutoManage').checked;
+    productFormData.allowBackorder = document.getElementById('productAllowBackorder').checked;
+  } else if (step === 4) {
+    productFormData.supplierId = document.getElementById('productSupplier').value;
+    productFormData.supplierCode = document.getElementById('productSupplierCode').value;
+    productFormData.leadTime = parseInt(document.getElementById('productLeadTime').value) || 0;
+    productFormData.warrantyPeriod = document.getElementById('productWarrantyPeriod').value;
+    productFormData.warrantyType = document.getElementById('productWarrantyType').value;
+    productFormData.warrantyDesc = document.getElementById('productWarrantyDesc').value;
+    productFormData.productType = document.getElementById('productType').value;
+    productFormData.status = document.getElementById('productStatus').value;
+    productFormData.showInPOS = document.getElementById('productShowPOS').checked;
+    productFormData.availableOnline = document.getElementById('productOnlineSale').checked;
+    productFormData.featured = document.getElementById('productFeatured').checked;
+    productFormData.description = document.getElementById('productDetailedDesc').value;
+    productFormData.internalNotes = document.getElementById('productInternalNotes').value;
+  } else if (step === 5) {
+    productFormData.images = productImages;
+  }
+}
+
+async function saveProduct(saveAndAddAnother = false) {
+  // Validate all steps
+  for (let i = 1; i <= 5; i++) {
+    if (!validateProductStep(i)) {
+      showProductStep(i);
+      return;
+    }
+    saveStepData(i);
+  }
+  
+  try {
+    const productData = {
+      id: editingProductId || Date.now(),
+      ...productFormData,
+      images: productImages,
+      createdAt: editingProductId ? products.find(p => p.id === editingProductId)?.createdAt : new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    
+    if (editingProductId) {
+      const index = products.findIndex(p => p.id === editingProductId);
+      if (index !== -1) {
+        products[index] = productData;
+        showToast('Product updated successfully', 'success');
+      }
+    } else {
+      products.push(productData);
+      showToast('Product added successfully', 'success');
+    }
+    
+    filteredProducts = [...products];
+    updateTabContent();
+    
+    if (saveAndAddAnother) {
+      openAddProductModal();
+    } else {
+      closeProductModal();
+    }
+  } catch (error) {
+    showToast('Failed to save product', 'error');
+    console.error(error);
+  }
+}
+
+function saveDraft() {
+  saveStepData(currentProductStep);
+  localStorage.setItem('productDraft', JSON.stringify({
+    data: productFormData,
+    images: productImages,
+    step: currentProductStep,
+    timestamp: new Date().toISOString()
+  }));
+  showToast('Draft saved', 'info');
+}
+
+function loadDraft() {
+  const draft = localStorage.getItem('productDraft');
+  if (draft) {
+    const { data, images, step } = JSON.parse(draft);
+    productFormData = data;
+    productImages = images;
+    populateProductForm(data);
+    showProductStep(step);
+    showToast('Draft loaded', 'success');
+  }
+}
+
+function startAutoSave() {
+  stopAutoSave();
+  autoSaveInterval = setInterval(() => {
+    saveDraft();
+  }, 120000); // 2 minutes
+}
+
+function stopAutoSave() {
+  if (autoSaveInterval) {
+    clearInterval(autoSaveInterval);
+    autoSaveInterval = null;
+  }
+}
+
+function hasUnsavedChanges() {
+  return Object.keys(productFormData).length > 0 || productImages.length > 0;
+}
+
+function generateSKU() {
+  const brand = document.getElementById('productBrand').value;
+  const category = document.getElementById('productCategory').value;
+  const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+  const sku = `${brand.substring(0, 3).toUpperCase()}-${category.substring(0, 3).toUpperCase()}-${random}`;
+  document.getElementById('productSKU').value = sku;
+}
+
+function generateBarcode() {
+  const barcode = Math.floor(Math.random() * 10000000000000).toString();
+  document.getElementById('productBarcode').value = barcode;
+}
+
+function calculateProfitMargin() {
+  const purchasePrice = parseFloat(document.getElementById('productPurchasePrice').value) || 0;
+  const sellingPrice = parseFloat(document.getElementById('productSellingPrice').value) || 0;
+  
+  if (purchasePrice > 0 && sellingPrice > 0) {
+    const margin = ((sellingPrice - purchasePrice) / sellingPrice * 100).toFixed(2);
+    const marginEl = document.getElementById('profitMargin');
+    if (marginEl) {
+      marginEl.textContent = `${margin}%`;
+      marginEl.style.color = margin >= 20 ? 'var(--success)' : margin >= 10 ? 'var(--warning)' : 'var(--error)';
+    }
+  }
+}
+
+function handleImageUpload(files) {
+  if (productImages.length + files.length > 10) {
+    showToast('Maximum 10 images allowed', 'error');
+    return;
+  }
+  
+  Array.from(files).forEach(file => {
+    if (file.size > 5 * 1024 * 1024) {
+      showToast(`${file.name} is too large (max 5MB)`, 'error');
+      return;
+    }
+    
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      showToast(`${file.name} has invalid format`, 'error');
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      productImages.push({
+        id: Date.now() + Math.random(),
+        url: e.target.result,
+        name: file.name,
+        isPrimary: productImages.length === 0,
+        altText: ''
+      });
+      renderProductImages();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderProductImages() {
+  const container = document.getElementById('productImagesContainer');
+  if (!container) return;
+  
+  container.innerHTML = productImages.map((img, index) => `
+    <div class="image-preview" data-image-id="${img.id}" draggable="true" ondragstart="handleImageDragStart(event, ${index})" ondragover="handleImageDragOver(event)" ondrop="handleImageDrop(event, ${index})">
+      <img src="${img.url}" alt="${img.name}" />
+      ${img.isPrimary ? '<span class="primary-badge">Primary</span>' : ''}
+      <div class="image-actions">
+        <button type="button" class="btn btn-sm btn-outline" onclick="setPrimaryImage(${index})" title="Set as primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="${img.isPrimary ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </button>
+        <button type="button" class="btn btn-sm btn-error" onclick="removeImage(${index})" title="Delete">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function setPrimaryImage(index) {
+  productImages.forEach((img, i) => {
+    img.isPrimary = i === index;
+  });
+  renderProductImages();
+}
+
+function removeImage(index) {
+  productImages.splice(index, 1);
+  if (productImages.length > 0 && !productImages.some(img => img.isPrimary)) {
+    productImages[0].isPrimary = true;
+  }
+  renderProductImages();
+}
+
+let draggedImageIndex = null;
+
+function handleImageDragStart(event, index) {
+  draggedImageIndex = index;
+  event.dataTransfer.effectAllowed = 'move';
+}
+
+function handleImageDragOver(event) {
+  event.preventDefault();
+  event.dataTransfer.dropEffect = 'move';
+}
+
+function handleImageDrop(event, targetIndex) {
+  event.preventDefault();
+  if (draggedImageIndex !== null && draggedImageIndex !== targetIndex) {
+    const draggedImage = productImages[draggedImageIndex];
+    productImages.splice(draggedImageIndex, 1);
+    productImages.splice(targetIndex, 0, draggedImage);
+    renderProductImages();
+  }
+  draggedImageIndex = null;
+}
+
+function loadBrandModels() {
+  const brandSelect = document.getElementById('productBrand');
+  const modelSelect = document.getElementById('productModel');
+  
+  if (!brandSelect || !modelSelect) return;
+  
+  const selectedBrand = brands.find(b => b.name === brandSelect.value);
+  
+  modelSelect.innerHTML = '<option value="">Select Model</option>';
+  
+  if (selectedBrand) {
+    const brandModels = models.filter(m => m.brandId === selectedBrand.id && m.active);
+    brandModels.forEach(model => {
+      modelSelect.innerHTML += `<option value="${model.name}">${model.name}</option>`;
+    });
+  }
 }
 
 async function deleteProduct(id) {
@@ -2567,6 +3392,30 @@ function viewProduct(productId) {
 }
 
 export async function init(app) {
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    // Ctrl+S or Cmd+S to save
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      e.preventDefault();
+      const modal = document.getElementById('productModal');
+      if (modal && !modal.classList.contains('hidden')) {
+        if (currentProductStep === 5) {
+          saveProduct();
+        } else {
+          saveDraft();
+        }
+      }
+    }
+    
+    // Escape to close modal
+    if (e.key === 'Escape') {
+      const productModal = document.getElementById('productModal');
+      if (productModal && !productModal.classList.contains('hidden')) {
+        closeProductModal();
+      }
+    }
+  });
+
   // Expose all functions to global scope
   window.switchTab = switchTab;
   window.updateTabContent = updateTabContent;
@@ -2640,6 +3489,21 @@ export async function init(app) {
   window.changePageSize = changePageSize;
   window.adjustStock = adjustStock;
   window.viewProduct = viewProduct;
+  window.nextProductStep = nextProductStep;
+  window.prevProductStep = prevProductStep;
+  window.jumpToProductStep = jumpToProductStep;
+  window.saveProduct = saveProduct;
+  window.saveDraft = saveDraft;
+  window.generateSKU = generateSKU;
+  window.generateBarcode = generateBarcode;
+  window.calculateProfitMargin = calculateProfitMargin;
+  window.handleImageUpload = handleImageUpload;
+  window.setPrimaryImage = setPrimaryImage;
+  window.removeImage = removeImage;
+  window.handleImageDragStart = handleImageDragStart;
+  window.handleImageDragOver = handleImageDragOver;
+  window.handleImageDrop = handleImageDrop;
+  window.loadBrandModels = loadBrandModels;
 
   // Load initial data
   try {
