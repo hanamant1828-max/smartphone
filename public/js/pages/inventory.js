@@ -26,7 +26,7 @@ if (categories.length === 0) {
     { id: 6, name: 'Screen Protectors', code: 'ACC-SCREEN', parentId: 4, description: 'Screen protection', active: true, showInMenu: true, showInPOS: true, displayOrder: 2, productCount: 123, selected: false },
     { id: 7, name: 'Chargers', code: 'ACC-CHARGE', parentId: 4, description: 'Charging accessories', active: true, showInMenu: true, showInPOS: true, displayOrder: 3, productCount: 210, selected: false },
   ];
-  localStorage.setItem('categories', JSON.JSON.stringify(categories));
+  localStorage.setItem('categories', JSON.stringify(categories));
 }
 
 
@@ -976,19 +976,17 @@ function updateTabContent() {
 
 // Category Management Functions
 function openCategoryModal(parentId = null) {
-  let editingCategoryId = null; // Ensure this is reset when opening for add
   document.getElementById('categoryModalTitle').textContent = parentId ? 'Add Subcategory' : 'Add Category';
-  document.getElementById('categoryId').value = ''; // Assuming this was intended for hiding the ID
   document.getElementById('categoryName').value = '';
   document.getElementById('categoryCode').value = '';
   document.getElementById('categoryDescription').value = '';
-  document.getElementById('categoryDisplayOrder').value = '1'; // Default to 1
+  document.getElementById('categoryDisplayOrder').value = '1';
   document.getElementById('categoryActive').checked = true;
   document.getElementById('categoryShowMenu').checked = true;
   document.getElementById('categoryShowPOS').checked = true;
   document.getElementById('categoryMetaTitle').value = '';
   document.getElementById('categoryMetaDescription').value = '';
-  document.getElementById('categoryImage').value = ''; // Clear image input
+  document.getElementById('categoryImage').value = '';
 
   const parentSelect = document.getElementById('categoryParent');
   parentSelect.innerHTML = '<option value="">-- Top Level --</option>' + renderCategoryOptions();
@@ -1022,8 +1020,9 @@ function clearCategoryImage() {
   showToast('Image cleared', 'info');
 }
 
+let editingCategoryId = null;
+
 function saveCategory() {
-  const idInput = document.getElementById('categoryId'); // Assuming this exists for edit mode
   const name = document.getElementById('categoryName').value.trim();
   if (!name) {
     showToast('Category name is required', 'error');
@@ -1031,35 +1030,34 @@ function saveCategory() {
   }
 
   const categoryData = {
-    id: idInput && idInput.value ? parseInt(idInput.value) : Date.now(),
+    id: editingCategoryId || Date.now(),
     name: name,
     code: document.getElementById('categoryCode').value.trim(),
     parentId: document.getElementById('categoryParent').value ? parseInt(document.getElementById('categoryParent').value) : null,
     description: document.getElementById('categoryDescription').value.trim(),
-    imageUrl: document.getElementById('categoryImage').value.trim(), // Get from input
+    imageUrl: document.getElementById('categoryImage').value.trim(),
     displayOrder: parseInt(document.getElementById('categoryDisplayOrder').value) || 1,
     active: document.getElementById('categoryActive').checked,
     showInMenu: document.getElementById('categoryShowMenu').checked,
     showInPOS: document.getElementById('categoryShowPOS').checked,
     metaTitle: document.getElementById('categoryMetaTitle').value.trim(),
     metaDescription: document.getElementById('categoryMetaDescription').value.trim(),
-    productCount: 0, // Reset or handle existing count if editing
+    productCount: 0,
     selected: false
   };
 
   const existingIndex = categories.findIndex(c => c.id === categoryData.id);
 
   if (existingIndex !== -1) {
-    // Update existing category
-    categoryData.productCount = categories[existingIndex].productCount; // Preserve product count
+    categoryData.productCount = categories[existingIndex].productCount;
     categories[existingIndex] = { ...categories[existingIndex], ...categoryData };
     showToast('Category updated successfully', 'success');
   } else {
-    // Add new category
     categories.push(categoryData);
     showToast('Category added successfully', 'success');
   }
   
+  editingCategoryId = null;
   localStorage.setItem('categories', JSON.stringify(categories));
   closeCategoryModal();
   updateTabContent();
@@ -1069,16 +1067,12 @@ function editCategory(id) {
   const category = categories.find(c => c.id === id);
   if (!category) return;
   
+  editingCategoryId = id;
   document.getElementById('categoryModalTitle').textContent = 'Edit Category';
-  // Set the hidden ID input if it exists
-  const idInput = document.getElementById('categoryId'); 
-  if (idInput) {
-      idInput.value = category.id;
-  }
   document.getElementById('categoryName').value = category.name;
   document.getElementById('categoryCode').value = category.code || '';
   document.getElementById('categoryDescription').value = category.description || '';
-  document.getElementById('categoryImage').value = category.imageUrl || ''; // Set image URL
+  document.getElementById('categoryImage').value = category.imageUrl || '';
   document.getElementById('categoryDisplayOrder').value = category.displayOrder || 1;
   document.getElementById('categoryActive').checked = category.active;
   document.getElementById('categoryShowMenu').checked = category.showInMenu;
@@ -1087,7 +1081,7 @@ function editCategory(id) {
   document.getElementById('categoryMetaDescription').value = category.metaDescription || '';
   
   const parentSelect = document.getElementById('categoryParent');
-  parentSelect.innerHTML = '<option value="">-- Top Level --</option>' + renderCategoryOptions(id); // Exclude self from parent options
+  parentSelect.innerHTML = '<option value="">-- Top Level --</option>' + renderCategoryOptions(id);
   parentSelect.value = category.parentId || '';
   
   document.getElementById('categoryModal').classList.remove('hidden');
@@ -1769,7 +1763,7 @@ function updateProductsTable() {
 }
 
 // Initialize global functions for onclick handlers
-export function init(app) {
+export async function init(app) {
   // Product functions
   window.openAddProductModal = openAddProductModal;
   window.closeProductModal = closeProductModal;
@@ -1834,12 +1828,14 @@ export function init(app) {
 
   // Initial data loading
   try {
-    products = await api.getProducts();
+    const productsData = await api.getProducts();
+    products = productsData;
     filteredProducts = products;
     
     // Load categories, brands, and models from localStorage if they exist
     // If localStorage is empty, the default values from the top of the file will be used.
-    categories = JSON.parse(localStorage.getItem('categories') || JSON.stringify(categories));
+    const storedCategories = localStorage.getItem('categories');
+    categories = storedCategories ? JSON.parse(storedCategories) : categories;
     brands = JSON.parse(localStorage.getItem('brands') || '[]');
     models = JSON.parse(localStorage.getItem('brandModels') || '[]');
     
