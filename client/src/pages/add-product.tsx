@@ -13,6 +13,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ArrowLeft, ArrowRight, Save, X, Plus, Trash2, Upload, Star, AlertCircle } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+
 
 // Sample suppliers - in production, this would come from the database
 const suppliers = [
@@ -55,6 +58,8 @@ const productSchema = z.object({
 
   // Supplier Information
   supplierId: z.string().optional(),
+  supplierProductCode: z.string().optional(),
+  leadTime: z.number().min(0).optional(),
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
@@ -93,6 +98,8 @@ export default function AddProduct() {
       salesDiscount: 0,
       isActive: true,
       supplierId: "",
+      supplierProductCode: "",
+      leadTime: 0,
     },
   });
 
@@ -155,6 +162,8 @@ export default function AddProduct() {
         return ["costPrice", "price"];
       case 3:
         return ["stockQuantity"];
+      case 4:
+        return ["warrantyMonths"];
       default:
         return [];
     }
@@ -607,6 +616,54 @@ export default function AddProduct() {
                       {...form.register("ram")}
                       placeholder="e.g., 8GB"
                     />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg">Supplier Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="supplierId">Primary Supplier</Label>
+                    <Select onValueChange={(value) => form.setValue("supplierId", value)} defaultValue={form.getValues("supplierId")}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Supplier" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {suppliers.map((supplier) => (
+                          <SelectItem key={supplier.id} value={supplier.id.toString()}>
+                            {supplier.name} ({supplier.code})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {form.formState.errors.supplierId && (
+                      <p className="text-sm text-destructive">{form.formState.errors.supplierId.message}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="supplierProductCode">Supplier Product Code</Label>
+                    <Input
+                      id="supplierProductCode"
+                      {...form.register("supplierProductCode")}
+                      placeholder="Supplier SKU"
+                    />
+                    {form.formState.errors.supplierProductCode && (
+                      <p className="text-sm text-destructive">{form.formState.errors.supplierProductCode.message}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="leadTime">Lead Time (days)</Label>
+                    <Input
+                      id="leadTime"
+                      type="number"
+                      {...form.register("leadTime", { valueAsNumber: true })}
+                      placeholder="0"
+                      min="0"
+                    />
+                    {form.formState.errors.leadTime && (
+                      <p className="text-sm text-destructive">{form.formState.errors.leadTime.message}</p>
+                    )}
                   </div>
                 </div>
               </div>
