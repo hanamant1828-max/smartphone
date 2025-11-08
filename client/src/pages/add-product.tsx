@@ -53,7 +53,6 @@ const productSchema = z.object({
   color: z.string().optional(),
   storage: z.string().optional(),
   ram: z.string().optional(),
-  imageUrl: z.string().optional(),
   isActive: z.boolean().optional(),
 
   // Supplier Information
@@ -141,12 +140,20 @@ export default function AddProduct() {
   const onSubmit = (data: ProductFormData) => {
     // Add the primary image URL if available
     const primaryImage = imageFiles.find(img => img.isPrimary);
+    
+    // Convert supplier ID to number if it exists
     const productData = {
       ...data,
       imageUrl: primaryImage?.preview || undefined,
+      supplierId: data.supplierId ? parseInt(data.supplierId) : undefined,
     };
     
-    createProduct.mutate(productData);
+    // Remove undefined values to prevent API issues
+    const cleanedData = Object.fromEntries(
+      Object.entries(productData).filter(([_, v]) => v !== undefined && v !== '')
+    );
+    
+    createProduct.mutate(cleanedData);
   };
 
   const handleNext = async () => {

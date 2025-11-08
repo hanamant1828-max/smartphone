@@ -176,7 +176,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/products', authenticateToken, async (req, res) => {
     try {
       const productData = req.body;
-      const product = await storage.createProduct(productData);
+      console.log('Received product data:', productData);
+      
+      // Ensure required fields are present
+      if (!productData.name || !productData.category || !productData.brand) {
+        return res.status(400).json({ 
+          message: 'Missing required fields: name, category, and brand are required' 
+        });
+      }
+      
+      // Ensure numeric fields are numbers
+      const cleanedData = {
+        ...productData,
+        costPrice: Number(productData.costPrice) || 0,
+        price: Number(productData.price) || 0,
+        stockQuantity: Number(productData.stockQuantity) || 0,
+        minStockLevel: Number(productData.minStockLevel) || 5,
+        warrantyMonths: Number(productData.warrantyMonths) || 12,
+        salesDiscount: Number(productData.salesDiscount) || 0,
+        leadTime: productData.leadTime ? Number(productData.leadTime) : undefined,
+        isActive: productData.isActive !== undefined ? productData.isActive : true,
+      };
+      
+      const product = await storage.createProduct(cleanedData);
+      console.log('Product created successfully:', product);
       res.status(201).json(product);
     } catch (error: any) {
       console.error('Create product error:', error);
