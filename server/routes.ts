@@ -486,6 +486,189 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Category routes
+  app.get('/api/categories', authenticateToken, async (req, res) => {
+    try {
+      const filters = req.query;
+      const categories = await storage.getCategories(filters);
+      res.json(categories);
+    } catch (error) {
+      console.error('Get categories error:', error);
+      res.status(500).json({ message: 'Failed to fetch categories' });
+    }
+  });
+
+  app.get('/api/categories/:id', authenticateToken, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const category = await storage.getCategory(id);
+      if (!category) {
+        return res.status(404).json({ message: 'Category not found' });
+      }
+      res.json(category);
+    } catch (error) {
+      console.error('Get category error:', error);
+      res.status(500).json({ message: 'Failed to fetch category' });
+    }
+  });
+
+  app.post('/api/categories', authenticateToken, async (req, res) => {
+    try {
+      const category = await storage.createCategory(req.body);
+      res.status(201).json(category);
+    } catch (error) {
+      console.error('Create category error:', error);
+      res.status(500).json({ message: 'Failed to create category' });
+    }
+  });
+
+  app.put('/api/categories/:id', authenticateToken, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const category = await storage.updateCategory(id, req.body);
+      if (!category) {
+        return res.status(404).json({ message: 'Category not found' });
+      }
+      res.json(category);
+    } catch (error) {
+      console.error('Update category error:', error);
+      res.status(500).json({ message: 'Failed to update category' });
+    }
+  });
+
+  app.delete('/api/categories/:id', authenticateToken, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteCategory(id);
+      res.json({ message: 'Category deleted successfully' });
+    } catch (error) {
+      console.error('Delete category error:', error);
+      res.status(500).json({ message: 'Failed to delete category' });
+    }
+  });
+
+  // Brand routes
+  app.get('/api/brands', authenticateToken, async (req, res) => {
+    try {
+      const filters = req.query;
+      const brands = await storage.getBrands(filters);
+      res.json(brands);
+    } catch (error) {
+      console.error('Get brands error:', error);
+      res.status(500).json({ message: 'Failed to fetch brands' });
+    }
+  });
+
+  app.get('/api/brands/:id', authenticateToken, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const brand = await storage.getBrand(id);
+      if (!brand) {
+        return res.status(404).json({ message: 'Brand not found' });
+      }
+      res.json(brand);
+    } catch (error) {
+      console.error('Get brand error:', error);
+      res.status(500).json({ message: 'Failed to fetch brand' });
+    }
+  });
+
+  app.post('/api/brands', authenticateToken, async (req, res) => {
+    try {
+      const brand = await storage.createBrand(req.body);
+      res.status(201).json(brand);
+    } catch (error) {
+      console.error('Create brand error:', error);
+      res.status(500).json({ message: 'Failed to create brand' });
+    }
+  });
+
+  app.put('/api/brands/:id', authenticateToken, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const brand = await storage.updateBrand(id, req.body);
+      if (!brand) {
+        return res.status(404).json({ message: 'Brand not found' });
+      }
+      res.json(brand);
+    } catch (error) {
+      console.error('Update brand error:', error);
+      res.status(500).json({ message: 'Failed to update brand' });
+    }
+  });
+
+  app.delete('/api/brands/:id', authenticateToken, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteBrand(id);
+      res.json({ message: 'Brand deleted successfully' });
+    } catch (error) {
+      console.error('Delete brand error:', error);
+      res.status(500).json({ message: 'Failed to delete brand' });
+    }
+  });
+
+  // Model routes
+  app.get('/api/models', authenticateToken, async (req, res) => {
+    try {
+      const filters = req.query;
+      const models = await storage.getModels(filters);
+      res.json(models);
+    } catch (error) {
+      console.error('Get models error:', error);
+      res.status(500).json({ message: 'Failed to fetch models' });
+    }
+  });
+
+  app.get('/api/models/:id', authenticateToken, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const model = await storage.getModelWithVariants(id);
+      if (!model) {
+        return res.status(404).json({ message: 'Model not found' });
+      }
+      res.json(model);
+    } catch (error) {
+      console.error('Get model error:', error);
+      res.status(500).json({ message: 'Failed to fetch model' });
+    }
+  });
+
+  app.post('/api/models', authenticateToken, async (req, res) => {
+    try {
+      const model = await storage.createModel(req.body);
+      res.status(201).json(model);
+    } catch (error) {
+      console.error('Create model error:', error);
+      res.status(500).json({ message: 'Failed to create model' });
+    }
+  });
+
+  app.put('/api/models/:id', authenticateToken, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const model = await storage.updateModel(id, req.body);
+      if (!model) {
+        return res.status(404).json({ message: 'Model not found' });
+      }
+      res.json(model);
+    } catch (error) {
+      console.error('Update model error:', error);
+      res.status(500).json({ message: 'Failed to update model' });
+    }
+  });
+
+  app.delete('/api/models/:id', authenticateToken, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteModel(id);
+      res.json({ message: 'Model deleted successfully' });
+    } catch (error) {
+      console.error('Delete model error:', error);
+      res.status(500).json({ message: 'Failed to delete model' });
+    }
+  });
+
   // Report routes
   app.get('/api/reports/dashboard', authenticateToken, async (req, res) => {
     try {

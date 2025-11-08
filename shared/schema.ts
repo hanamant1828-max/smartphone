@@ -151,6 +151,74 @@ export const stockAdjustments = sqliteTable("stock_adjustments", {
   createdAt: integer("created_at", { mode: 'timestamp' }).default(sql`(strftime('%s','now') * 1000)`),
 });
 
+// Categories table
+export const categories = sqliteTable("categories", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name", { length: 100 }).notNull(),
+  code: text("code", { length: 50 }),
+  parentId: integer("parent_id").references((): any => categories.id),
+  description: text("description"),
+  imageUrl: text("image_url", { length: 255 }),
+  displayOrder: integer("display_order").default(0),
+  active: integer("active", { mode: 'boolean' }).default(true),
+  showInMenu: integer("show_in_menu", { mode: 'boolean' }).default(true),
+  showInPOS: integer("show_in_pos", { mode: 'boolean' }).default(true),
+  productCount: integer("product_count").default(0),
+  createdAt: integer("created_at", { mode: 'timestamp' }).default(sql`(strftime('%s','now') * 1000)`),
+  updatedAt: integer("updated_at", { mode: 'timestamp' }).default(sql`(strftime('%s','now') * 1000)`),
+});
+
+// Brands table
+export const brands = sqliteTable("brands", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name", { length: 100 }).notNull(),
+  code: text("code", { length: 50 }),
+  description: text("description"),
+  logoUrl: text("logo_url", { length: 255 }),
+  website: text("website", { length: 255 }),
+  email: text("email", { length: 100 }),
+  phone: text("phone", { length: 20 }),
+  country: text("country", { length: 50 }),
+  displayOrder: integer("display_order").default(0),
+  active: integer("active", { mode: 'boolean' }).default(true),
+  showInMenu: integer("show_in_menu", { mode: 'boolean' }).default(false),
+  featured: integer("featured", { mode: 'boolean' }).default(false),
+  productCount: integer("product_count").default(0),
+  stockValue: real("stock_value").default(0),
+  createdAt: integer("created_at", { mode: 'timestamp' }).default(sql`(strftime('%s','now') * 1000)`),
+  updatedAt: integer("updated_at", { mode: 'timestamp' }).default(sql`(strftime('%s','now') * 1000)`),
+});
+
+// Models table
+export const models = sqliteTable("models", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  brandId: integer("brand_id").references(() => brands.id).notNull(),
+  name: text("name", { length: 100 }).notNull(),
+  modelNumber: text("model_number", { length: 50 }),
+  modelCode: text("model_code", { length: 50 }),
+  description: text("description"),
+  imageUrl: text("image_url", { length: 255 }),
+  launchDate: text("launch_date", { length: 10 }),
+  discontinued: integer("discontinued", { mode: 'boolean' }).default(false),
+  warrantyMonths: integer("warranty_months").default(12),
+  active: integer("active", { mode: 'boolean' }).default(true),
+  displayOrder: integer("display_order").default(0),
+  baseSpecs: text("base_specs"),
+  createdAt: integer("created_at", { mode: 'timestamp' }).default(sql`(strftime('%s','now') * 1000)`),
+  updatedAt: integer("updated_at", { mode: 'timestamp' }).default(sql`(strftime('%s','now') * 1000)`),
+});
+
+// Model variants table
+export const modelVariants = sqliteTable("model_variants", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  modelId: integer("model_id").references(() => models.id).notNull(),
+  ram: text("ram", { length: 20 }),
+  storage: text("storage", { length: 20 }),
+  color: text("color", { length: 30 }),
+  sku: text("sku", { length: 50 }),
+  createdAt: integer("created_at", { mode: 'timestamp' }).default(sql`(strftime('%s','now') * 1000)`),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   sales: many(sales),
@@ -199,6 +267,33 @@ export const stockAdjustmentsRelations = relations(stockAdjustments, ({ one }) =
   }),
 }));
 
+export const categoriesRelations = relations(categories, ({ one, many }) => ({
+  parent: one(categories, {
+    fields: [categories.parentId],
+    references: [categories.id],
+  }),
+  children: many(categories),
+}));
+
+export const brandsRelations = relations(brands, ({ many }) => ({
+  models: many(models),
+}));
+
+export const modelsRelations = relations(models, ({ one, many }) => ({
+  brand: one(brands, {
+    fields: [models.brandId],
+    references: [brands.id],
+  }),
+  variants: many(modelVariants),
+}));
+
+export const modelVariantsRelations = relations(modelVariants, ({ one }) => ({
+  model: one(models, {
+    fields: [modelVariants.modelId],
+    references: [models.id],
+  }),
+}));
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -232,6 +327,29 @@ export const insertStockAdjustmentSchema = createInsertSchema(stockAdjustments).
   createdAt: true,
 });
 
+export const insertCategorySchema = createInsertSchema(categories).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertBrandSchema = createInsertSchema(brands).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertModelSchema = createInsertSchema(models).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertModelVariantSchema = createInsertSchema(modelVariants).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -250,3 +368,15 @@ export type InsertSaleItem = z.infer<typeof insertSaleItemSchema>;
 
 export type StockAdjustment = typeof stockAdjustments.$inferSelect;
 export type InsertStockAdjustment = z.infer<typeof insertStockAdjustmentSchema>;
+
+export type Category = typeof categories.$inferSelect;
+export type InsertCategory = z.infer<typeof insertCategorySchema>;
+
+export type Brand = typeof brands.$inferSelect;
+export type InsertBrand = z.infer<typeof insertBrandSchema>;
+
+export type Model = typeof models.$inferSelect;
+export type InsertModel = z.infer<typeof insertModelSchema>;
+
+export type ModelVariant = typeof modelVariants.$inferSelect;
+export type InsertModelVariant = z.infer<typeof insertModelVariantSchema>;

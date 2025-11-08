@@ -18,6 +18,7 @@ import {
   type StockAdjustment,
   type InsertStockAdjustment,
 } from "@shared/schema";
+import * as schema from "@shared/schema"; // Import schema for type safety
 import { db } from "./db";
 import { eq, desc, gte, lte, and, sql, count, inArray } from "drizzle-orm";
 
@@ -34,12 +35,12 @@ export interface IStorage {
   updateProduct(id: number, product: Partial<InsertProduct>): Promise<Product | undefined>;
   deleteProduct(id: number): Promise<boolean>;
   getLowStockProducts(): Promise<Product[]>;
-  
+
   // Bulk operations
   bulkDeleteProducts(productIds: number[]): Promise<void>;
   bulkUpdateProducts(productIds: number[], updates: Partial<InsertProduct>): Promise<void>;
   bulkUpdatePrices(productIds: number[], field: string, operation: string, value: number): Promise<void>;
-  
+
   // Stock adjustment operations
   createStockAdjustment(adjustment: InsertStockAdjustment): Promise<StockAdjustment>;
   adjustStock(productId: number, userId: number, adjustmentType: string, quantity: number, reason: string, notes?: string, referenceNumber?: string): Promise<Product>;
@@ -57,6 +58,29 @@ export interface IStorage {
   getSales(filters?: any): Promise<Sale[]>;
   getSale(id: number): Promise<Sale | undefined>;
   getSaleWithItems(id: number): Promise<(Sale & { items: any[] }) | undefined>;
+
+  // Category operations
+  getCategories(filters?: { active?: boolean }): Promise<schema.Category[]>;
+  getCategory(id: number): Promise<schema.Category | undefined>;
+  createCategory(data: schema.InsertCategory): Promise<schema.Category>;
+  updateCategory(id: number, data: Partial<schema.InsertCategory>): Promise<schema.Category | undefined>;
+  deleteCategory(id: number): Promise<void>;
+
+  // Brand operations
+  getBrands(filters?: { active?: boolean }): Promise<schema.Brand[]>;
+  getBrand(id: number): Promise<schema.Brand | undefined>;
+  createBrand(data: schema.InsertBrand): Promise<schema.Brand>;
+  updateBrand(id: number, data: Partial<schema.InsertBrand>): Promise<schema.Brand | undefined>;
+  deleteBrand(id: number): Promise<void>;
+
+  // Model operations
+  getModels(filters?: { brandId?: number; active?: boolean }): Promise<schema.Model[]>;
+  getModel(id: number): Promise<schema.Model | undefined>;
+  getModelWithVariants(id: number): Promise<(schema.Model & { variants: schema.ModelVariant[] }) | undefined>;
+  createModel(data: schema.InsertModel & { variants?: schema.InsertModelVariant[] }): Promise<schema.Model>;
+  updateModel(id: number, data: Partial<schema.InsertModel> & { variants?: schema.InsertModelVariant[] }): Promise<schema.Model | undefined>;
+  deleteModel(id: number): Promise<void>;
+
 
   // Reports
   getDashboardStats(): Promise<any>;
@@ -441,6 +465,176 @@ export class DatabaseStorage implements IStorage {
       items,
     } as any;
   }
+
+  // Category methods
+  async getCategories(filters?: { active?: boolean }) {
+    let query = db.select().from(schema.categories);
+
+    if (filters?.active !== undefined) {
+      query = query.where(eq(schema.categories.active, filters.active));
+    }
+
+    return await query.all();
+  }
+
+  async getCategory(id: number) {
+    const result = await db.select()
+      .from(schema.categories)
+      .where(eq(schema.categories.id, id))
+      .limit(1);
+    return result[0];
+  }
+
+  async createCategory(data: schema.InsertCategory) {
+    const result = await db.insert(schema.categories)
+      .values(data)
+      .returning();
+    return result[0];
+  }
+
+  async updateCategory(id: number, data: Partial<schema.InsertCategory>) {
+    const result = await db.update(schema.categories)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(schema.categories.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteCategory(id: number) {
+    await db.delete(schema.categories)
+      .where(eq(schema.categories.id, id));
+  }
+
+  // Brand methods
+  async getBrands(filters?: { active?: boolean }) {
+    let query = db.select().from(schema.brands);
+
+    if (filters?.active !== undefined) {
+      query = query.where(eq(schema.brands.active, filters.active));
+    }
+
+    return await query.all();
+  }
+
+  async getBrand(id: number) {
+    const result = await db.select()
+      .from(schema.brands)
+      .where(eq(schema.brands.id, id))
+      .limit(1);
+    return result[0];
+  }
+
+  async createBrand(data: schema.InsertBrand) {
+    const result = await db.insert(schema.brands)
+      .values(data)
+      .returning();
+    return result[0];
+  }
+
+  async updateBrand(id: number, data: Partial<schema.InsertBrand>) {
+    const result = await db.update(schema.brands)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(schema.brands.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteBrand(id: number) {
+    await db.delete(schema.brands)
+      .where(eq(schema.brands.id, id));
+  }
+
+  // Model methods
+  async getModels(filters?: { brandId?: number; active?: boolean }) {
+    let query = db.select().from(schema.models);
+
+    const conditions = [];
+    if (filters?.brandId) {
+      conditions.push(eq(schema.models.brandId, filters.brandId));
+    }
+    if (filters?.active !== undefined) {
+      conditions.push(eq(schema.models.active, filters.active));
+    }
+
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
+    }
+
+    return await query.all();
+  }
+
+  async getModel(id: number) {
+    const result = await db.select()
+      .from(schema.models)
+      .where(eq(schema.models.id, id))
+      .limit(1);
+    return result[0];
+  }
+
+  async getModelWithVariants(id: number) {
+    const model = await this.getModel(id);
+    if (!model) return null;
+
+    const variants = await db.select()
+      .from(schema.modelVariants)
+      .where(eq(schema.modelVariants.modelId, id))
+      .all();
+
+    return {
+      ...model,
+      variants,
+    };
+  }
+
+  async createModel(data: schema.InsertModel & { variants?: schema.InsertModelVariant[] }) {
+    const { variants, ...modelData } = data;
+
+    const result = await db.insert(schema.models)
+      .values(modelData)
+      .returning();
+
+    const model = result[0];
+
+    if (variants && variants.length > 0) {
+      await db.insert(schema.modelVariants)
+        .values(variants.map(v => ({ ...v, modelId: model.id })));
+    }
+
+    return model;
+  }
+
+  async updateModel(id: number, data: Partial<schema.InsertModel> & { variants?: schema.InsertModelVariant[] }) {
+    const { variants, ...modelData } = data;
+
+    const result = await db.update(schema.models)
+      .set({ ...modelData, updatedAt: new Date() })
+      .where(eq(schema.models.id, id))
+      .returning();
+
+    if (variants !== undefined) {
+      // Delete existing variants
+      await db.delete(schema.modelVariants)
+        .where(eq(schema.modelVariants.modelId, id));
+
+      // Insert new variants
+      if (variants.length > 0) {
+        await db.insert(schema.modelVariants)
+          .values(variants.map(v => ({ ...v, modelId: id })));
+      }
+    }
+
+    return result[0];
+  }
+
+  async deleteModel(id: number) {
+    // Delete variants first
+    await db.delete(schema.modelVariants)
+      .where(eq(schema.modelVariants.modelId, id));
+
+    await db.delete(schema.models)
+      .where(eq(schema.models.id, id));
+  }
+
 
   // Reports
   async getDashboardStats(): Promise<any> {
