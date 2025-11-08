@@ -15,6 +15,21 @@ let categoryStatusFilter = 'all';
 let categoryToDelete = null;
 let draggedCategory = null;
 
+// Initialize with default categories if empty
+if (categories.length === 0) {
+  categories = [
+    { id: 1, name: 'Mobiles', code: 'MOB', parentId: null, description: 'Mobile phones', active: true, showInMenu: true, showInPOS: true, displayOrder: 1, productCount: 234, selected: false },
+    { id: 2, name: 'Smartphones', code: 'MOB-SMART', parentId: 1, description: 'Smart mobile phones', active: true, showInMenu: true, showInPOS: true, displayOrder: 1, productCount: 180, selected: false },
+    { id: 3, name: 'Feature Phones', code: 'MOB-FEAT', parentId: 1, description: 'Basic feature phones', active: true, showInMenu: true, showInPOS: true, displayOrder: 2, productCount: 54, selected: false },
+    { id: 4, name: 'Accessories', code: 'ACC', parentId: null, description: 'Mobile accessories', active: true, showInMenu: true, showInPOS: true, displayOrder: 2, productCount: 567, selected: false },
+    { id: 5, name: 'Cases & Covers', code: 'ACC-CASE', parentId: 4, description: 'Protective cases', active: true, showInMenu: true, showInPOS: true, displayOrder: 1, productCount: 234, selected: false },
+    { id: 6, name: 'Screen Protectors', code: 'ACC-SCREEN', parentId: 4, description: 'Screen protection', active: true, showInMenu: true, showInPOS: true, displayOrder: 2, productCount: 123, selected: false },
+    { id: 7, name: 'Chargers', code: 'ACC-CHARGE', parentId: 4, description: 'Charging accessories', active: true, showInMenu: true, showInPOS: true, displayOrder: 3, productCount: 210, selected: false },
+  ];
+  localStorage.setItem('categories', JSON.JSON.stringify(categories));
+}
+
+
 export function render(app) {
   return wrapWithLayout(`
     <div class="page-header">
@@ -74,12 +89,11 @@ export function render(app) {
     <div id="tabContent">
       ${renderTabContent()}
     </div>
-
     
 
     <!-- Category Modal -->
     <div id="categoryModal" class="modal-backdrop hidden">
-      <div class="modal" style="max-width: 900px;">
+      <div class="modal" style="max-width: 800px;">
         <div class="modal-header">
           <h3 class="modal-title" id="categoryModalTitle">Add Category</h3>
           <button class="modal-close" onclick="closeCategoryModal()">
@@ -91,18 +105,16 @@ export function render(app) {
         </div>
         <div class="modal-body">
           <form id="categoryForm">
-            <input type="hidden" id="categoryId" />
-            
-            <h4 style="font-size: 1rem; font-weight: 500; margin-bottom: 16px; color: var(--text-primary);">Basic Information</h4>
             <div class="grid grid-cols-2 gap-4">
               <div class="form-group">
                 <label class="form-label">Category Name *</label>
-                <input type="text" id="categoryName" class="form-input" required placeholder="e.g., Smartphones" />
+                <input type="text" id="categoryName" class="form-input" placeholder="e.g., Smartphones" required />
               </div>
               <div class="form-group">
                 <label class="form-label">Parent Category</label>
                 <select id="categoryParent" class="form-input">
-                  <option value="">None (Top Level)</option>
+                  <option value="">-- Top Level --</option>
+                  ${renderCategoryOptions()}
                 </select>
               </div>
               <div class="form-group">
@@ -111,36 +123,17 @@ export function render(app) {
               </div>
               <div class="form-group">
                 <label class="form-label">Display Order</label>
-                <input type="number" id="categoryOrder" class="form-input" value="0" />
+                <input type="number" id="categoryDisplayOrder" class="form-input" value="1" min="0" />
               </div>
             </div>
-            
             <div class="form-group">
               <label class="form-label">Description</label>
-              <textarea id="categoryDescription" class="form-input" rows="3" placeholder="Brief description of this category"></textarea>
+              <textarea id="categoryDescription" class="form-input" rows="3" placeholder="Category description"></textarea>
             </div>
-            
             <div class="form-group">
-              <label class="form-label">Category Icon/Image</label>
-              <div style="display: flex; gap: 12px; align-items: center;">
-                <input type="file" id="categoryImage" accept="image/*" onchange="handleCategoryImageSelect(event)" style="display: none;" />
-                <button type="button" class="btn btn-outline" onclick="document.getElementById('categoryImage').click()">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                    <circle cx="8.5" cy="8.5" r="1.5"/>
-                    <polyline points="21 15 16 10 5 21"/>
-                  </svg>
-                  Choose Image
-                </button>
-                <div id="categoryImagePreview" style="display: none;">
-                  <img id="categoryImagePreviewImg" style="max-width: 100px; max-height: 100px; border-radius: 4px; border: 1px solid var(--border-color);" />
-                  <button type="button" class="btn btn-outline btn-sm" onclick="clearCategoryImage()" style="margin-left: 8px;">Remove</button>
-                </div>
-                <input type="hidden" id="categoryImageUrl" />
-              </div>
+              <label class="form-label">Category Image URL (Optional)</label>
+              <input type="text" id="categoryImage" class="form-input" placeholder="https://example.com/image.jpg" />
             </div>
-            
-            <h4 style="font-size: 1rem; font-weight: 500; margin: 24px 0 16px 0; color: var(--text-primary);">Display Settings</h4>
             <div class="grid grid-cols-3 gap-4">
               <div class="form-group">
                 <label class="flex items-center gap-2">
@@ -161,7 +154,6 @@ export function render(app) {
                 </label>
               </div>
             </div>
-            
             <h4 style="font-size: 1rem; font-weight: 500; margin: 24px 0 16px 0; color: var(--text-primary);">SEO Settings (Optional)</h4>
             <div class="form-group">
               <label class="form-label">Meta Title</label>
@@ -229,25 +221,11 @@ export function render(app) {
           </button>
         </div>
         <div class="modal-body">
-          <div id="deleteCategoryWarning"></div>
-          <div id="deleteCategoryOptions" style="display: none;">
-            <div class="form-group">
-              <label class="form-label">What would you like to do with the products?</label>
-              <select id="deleteProductAction" class="form-input">
-                <option value="cancel">Cancel deletion</option>
-                <option value="moveToParent">Move products to parent category</option>
-                <option value="moveToOther">Move products to another category</option>
-              </select>
-            </div>
-            <div id="moveToOtherCategory" style="display: none;" class="form-group">
-              <label class="form-label">Select target category</label>
-              <select id="targetCategory" class="form-input"></select>
-            </div>
-          </div>
+          <div id="deleteCategoryContent"></div>
         </div>
         <div class="modal-footer">
           <button class="btn btn-outline" onclick="closeDeleteCategoryModal()">Cancel</button>
-          <button class="btn btn-error" onclick="confirmDeleteCategory()">Delete Category</button>
+          <button class="btn btn-error" id="confirmDeleteBtn">Delete</button>
         </div>
       </div>
     </div>
@@ -346,6 +324,7 @@ export function render(app) {
                 <label class="form-label">Brand *</label>
                 <select id="modelBrand" class="form-input" required>
                   <option value="">Select Brand</option>
+                  ${brands.filter(b => b.active).map(b => `<option value="${b.id}">${b.name}</option>`).join('')}
                 </select>
               </div>
               <div class="form-group">
@@ -711,6 +690,11 @@ function renderCategoryNode(category, level) {
   const hasChildren = children.length > 0;
   const isExpanded = expandedCategories.has(category.id);
   
+  if (categoryStatusFilter !== 'all') {
+    if (categoryStatusFilter === 'active' && !category.active) return '';
+    if (categoryStatusFilter === 'inactive' && category.active) return '';
+  }
+  
   return `
     <div class="category-node" data-category-id="${category.id}" data-level="${level}" draggable="true" ondragstart="handleCategoryDragStart(event, ${category.id})" ondragover="handleCategoryDragOver(event)" ondrop="handleCategoryDrop(event, ${category.id})" ondragend="handleCategoryDragEnd(event)">
       <div class="category-node-content" style="padding-left: ${level * 24}px;">
@@ -767,6 +751,170 @@ function matchesFilter(category) {
   return category.name.toLowerCase().includes(categoryFilter.toLowerCase()) ||
          (category.code && category.code.toLowerCase().includes(categoryFilter.toLowerCase())) ||
          (category.description && category.description.toLowerCase().includes(categoryFilter.toLowerCase()));
+}
+
+function renderCategoryModal() {
+  return `
+    <div id="categoryModal" class="modal-backdrop hidden">
+      <div class="modal" style="max-width: 800px;">
+        <div class="modal-header">
+          <h3 class="modal-title" id="categoryModalTitle">Add Category</h3>
+          <button class="modal-close" onclick="closeCategoryModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="categoryForm">
+            <div class="grid grid-cols-2 gap-4">
+              <div class="form-group">
+                <label class="form-label">Category Name *</label>
+                <input type="text" id="categoryName" class="form-input" placeholder="e.g., Smartphones" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Parent Category</label>
+                <select id="categoryParent" class="form-input">
+                  <option value="">-- Top Level --</option>
+                  ${renderCategoryOptions()}
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Category Code</label>
+                <input type="text" id="categoryCode" class="form-input" placeholder="e.g., MOB-SMART" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Display Order</label>
+                <input type="number" id="categoryDisplayOrder" class="form-input" value="1" min="0" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Description</label>
+              <textarea id="categoryDescription" class="form-input" rows="3" placeholder="Category description"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category Image URL (Optional)</label>
+              <input type="text" id="categoryImage" class="form-input" placeholder="https://example.com/image.jpg" />
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+              <div class="form-group">
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" id="categoryActive" checked />
+                  <span>Active</span>
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" id="categoryShowMenu" checked />
+                  <span>Show in Menu</span>
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" id="categoryShowPOS" checked />
+                  <span>Show in POS</span>
+                </label>
+              </div>
+            </div>
+            <h4 style="font-size: 1rem; font-weight: 500; margin: 24px 0 16px 0; color: var(--text-primary);">SEO Settings (Optional)</h4>
+            <div class="form-group">
+              <label class="form-label">Meta Title</label>
+              <input type="text" id="categoryMetaTitle" class="form-input" placeholder="SEO meta title" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Meta Description</label>
+              <textarea id="categoryMetaDescription" class="form-input" rows="2" placeholder="SEO meta description"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" onclick="closeCategoryModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveCategory()">Save Category</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderImportModal() {
+  return `
+    <div id="importModal" class="modal-backdrop hidden">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Import Categories</h3>
+          <button class="modal-close" onclick="closeImportModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Select CSV/Excel File</label>
+            <input type="file" id="importFile" accept=".csv,.xlsx,.xls" class="form-input" />
+            <p class="form-helper">File should contain columns: Name, Code, ParentCode, Description, Active, ShowInMenu, ShowInPOS</p>
+          </div>
+          <div class="alert alert-info">
+            <strong>Import Format:</strong> The file should have these columns:<br/>
+            - Name (required)<br/>
+            - Code (optional)<br/>
+            - ParentCode (optional - code of parent category)<br/>
+            - Description (optional)<br/>
+            - Active (optional - true/false)<br/>
+            - ShowInMenu (optional - true/false)<br/>
+            - ShowInPOS (optional - true/false)
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" onclick="closeImportModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="importCategories()">Import</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderDeleteCategoryModal() {
+  return `
+    <div id="deleteCategoryModal" class="modal-backdrop hidden">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Delete Category</h3>
+          <button class="modal-close" onclick="closeDeleteCategoryModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="deleteCategoryContent"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" onclick="closeDeleteCategoryModal()">Cancel</button>
+          <button class="btn btn-error" id="confirmDeleteBtn">Delete</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderCategoryOptions(excludeId = null) {
+  return categories
+    .filter(c => c.id !== excludeId)
+    .map(c => {
+      const indent = getCategoryDepth(c.id) * 2;
+      return `<option value="${c.id}">${'&nbsp;'.repeat(indent)}${c.name}</option>`;
+    })
+    .join('');
+}
+
+function getCategoryDepth(categoryId, depth = 0) {
+  const category = categories.find(c => c.id === categoryId);
+  if (!category || !category.parentId) return depth;
+  return getCategoryDepth(category.parentId, depth + 1);
 }
 
 function renderBrandRows() {
@@ -828,25 +976,22 @@ function updateTabContent() {
 
 // Category Management Functions
 function openCategoryModal(parentId = null) {
+  let editingCategoryId = null; // Ensure this is reset when opening for add
   document.getElementById('categoryModalTitle').textContent = parentId ? 'Add Subcategory' : 'Add Category';
-  document.getElementById('categoryId').value = '';
+  document.getElementById('categoryId').value = ''; // Assuming this was intended for hiding the ID
   document.getElementById('categoryName').value = '';
   document.getElementById('categoryCode').value = '';
   document.getElementById('categoryDescription').value = '';
-  document.getElementById('categoryOrder').value = '0';
+  document.getElementById('categoryDisplayOrder').value = '1'; // Default to 1
   document.getElementById('categoryActive').checked = true;
   document.getElementById('categoryShowMenu').checked = true;
   document.getElementById('categoryShowPOS').checked = true;
   document.getElementById('categoryMetaTitle').value = '';
   document.getElementById('categoryMetaDescription').value = '';
-  document.getElementById('categoryImageUrl').value = '';
-  document.getElementById('categoryImagePreview').style.display = 'none';
-  
-  // Populate parent category dropdown
+  document.getElementById('categoryImage').value = ''; // Clear image input
+
   const parentSelect = document.getElementById('categoryParent');
-  parentSelect.innerHTML = '<option value="">None (Top Level)</option>';
-  buildCategoryDropdown(parentSelect, null, '');
-  
+  parentSelect.innerHTML = '<option value="">-- Top Level --</option>' + renderCategoryOptions();
   if (parentId) {
     parentSelect.value = parentId;
   }
@@ -854,30 +999,6 @@ function openCategoryModal(parentId = null) {
   document.getElementById('categoryModal').classList.remove('hidden');
 }
 
-function buildCategoryDropdown(select, excludeId, prefix) {
-  const topLevel = categories.filter(c => !c.parentId && c.id !== excludeId);
-  topLevel.forEach(cat => {
-    const option = document.createElement('option');
-    option.value = cat.id;
-    option.textContent = prefix + cat.name;
-    select.appendChild(option);
-    
-    // Add children recursively
-    addChildrenToDropdown(select, cat.id, excludeId, prefix + '  ');
-  });
-}
-
-function addChildrenToDropdown(select, parentId, excludeId, prefix) {
-  const children = categories.filter(c => c.parentId === parentId && c.id !== excludeId);
-  children.forEach(cat => {
-    const option = document.createElement('option');
-    option.value = cat.id;
-    option.textContent = prefix + cat.name;
-    select.appendChild(option);
-    
-    addChildrenToDropdown(select, cat.id, excludeId, prefix + '  ');
-  });
-}
 
 function closeCategoryModal() {
   document.getElementById('categoryModal').classList.add('hidden');
@@ -888,57 +1009,59 @@ function handleCategoryImageSelect(event) {
   if (file) {
     const reader = new FileReader();
     reader.onload = (e) => {
-      document.getElementById('categoryImageUrl').value = e.target.result;
-      document.getElementById('categoryImagePreviewImg').src = e.target.result;
-      document.getElementById('categoryImagePreview').style.display = 'flex';
+      document.getElementById('categoryImage').value = e.target.result; // Store data URL
+      // In a real app, you would likely upload this to a server and store the URL
+      showToast('Image selected. URL stored in hidden field.', 'info'); 
     };
     reader.readAsDataURL(file);
   }
 }
 
 function clearCategoryImage() {
-  document.getElementById('categoryImageUrl').value = '';
   document.getElementById('categoryImage').value = '';
-  document.getElementById('categoryImagePreview').style.display = 'none';
+  showToast('Image cleared', 'info');
 }
 
 function saveCategory() {
-  const id = document.getElementById('categoryId').value;
-  const categoryData = {
-    id: id ? parseInt(id) : Date.now(),
-    name: document.getElementById('categoryName').value,
-    code: document.getElementById('categoryCode').value,
-    description: document.getElementById('categoryDescription').value,
-    parentId: document.getElementById('categoryParent').value ? parseInt(document.getElementById('categoryParent').value) : null,
-    displayOrder: parseInt(document.getElementById('categoryOrder').value) || 0,
-    active: document.getElementById('categoryActive').checked,
-    showInMenu: document.getElementById('categoryShowMenu').checked,
-    showInPOS: document.getElementById('categoryShowPOS').checked,
-    metaTitle: document.getElementById('categoryMetaTitle').value,
-    metaDescription: document.getElementById('categoryMetaDescription').value,
-    imageUrl: document.getElementById('categoryImageUrl').value,
-    productCount: 0,
-    selected: false
-  };
-  
-  if (!categoryData.name) {
+  const idInput = document.getElementById('categoryId'); // Assuming this exists for edit mode
+  const name = document.getElementById('categoryName').value.trim();
+  if (!name) {
     showToast('Category name is required', 'error');
     return;
   }
-  
-  if (id) {
-    const index = categories.findIndex(c => c.id === parseInt(id));
-    if (index !== -1) {
-      categoryData.productCount = categories[index].productCount;
-      categories[index] = { ...categories[index], ...categoryData };
-    }
+
+  const categoryData = {
+    id: idInput && idInput.value ? parseInt(idInput.value) : Date.now(),
+    name: name,
+    code: document.getElementById('categoryCode').value.trim(),
+    parentId: document.getElementById('categoryParent').value ? parseInt(document.getElementById('categoryParent').value) : null,
+    description: document.getElementById('categoryDescription').value.trim(),
+    imageUrl: document.getElementById('categoryImage').value.trim(), // Get from input
+    displayOrder: parseInt(document.getElementById('categoryDisplayOrder').value) || 1,
+    active: document.getElementById('categoryActive').checked,
+    showInMenu: document.getElementById('categoryShowMenu').checked,
+    showInPOS: document.getElementById('categoryShowPOS').checked,
+    metaTitle: document.getElementById('categoryMetaTitle').value.trim(),
+    metaDescription: document.getElementById('categoryMetaDescription').value.trim(),
+    productCount: 0, // Reset or handle existing count if editing
+    selected: false
+  };
+
+  const existingIndex = categories.findIndex(c => c.id === categoryData.id);
+
+  if (existingIndex !== -1) {
+    // Update existing category
+    categoryData.productCount = categories[existingIndex].productCount; // Preserve product count
+    categories[existingIndex] = { ...categories[existingIndex], ...categoryData };
+    showToast('Category updated successfully', 'success');
   } else {
+    // Add new category
     categories.push(categoryData);
+    showToast('Category added successfully', 'success');
   }
   
   localStorage.setItem('categories', JSON.stringify(categories));
   closeCategoryModal();
-  showToast('Category saved successfully', 'success');
   updateTabContent();
 }
 
@@ -947,28 +1070,24 @@ function editCategory(id) {
   if (!category) return;
   
   document.getElementById('categoryModalTitle').textContent = 'Edit Category';
-  document.getElementById('categoryId').value = category.id;
+  // Set the hidden ID input if it exists
+  const idInput = document.getElementById('categoryId'); 
+  if (idInput) {
+      idInput.value = category.id;
+  }
   document.getElementById('categoryName').value = category.name;
   document.getElementById('categoryCode').value = category.code || '';
   document.getElementById('categoryDescription').value = category.description || '';
-  document.getElementById('categoryOrder').value = category.displayOrder || 0;
+  document.getElementById('categoryImage').value = category.imageUrl || ''; // Set image URL
+  document.getElementById('categoryDisplayOrder').value = category.displayOrder || 1;
   document.getElementById('categoryActive').checked = category.active;
   document.getElementById('categoryShowMenu').checked = category.showInMenu;
   document.getElementById('categoryShowPOS').checked = category.showInPOS;
   document.getElementById('categoryMetaTitle').value = category.metaTitle || '';
   document.getElementById('categoryMetaDescription').value = category.metaDescription || '';
-  document.getElementById('categoryImageUrl').value = category.imageUrl || '';
-  
-  if (category.imageUrl) {
-    document.getElementById('categoryImagePreviewImg').src = category.imageUrl;
-    document.getElementById('categoryImagePreview').style.display = 'flex';
-  } else {
-    document.getElementById('categoryImagePreview').style.display = 'none';
-  }
   
   const parentSelect = document.getElementById('categoryParent');
-  parentSelect.innerHTML = '<option value="">None (Top Level)</option>';
-  buildCategoryDropdown(parentSelect, id, '');
+  parentSelect.innerHTML = '<option value="">-- Top Level --</option>' + renderCategoryOptions(id); // Exclude self from parent options
   parentSelect.value = category.parentId || '';
   
   document.getElementById('categoryModal').classList.remove('hidden');
@@ -980,33 +1099,53 @@ function deleteCategory(id) {
   
   categoryToDelete = id;
   const productCount = category.productCount || 0;
-  
-  if (productCount > 0) {
-    document.getElementById('deleteCategoryWarning').innerHTML = `
-      <div class="alert alert-warning">
-        <strong>Warning:</strong> This category has ${productCount} product(s). What would you like to do with them?
-      </div>
-    `;
-    document.getElementById('deleteCategoryOptions').style.display = 'block';
-    
-    const targetSelect = document.getElementById('targetCategory');
-    targetSelect.innerHTML = '<option value="">Select category</option>';
-    buildCategoryDropdown(targetSelect, id, '');
-    
-    document.getElementById('deleteProductAction').addEventListener('change', function() {
-      document.getElementById('moveToOtherCategory').style.display = 
-        this.value === 'moveToOther' ? 'block' : 'none';
-    });
-  } else {
-    document.getElementById('deleteCategoryWarning').innerHTML = `
-      <div class="alert alert-info">
-        Are you sure you want to delete the category "${category.name}"?
-      </div>
-    `;
-    document.getElementById('deleteCategoryOptions').style.display = 'none';
+  const hasChildren = categories.some(c => c.parentId === id);
+
+  let content = `<p>Are you sure you want to delete "<strong>${category.name}</strong>"?</p>`;
+
+  if (productCount > 0 || hasChildren) {
+    content += '<div class="alert alert-warning" style="margin-top: 16px;">';
+    if (productCount > 0) {
+      content += `<p><strong>Warning:</strong> This category has ${productCount} product(s).</p>`;
+    }
+    if (hasChildren) {
+      content += '<p><strong>Warning:</strong> This category has subcategories. Deleting this will also delete its subcategories.</p>';
+    }
+    content += '</div>';
+    content += '<div class="form-group" style="margin-top: 16px;">';
+    content += '<label class="form-label">What would you like to do?</label>';
+    content += '<select id="deleteAction" class="form-input">';
+    if (category.parentId) {
+      content += '<option value="move-parent">Move products to parent category</option>';
+    }
+    content += '<option value="move-other">Move products to another category</option>';
+    content += '<option value="delete-all">Delete category and its products</option>';
+    content += '</select>';
+    content += '</div>';
+    content += '<div id="moveToContainer" class="form-group hidden" style="margin-top: 16px;">';
+    content += '<label class="form-label">Select target category</label>';
+    content += '<select id="moveToCategory" class="form-input">';
+    content += renderCategoryOptions(id); // Exclude the category being deleted from target options
+    content += '</select>';
+    content += '</div>';
   }
-  
+
+  document.getElementById('deleteCategoryContent').innerHTML = content;
   document.getElementById('deleteCategoryModal').classList.remove('hidden');
+
+  const deleteActionSelect = document.getElementById('deleteAction');
+  if (deleteActionSelect) {
+    deleteActionSelect.addEventListener('change', function() {
+      const moveToContainer = document.getElementById('moveToContainer');
+      if (this.value === 'move-other') {
+        moveToContainer.classList.remove('hidden');
+      } else {
+        moveToContainer.classList.add('hidden');
+      }
+    });
+  }
+
+  document.getElementById('confirmDeleteBtn').onclick = () => confirmDeleteCategory(id);
 }
 
 function closeDeleteCategoryModal() {
@@ -1014,80 +1153,57 @@ function closeDeleteCategoryModal() {
   categoryToDelete = null;
 }
 
-function confirmDeleteCategory() {
-  if (!categoryToDelete) return;
-  
-  const category = categories.find(c => c.id === categoryToDelete);
+function confirmDeleteCategory(categoryId) {
+  const category = categories.find(c => c.id === categoryId);
   if (!category) return;
   
-  const productCount = category.productCount || 0;
-  
-  if (productCount > 0) {
-    const action = document.getElementById('deleteProductAction').value;
+  const deleteActionSelect = document.getElementById('deleteAction');
+  let action = 'delete-all'; // Default action
+
+  if (deleteActionSelect) {
+    action = deleteActionSelect.value;
     
-    if (action === 'cancel') {
-      closeDeleteCategoryModal();
-      return;
-    }
-    
-    if (action === 'moveToOther') {
-      const targetId = document.getElementById('targetCategory').value;
-      if (!targetId) {
+    if (action === 'move-other') {
+      const targetCategoryId = parseInt(document.getElementById('moveToCategory').value);
+      if (!targetCategoryId) {
         showToast('Please select a target category', 'error');
         return;
       }
-      // In a real app, you would update products here
-      showToast(`Products will be moved to selected category`, 'info');
-    } else if (action === 'moveToParent') {
-      if (category.parentId) {
-        showToast(`Products will be moved to parent category`, 'info');
-      } else {
-        showToast('This is a top-level category with no parent', 'error');
-        return;
-      }
+      // In a real app, you would reassign products here
+      showToast(`Products will be moved to target category ${targetCategoryId}.`, 'info');
+    } else if (action === 'move-parent' && category.parentId) {
+      // In a real app, you would reassign products to parent category
+      showToast(`Products will be moved to parent category ${category.parentId}.`, 'info');
     }
   }
-  
-  // Delete all child categories recursively
-  deleteChildCategories(categoryToDelete);
+
+  // Delete child categories recursively
+  deleteChildCategories(categoryId);
   
   // Delete the category itself
-  categories = categories.filter(c => c.id !== categoryToDelete);
-  localStorage.setItem('categories', JSON.stringify(categories));
+  categories = categories.filter(c => c.id !== categoryId);
   
-  closeDeleteCategoryModal();
+  localStorage.setItem('categories', JSON.stringify(categories));
   showToast('Category deleted successfully', 'success');
+  closeDeleteCategoryModal();
   updateTabContent();
 }
 
 function deleteChildCategories(parentId) {
   const children = categories.filter(c => c.parentId === parentId);
   children.forEach(child => {
-    deleteChildCategories(child.id);
-    categories = categories.filter(c => c.id !== child.id);
+    deleteChildCategories(child.id); // Recurse
+    categories = categories.filter(c => c.id !== child.id); // Remove child
   });
 }
 
-function filterCategories(searchTerm) {
-  categoryFilter = searchTerm;
+function filterCategories(query) {
+  categoryFilter = query;
   updateTabContent();
 }
 
 function filterCategoriesByStatus(status) {
   categoryStatusFilter = status;
-  if (status === 'active') {
-    categories.forEach(c => {
-      if (!c.active) c.hidden = true;
-      else c.hidden = false;
-    });
-  } else if (status === 'inactive') {
-    categories.forEach(c => {
-      if (c.active) c.hidden = true;
-      else c.hidden = false;
-    });
-  } else {
-    categories.forEach(c => c.hidden = false);
-  }
   updateTabContent();
 }
 
@@ -1104,6 +1220,7 @@ function toggleCategorySelection(id) {
   const category = categories.find(c => c.id === id);
   if (category) {
     category.selected = !category.selected;
+    localStorage.setItem('categories', JSON.stringify(categories));
     updateTabContent();
   }
 }
@@ -1119,7 +1236,7 @@ function bulkActivateCategories() {
     const category = categories.find(c => c.id === id);
     if (category) {
       category.active = true;
-      category.selected = false;
+      category.selected = false; // Deselect after action
     }
   });
   
@@ -1139,7 +1256,7 @@ function bulkDeactivateCategories() {
     const category = categories.find(c => c.id === id);
     if (category) {
       category.active = false;
-      category.selected = false;
+      category.selected = false; // Deselect after action
     }
   });
   
@@ -1160,8 +1277,8 @@ function bulkDeleteCategories() {
   }
   
   selectedIds.forEach(id => {
-    deleteChildCategories(id);
-    categories = categories.filter(c => c.id !== id);
+    deleteChildCategories(id); // Delete children first
+    categories = categories.filter(c => c.id !== id); // Then remove the category
   });
   
   localStorage.setItem('categories', JSON.stringify(categories));
@@ -1188,7 +1305,7 @@ function exportCategories() {
     ]);
   });
   
-  const csv = csvData.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+  const csv = csvData.map(row => row.map(cell => `"${cell.replace(/"/g, '""')}"`).join(',')).join('\n'); // Escape quotes
   const blob = new Blob([csv], { type: 'text/csv' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -1206,6 +1323,7 @@ function showImportModal() {
 
 function closeImportModal() {
   document.getElementById('importModal').classList.add('hidden');
+  document.getElementById('importFile').value = ''; // Clear the file input
 }
 
 function importCategories() {
@@ -1224,13 +1342,13 @@ function importCategories() {
       const lines = text.split('\n');
       const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
       
-      let imported = 0;
+      let importedCount = 0;
       for (let i = 1; i < lines.length; i++) {
         if (!lines[i].trim()) continue;
         
         const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
         const categoryData = {
-          id: Date.now() + i,
+          id: Date.now() + i, // Simple unique ID generation
           name: values[0],
           code: values[1] || '',
           description: values[3] || '',
@@ -1238,7 +1356,7 @@ function importCategories() {
           showInMenu: values[5]?.toLowerCase() === 'true',
           showInPOS: values[6]?.toLowerCase() === 'true',
           displayOrder: parseInt(values[7]) || 0,
-          productCount: 0,
+          productCount: 0, // New categories start with 0 products
           selected: false,
           parentId: null
         };
@@ -1248,20 +1366,27 @@ function importCategories() {
           const parent = categories.find(c => c.code === values[2]);
           if (parent) {
             categoryData.parentId = parent.id;
+          } else {
+            showToast(`Parent category with code "${values[2]}" not found for category "${categoryData.name}". Setting as top-level.`, 'warning');
           }
         }
         
         categories.push(categoryData);
-        imported++;
+        importedCount++;
       }
       
       localStorage.setItem('categories', JSON.stringify(categories));
       closeImportModal();
-      showToast(`${imported} categories imported successfully`, 'success');
+      showToast(`${importedCount} categories imported successfully`, 'success');
       updateTabContent();
     } catch (error) {
+      console.error("Import error:", error);
       showToast('Failed to import categories: ' + error.message, 'error');
     }
+  };
+  
+  reader.onerror = () => {
+    showToast('File reading error', 'error');
   };
   
   reader.readAsText(file);
@@ -1281,7 +1406,7 @@ function handleCategoryDragOver(event) {
 function handleCategoryDrop(event, targetId) {
   event.preventDefault();
   
-  if (draggedCategory === targetId) return;
+  if (draggedCategory === targetId) return; // Cannot drop on itself
   
   const draggedCat = categories.find(c => c.id === draggedCategory);
   const targetCat = categories.find(c => c.id === targetId);
@@ -1299,7 +1424,7 @@ function handleCategoryDrop(event, targetId) {
   
   localStorage.setItem('categories', JSON.stringify(categories));
   showToast('Category moved successfully', 'success');
-  updateTabContent();
+  updateTabContent(); // Re-render the tree
 }
 
 function handleCategoryDragEnd(event) {
@@ -1315,6 +1440,7 @@ function isChildOf(categoryId, potentialParentId) {
   }
   return false;
 }
+
 
 // Brand Management Functions
 function openBrandModal() {
@@ -1342,17 +1468,17 @@ function saveBrand() {
   const id = document.getElementById('brandId').value;
   const brandData = {
     id: id ? parseInt(id) : Date.now(),
-    name: document.getElementById('brandName').value,
-    code: document.getElementById('brandCode').value || document.getElementById('brandName').value.substring(0, 4).toUpperCase(),
-    website: document.getElementById('brandWebsite').value,
-    email: document.getElementById('brandEmail').value,
-    phone: document.getElementById('brandPhone').value,
-    country: document.getElementById('brandCountry').value,
-    description: document.getElementById('brandDescription').value,
+    name: document.getElementById('brandName').value.trim(),
+    code: document.getElementById('brandCode').value.trim() || document.getElementById('brandName').value.substring(0, 4).toUpperCase(), // Auto-generate code if empty
+    website: document.getElementById('brandWebsite').value.trim(),
+    email: document.getElementById('brandEmail').value.trim(),
+    phone: document.getElementById('brandPhone').value.trim(),
+    country: document.getElementById('brandCountry').value.trim(),
+    description: document.getElementById('brandDescription').value.trim(),
     active: document.getElementById('brandActive').checked,
     featured: document.getElementById('brandFeatured').checked,
     showInMenu: document.getElementById('brandShowMenu').checked,
-    productCount: 0
+    productCount: 0 // Initialize product count
   };
   
   if (!brandData.name) {
@@ -1360,19 +1486,21 @@ function saveBrand() {
     return;
   }
   
-  if (id) {
-    const index = brands.findIndex(b => b.id === parseInt(id));
-    if (index !== -1) {
-      brands[index] = { ...brands[index], ...brandData };
-    }
+  const existingIndex = brands.findIndex(b => b.id === brandData.id);
+  
+  if (existingIndex !== -1) {
+    // Update existing brand
+    brandData.productCount = brands[existingIndex].productCount; // Preserve product count
+    brands[existingIndex] = brandData;
   } else {
+    // Add new brand
     brands.push(brandData);
   }
   
   localStorage.setItem('brands', JSON.stringify(brands));
   closeBrandModal();
   showToast('Brand saved successfully', 'success');
-  updateTabContent();
+  updateTabContent(); // Refresh the tab content
 }
 
 function editBrand(id) {
@@ -1412,8 +1540,8 @@ function deleteBrand(id) {
 }
 
 function filterBrands(searchTerm) {
-  // Implement brand filtering logic
-  updateTabContent();
+  // Implement brand filtering logic - for now, just re-render
+  updateTabContent(); 
 }
 
 // Model Management Functions
@@ -1448,12 +1576,12 @@ function saveModel() {
   const modelData = {
     id: id ? parseInt(id) : Date.now(),
     brandId: parseInt(document.getElementById('modelBrand').value),
-    name: document.getElementById('modelName').value,
-    modelNumber: document.getElementById('modelNumber').value,
-    code: document.getElementById('modelCode').value,
+    name: document.getElementById('modelName').value.trim(),
+    modelNumber: document.getElementById('modelNumber').value.trim(),
+    code: document.getElementById('modelCode').value.trim(),
     launchDate: document.getElementById('modelLaunchDate').value,
     warrantyMonths: parseInt(document.getElementById('modelWarranty').value) || 12,
-    description: document.getElementById('modelDescription').value,
+    description: document.getElementById('modelDescription').value.trim(),
     active: document.getElementById('modelActive').checked,
     discontinued: document.getElementById('modelDiscontinued').checked
   };
@@ -1463,12 +1591,13 @@ function saveModel() {
     return;
   }
   
-  if (id) {
-    const index = models.findIndex(m => m.id === parseInt(id));
-    if (index !== -1) {
-      models[index] = { ...models[index], ...modelData };
-    }
+  const existingIndex = models.findIndex(m => m.id === modelData.id);
+  
+  if (existingIndex !== -1) {
+    // Update existing model
+    models[existingIndex] = modelData;
   } else {
+    // Add new model
     models.push(modelData);
   }
   
@@ -1515,22 +1644,22 @@ function deleteModel(id) {
 }
 
 function filterModels(searchTerm) {
-  // Implement model filtering logic
+  // Implement model filtering logic - for now, just re-render
   updateTabContent();
 }
 
 function filterModelsByBrand(brandId) {
-  // Implement brand-based filtering
+  // Implement brand-based filtering - for now, just re-render
   updateTabContent();
 }
 
 function filterModelsByStatus(status) {
-  // Implement status-based filtering
+  // Implement status-based filtering - for now, just re-render
   updateTabContent();
 }
 
 function filterBrandsByStatus(status) {
-  // Implement status-based filtering for brands
+  // Implement status-based filtering for brands - for now, just re-render
   updateTabContent();
 }
 
@@ -1545,385 +1674,13 @@ function getCategoryColor(category) {
 }
 
 function formatCategory(category) {
+  if (!category) return '';
   return category.split('_').map(word => 
     word.charAt(0).toUpperCase() + word.slice(1)
   ).join(' ');
 }
 
-export async function init(app) {
-  // Expose functions globally for onclick handlers FIRST
-  window.switchTab = switchTab;
-  window.openAddProductModal = openAddProductModal;
-  window.saveProduct = saveProduct;
-  window.editProduct = editProduct;
-  window.deleteProduct = deleteProduct;
-  window.filterProducts = filterProducts;
-  window.setFilter = setFilter;
-  window.toggleCategoryExpand = toggleCategoryExpand;
-  window.filterCategoriesByStatus = filterCategoriesByStatus;
-  window.openDeleteCategoryModal = openDeleteCategoryModal;
-  window.closeDeleteCategoryModal = closeDeleteCategoryModal;
-  window.confirmDeleteCategory = confirmDeleteCategory;
-  
-  // Category functions
-  window.openCategoryModal = openCategoryModal;
-  window.closeCategoryModal = closeCategoryModal;
-  window.saveCategory = saveCategory;
-  window.editCategory = editCategory;
-  window.deleteCategory = deleteCategory;
-  window.filterCategories = filterCategories;
-  
-  // Brand functions
-  window.openBrandModal = openBrandModal;
-  window.closeBrandModal = closeBrandModal;
-  window.saveBrand = saveBrand;
-  window.editBrand = editBrand;
-  window.deleteBrand = deleteBrand;
-  window.filterBrands = filterBrands;
-  window.filterBrandsByStatus = filterBrandsByStatus;
-  
-  // Model functions
-  window.openModelModal = openModelModal;
-  window.closeModelModal = closeModelModal;
-  window.saveModel = saveModel;
-  window.editModel = editModel;
-  window.deleteModel = deleteModel;
-  window.filterModels = filterModels;
-  window.filterModelsByBrand = filterModelsByBrand;
-  window.filterModelsByStatus = filterModelsByStatus;
-
-  try {
-    products = await api.getProducts();
-    filteredProducts = products;
-    
-    // Load categories, brands, and models from localStorage
-    categories = JSON.parse(localStorage.getItem('categories') || '[]');
-    brands = JSON.parse(localStorage.getItem('brands') || '[]');
-    models = JSON.parse(localStorage.getItem('brandModels') || '[]');
-    
-    updateTabContent();
-  } catch (error) {
-    console.error('Failed to load products:', error);
-    showToast('Failed to load products', 'error');
-  }
-}
-
-function updateProductAction() {
-  const productId = document.getElementById('productId').value;
-  if (!productId) {
-    showToast('Please select a product to update', 'error');
-    return;
-  }
-  saveProduct();
-}
-
-function deleteProductAction() {
-  const productId = document.getElementById('productId').value;
-  if (!productId) {
-    showToast('Please select a product to delete', 'error');
-    return;
-  }
-  deleteProduct(productId);
-}
-
-function getProductData() {
-  const imei = document.getElementById('productIMEI').value;
-  const barcode = document.getElementById('productBarcode').value;
-  
-  if (!imei && !barcode) {
-    showToast('Please enter IMEI or Barcode to fetch data', 'info');
-    return;
-  }
-  
-  showToast('Fetching product data...', 'info');
-  // Add your data fetching logic here
-}
-
-function generateBarcode() {
-  const productCode = document.getElementById('productCode').value || `PRD${Date.now()}`;
-  document.getElementById('productBarcode').value = productCode;
-  showToast('Barcode generated', 'success');
-}
-
-function handleProductImageSelect(event) {
-  const file = event.target.files[0];
-  if (file) {
-    if (file.size > 5 * 1024 * 1024) {
-      showToast('Image size should be less than 5MB', 'error');
-      return;
-    }
-    
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const preview = document.getElementById('productImagePreview');
-      const placeholder = document.getElementById('noImagePlaceholder');
-      preview.src = e.target.result;
-      preview.style.display = 'block';
-      placeholder.style.display = 'none';
-      document.getElementById('productImageUrl').value = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-}
-
-function clearProductImage() {
-  const preview = document.getElementById('productImagePreview');
-  const placeholder = document.getElementById('noImagePlaceholder');
-  const input = document.getElementById('productImageInput');
-  
-  preview.src = '';
-  preview.style.display = 'none';
-  placeholder.style.display = 'block';
-  input.value = '';
-  document.getElementById('productImageUrl').value = '';
-  
-  showToast('Image cleared', 'info');
-}
-
-function showImageLibrary() {
-  showToast('Online image library feature coming soon', 'info');
-}
-
-let isCalculating = false;
-
-function calculateMarginFromPrice(priceType) {
-  if (isCalculating) return;
-  isCalculating = true;
-  
-  const costPrice = parseFloat(document.getElementById('productCostPrice').value) || 0;
-  
-  let priceField = null;
-  let marginField = null;
-  let hiddenField = null;
-  
-  if (priceType === 'mrp') {
-    priceField = document.getElementById('priceMRP');
-    marginField = document.getElementById('marginMRP');
-    hiddenField = document.getElementById('productMRP');
-  } else if (priceType === 'retail') {
-    priceField = document.getElementById('priceRetail');
-    marginField = document.getElementById('marginRetail');
-    hiddenField = document.getElementById('productPrice');
-  } else if (priceType === 'wholesale') {
-    priceField = document.getElementById('priceWholesale');
-    marginField = document.getElementById('marginWholesale');
-    hiddenField = document.getElementById('productWholesalePrice');
-  }
-  
-  if (priceField && marginField && hiddenField) {
-    const price = parseFloat(priceField.value) || 0;
-    hiddenField.value = price.toFixed(2);
-    
-    if (costPrice > 0 && price > 0) {
-      const marginPercent = ((price - costPrice) / costPrice) * 100;
-      marginField.value = marginPercent.toFixed(2);
-    } else {
-      marginField.value = '0.00';
-    }
-  }
-  
-  isCalculating = false;
-}
-
-function handleMarginChange(priceType) {
-  if (isCalculating) return;
-  isCalculating = true;
-  
-  const costPrice = parseFloat(document.getElementById('productCostPrice').value) || 0;
-  
-  let priceField = null;
-  let marginField = null;
-  let hiddenField = null;
-  
-  if (priceType === 'mrp') {
-    priceField = document.getElementById('priceMRP');
-    marginField = document.getElementById('marginMRP');
-    hiddenField = document.getElementById('productMRP');
-  } else if (priceType === 'retail') {
-    priceField = document.getElementById('priceRetail');
-    marginField = document.getElementById('marginRetail');
-    hiddenField = document.getElementById('productPrice');
-  } else if (priceType === 'wholesale') {
-    priceField = document.getElementById('priceWholesale');
-    marginField = document.getElementById('marginWholesale');
-    hiddenField = document.getElementById('productWholesalePrice');
-  }
-  
-  if (priceField && marginField && hiddenField) {
-    const marginPercent = parseFloat(marginField.value) || 0;
-    
-    if (costPrice > 0) {
-      const calculatedPrice = costPrice * (1 + marginPercent / 100);
-      priceField.value = calculatedPrice.toFixed(2);
-      hiddenField.value = calculatedPrice.toFixed(2);
-    } else {
-      priceField.value = '0.00';
-      hiddenField.value = '0.00';
-    }
-  }
-  
-  isCalculating = false;
-}
-
-function recalculateAllPrices() {
-  if (isCalculating) return;
-  isCalculating = true;
-  
-  const costPrice = parseFloat(document.getElementById('productCostPrice').value) || 0;
-  
-  // Auto-calculate MRP from Purchase Price + MRP Margin %
-  const marginMRPField = document.getElementById('marginMRP');
-  const priceMRPField = document.getElementById('priceMRP');
-  const hiddenMRPField = document.getElementById('productMRP');
-  
-  if (costPrice > 0 && marginMRPField && priceMRPField && hiddenMRPField) {
-    const marginPercent = parseFloat(marginMRPField.value) || 0;
-    if (marginPercent > 0) {
-      const calculatedMRP = costPrice * (1 + marginPercent / 100);
-      priceMRPField.value = calculatedMRP.toFixed(2);
-      hiddenMRPField.value = calculatedMRP.toFixed(2);
-    }
-  }
-  
-  isCalculating = false;
-  
-  // Recalculate margins for all price types
-  calculateMarginFromPrice('mrp');
-  calculateMarginFromPrice('retail');
-  calculateMarginFromPrice('wholesale');
-}
-
-function calculateGSTComponents() {
-  const gstValue = parseFloat(document.getElementById('productGST').value) || 0;
-  
-  const cgst = gstValue / 2;
-  const sgst = gstValue / 2;
-  const igst = gstValue;
-  
-  document.getElementById('productCGST').value = cgst.toFixed(2);
-  document.getElementById('productSGST').value = sgst.toFixed(2);
-  document.getElementById('productIGST').value = igst.toFixed(2);
-}
-
-function incrementPriceQty() {
-  const displayField = document.getElementById('priceInfoQtyDisplay');
-  const actualField = document.getElementById('productDefaultQty');
-  const currentValue = parseInt(displayField.value) || 1;
-  const newValue = currentValue + 1;
-  displayField.value = newValue;
-  if (actualField) {
-    actualField.value = newValue;
-  }
-}
-
-function syncPriceInfoQty() {
-  const actualField = document.getElementById('productDefaultQty');
-  const displayField = document.getElementById('priceInfoQtyDisplay');
-  if (actualField && displayField) {
-    displayField.value = actualField.value || '1';
-  }
-}
-
-function loadBrandsAndModels() {
-  const brands = JSON.parse(localStorage.getItem('brands') || '[]');
-  const brandModels = JSON.parse(localStorage.getItem('brandModels') || '[]');
-  
-  const brandSelect = document.getElementById('productBrand');
-  brandSelect.innerHTML = '<option value="">Select brand</option>';
-  
-  // Default models for each brand
-  const defaultBrandModels = {
-    'Apple': ['iPhone 15 Pro Max', 'iPhone 15 Pro', 'iPhone 15 Plus', 'iPhone 15', 'iPhone 14 Pro Max', 'iPhone 14 Pro', 'iPhone 14', 'iPhone 13', 'iPhone SE'],
-    'Samsung': ['Galaxy S24 Ultra', 'Galaxy S24+', 'Galaxy S24', 'Galaxy S23 Ultra', 'Galaxy A54', 'Galaxy A34', 'Galaxy M34', 'Galaxy F54', 'Galaxy Z Fold 5', 'Galaxy Z Flip 5'],
-    'OnePlus': ['OnePlus 12', 'OnePlus 11', 'OnePlus Nord 3', 'OnePlus Nord CE 3', 'OnePlus 11R', 'OnePlus 10 Pro', 'OnePlus 10T'],
-    'Xiaomi': ['Xiaomi 14 Pro', 'Xiaomi 14', 'Xiaomi 13 Pro', 'Redmi Note 13 Pro+', 'Redmi Note 13 Pro', 'Redmi Note 13', 'Redmi 13C', 'Redmi A3'],
-    'Realme': ['Realme 12 Pro+', 'Realme 12 Pro', 'Realme 12', 'Realme 11 Pro+', 'Realme 11 Pro', 'Realme Narzo 60 Pro', 'Realme C67'],
-    'Oppo': ['Oppo Reno 11 Pro', 'Oppo Reno 11', 'Oppo F25 Pro', 'Oppo A79', 'Oppo A59', 'Oppo Find N3'],
-    'Vivo': ['Vivo V30 Pro', 'Vivo V30', 'Vivo V29 Pro', 'Vivo Y100', 'Vivo Y56', 'Vivo Y27', 'Vivo T2 Pro'],
-    'Motorola': ['Moto Edge 50 Pro', 'Moto Edge 40 Neo', 'Moto G84', 'Moto G54', 'Moto G34', 'Moto E13'],
-    'Nokia': ['Nokia G42', 'Nokia G22', 'Nokia C32', 'Nokia C22', 'Nokia 105', 'Nokia 110'],
-    'Google': ['Pixel 8 Pro', 'Pixel 8', 'Pixel 7a', 'Pixel 7 Pro', 'Pixel 7', 'Pixel Fold'],
-    'Asus': ['ROG Phone 8 Pro', 'ROG Phone 7', 'Zenfone 10', 'Zenfone 11 Ultra'],
-    'Nothing': ['Nothing Phone 2', 'Nothing Phone 2a', 'Nothing Phone 1'],
-    'Poco': ['Poco X6 Pro', 'Poco X6', 'Poco M6 Pro', 'Poco C65', 'Poco F5'],
-    'Infinix': ['Infinix Note 30 Pro', 'Infinix Note 30', 'Infinix Hot 40 Pro', 'Infinix Smart 8'],
-    'Tecno': ['Tecno Phantom X2 Pro', 'Tecno Camon 20 Pro', 'Tecno Spark 10 Pro', 'Tecno Pop 8']
-  };
-  
-  // If brands exist in localStorage, use them
-  if (brands.length > 0) {
-    brands.filter(b => b.active).forEach(brand => {
-      const option = document.createElement('option');
-      option.value = brand.name;
-      option.textContent = brand.name;
-      brandSelect.appendChild(option);
-    });
-  } else {
-    // If no brands in localStorage, show some default popular brands
-    const defaultBrands = Object.keys(defaultBrandModels);
-    
-    defaultBrands.forEach(brandName => {
-      const option = document.createElement('option');
-      option.value = brandName;
-      option.textContent = brandName;
-      brandSelect.appendChild(option);
-    });
-  }
-  
-  return { brands, brandModels, defaultBrandModels };
-}
-
-function updateModelOptions() {
-  const selectedBrandName = document.getElementById('productBrand').value;
-  const brands = JSON.parse(localStorage.getItem('brands') || '[]');
-  const brandModels = JSON.parse(localStorage.getItem('brandModels') || '[]');
-  
-  const defaultBrandModels = {
-    'Apple': ['iPhone 15 Pro Max', 'iPhone 15 Pro', 'iPhone 15 Plus', 'iPhone 15', 'iPhone 14 Pro Max', 'iPhone 14 Pro', 'iPhone 14', 'iPhone 13', 'iPhone SE'],
-    'Samsung': ['Galaxy S24 Ultra', 'Galaxy S24+', 'Galaxy S24', 'Galaxy S23 Ultra', 'Galaxy A54', 'Galaxy A34', 'Galaxy M34', 'Galaxy F54', 'Galaxy Z Fold 5', 'Galaxy Z Flip 5'],
-    'OnePlus': ['OnePlus 12', 'OnePlus 11', 'OnePlus Nord 3', 'OnePlus Nord CE 3', 'OnePlus 11R', 'OnePlus 10 Pro', 'OnePlus 10T'],
-    'Xiaomi': ['Xiaomi 14 Pro', 'Xiaomi 14', 'Xiaomi 13 Pro', 'Redmi Note 13 Pro+', 'Redmi Note 13 Pro', 'Redmi Note 13', 'Redmi 13C', 'Redmi A3'],
-    'Realme': ['Realme 12 Pro+', 'Realme 12 Pro', 'Realme 12', 'Realme 11 Pro+', 'Realme 11 Pro', 'Realme Narzo 60 Pro', 'Realme C67'],
-    'Oppo': ['Oppo Reno 11 Pro', 'Oppo Reno 11', 'Oppo F25 Pro', 'Oppo A79', 'Oppo A59', 'Oppo Find N3'],
-    'Vivo': ['Vivo V30 Pro', 'Vivo V30', 'Vivo V29 Pro', 'Vivo Y100', 'Vivo Y56', 'Vivo Y27', 'Vivo T2 Pro'],
-    'Motorola': ['Moto Edge 50 Pro', 'Moto Edge 40 Neo', 'Moto G84', 'Moto G54', 'Moto G34', 'Moto E13'],
-    'Nokia': ['Nokia G42', 'Nokia G22', 'Nokia C32', 'Nokia C22', 'Nokia 105', 'Nokia 110'],
-    'Google': ['Pixel 8 Pro', 'Pixel 8', 'Pixel 7a', 'Pixel 7 Pro', 'Pixel 7', 'Pixel Fold'],
-    'Asus': ['ROG Phone 8 Pro', 'ROG Phone 7', 'Zenfone 10', 'Zenfone 11 Ultra'],
-    'Nothing': ['Nothing Phone 2', 'Nothing Phone 2a', 'Nothing Phone 1'],
-    'Poco': ['Poco X6 Pro', 'Poco X6', 'Poco M6 Pro', 'Poco C65', 'Poco F5'],
-    'Infinix': ['Infinix Note 30 Pro', 'Infinix Note 30', 'Infinix Hot 40 Pro', 'Infinix Smart 8'],
-    'Tecno': ['Tecno Phantom X2 Pro', 'Tecno Camon 20 Pro', 'Tecno Spark 10 Pro', 'Tecno Pop 8']
-  };
-  
-  const modelSelect = document.getElementById('productModel');
-  modelSelect.innerHTML = '<option value="">Select model</option>';
-  
-  if (!selectedBrandName) return;
-  
-  // First, try to find brand in localStorage
-  const selectedBrand = brands.find(b => b.name === selectedBrandName);
-  
-  if (selectedBrand) {
-    // Use models from localStorage
-    const models = brandModels.filter(m => m.brandId === selectedBrand.id && m.active);
-    models.forEach(model => {
-      const option = document.createElement('option');
-      option.value = model.name;
-      option.textContent = model.name;
-      modelSelect.appendChild(option);
-    });
-  } else if (defaultBrandModels[selectedBrandName]) {
-    // Use default models for the brand
-    defaultBrandModels[selectedBrandName].forEach(modelName => {
-      const option = document.createElement('option');
-      option.value = modelName;
-      option.textContent = modelName;
-      modelSelect.appendChild(option);
-    });
-  }
-}
-
+// Product Management Functions (kept from original, but might need updates if product form is changed)
 function openAddProductModal() {
   document.getElementById('modalTitle').textContent = 'Add New Product';
   const productIdInput = document.getElementById('productId');
@@ -1968,9 +1725,9 @@ async function deleteProduct(id) {
   try {
     await api.deleteProduct(id);
     showToast('Product deleted successfully', 'success');
-    products = await api.getProducts();
-    filteredProducts = products;
-    updateProductsTable();
+    products = await api.getProducts(); // Re-fetch products
+    filteredProducts = products; // Reset filtered products
+    updateProductsTable(); // Update the table view
   } catch (error) {
     showToast(error.message || 'Failed to delete product', 'error');
   }
@@ -1991,6 +1748,7 @@ function filterProducts() {
     } else if (currentFilter === 'low-stock') {
       return matchesSearch && product.stockQuantity <= product.minStockLevel;
     } else {
+      // Assuming category is a direct match for filters like 'smartphone'
       return matchesSearch && product.category === currentFilter;
     }
   });
@@ -2010,4 +1768,84 @@ function updateProductsTable() {
   }
 }
 
-// Removed handleImageSelect and updateImagePreview functions as per instructions.
+// Initialize global functions for onclick handlers
+export function init(app) {
+  // Product functions
+  window.openAddProductModal = openAddProductModal;
+  window.closeProductModal = closeProductModal;
+  window.saveProduct = saveProduct;
+  window.editProduct = editProduct;
+  window.deleteProduct = deleteProduct;
+  window.filterProducts = filterProducts;
+  window.setFilter = setFilter;
+  window.updateProductsTable = updateProductsTable; // Added for potential external use
+
+  // Tab functions
+  window.switchTab = switchTab;
+  window.updateTabContent = updateTabContent;
+
+  // Category functions
+  window.openCategoryModal = openCategoryModal;
+  window.closeCategoryModal = closeCategoryModal;
+  window.saveCategory = saveCategory;
+  window.editCategory = editCategory;
+  window.deleteCategory = deleteCategory;
+  window.confirmDeleteCategory = confirmDeleteCategory; // For the delete modal confirm button
+  window.closeDeleteCategoryModal = closeDeleteCategoryModal;
+  window.filterCategories = filterCategories;
+  window.filterCategoriesByStatus = filterCategoriesByStatus;
+  window.toggleCategoryExpand = toggleCategoryExpand;
+  window.toggleCategorySelection = toggleCategorySelection;
+  window.bulkActivateCategories = bulkActivateCategories;
+  window.bulkDeactivateCategories = bulkDeactivateCategories;
+  window.bulkDeleteCategories = bulkDeleteCategories;
+  window.exportCategories = exportCategories;
+  window.showImportModal = showImportModal;
+  window.closeImportModal = closeImportModal;
+  window.importCategories = importCategories;
+  window.handleCategoryDragStart = handleCategoryDragStart;
+  window.handleCategoryDragOver = handleCategoryDragOver;
+  window.handleCategoryDrop = handleCategoryDrop;
+  window.handleCategoryDragEnd = handleCategoryDragEnd;
+  window.renderCategoryOptions = renderCategoryOptions; // Needed for modal select
+
+  // Brand functions
+  window.openBrandModal = openBrandModal;
+  window.closeBrandModal = closeBrandModal;
+  window.saveBrand = saveBrand;
+  window.editBrand = editBrand;
+  window.deleteBrand = deleteBrand;
+  window.filterBrands = filterBrands;
+  // window.filterBrandsByStatus = filterBrandsByStatus; // Not implemented in edited code snippet
+
+  // Model functions
+  window.openModelModal = openModelModal;
+  window.closeModelModal = closeModelModal;
+  window.saveModel = saveModel;
+  window.editModel = editModel;
+  window.deleteModel = deleteModel;
+  window.filterModels = filterModels;
+  window.filterModelsByBrand = filterModelsByBrand;
+  // window.filterModelsByStatus = filterModelsByStatus; // Not implemented in edited code snippet
+
+  // Utility functions
+  window.getCategoryColor = getCategoryColor;
+  window.formatCategory = formatCategory;
+
+  // Initial data loading
+  try {
+    products = await api.getProducts();
+    filteredProducts = products;
+    
+    // Load categories, brands, and models from localStorage if they exist
+    // If localStorage is empty, the default values from the top of the file will be used.
+    categories = JSON.parse(localStorage.getItem('categories') || JSON.stringify(categories));
+    brands = JSON.parse(localStorage.getItem('brands') || '[]');
+    models = JSON.parse(localStorage.getItem('brandModels') || '[]');
+    
+    updateTabContent(); // Render the initial tab content
+  } catch (error) {
+    console.error('Failed to load initial data:', error);
+    showToast('Failed to load initial data', 'error');
+  }
+}
