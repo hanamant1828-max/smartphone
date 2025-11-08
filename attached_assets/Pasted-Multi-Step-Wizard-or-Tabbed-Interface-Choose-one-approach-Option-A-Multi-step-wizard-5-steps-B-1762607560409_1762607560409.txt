@@ -1,0 +1,85 @@
+Multi-Step Wizard or Tabbed Interface
+Choose one approach:
+•	Option A: Multi-step wizard (5 steps: Basic Info → Pricing → Stock → Details → Images)
+•	Option B: Tabbed interface (all tabs visible, can jump between)
+3.2 Step/Tab 1: Basic Information
+•	• Product Name (required)
+•	• Category (dropdown with hierarchy, required)
+•	• Brand (dropdown with search, required)
+•	• Model (cascading dropdown)
+•	• Variant (dropdown)
+•	• SKU/Product Code (with auto-generate button)
+•	• Barcode (with auto-generate and scan buttons)
+•	• Short Description (textarea, 500 char max)
+3.3 Step/Tab 2: Pricing Information
+•	• Purchase Price (required)
+•	• Selling Price (required)
+•	• MRP (optional)
+•	• Profit Margin (auto-calculated, color-coded)
+•	• Tax Type (Inclusive/Exclusive)
+•	• GST Rate (dropdown: 0%, 5%, 12%, 18%, 28%)
+•	• HSN Code
+•	• Discount (percentage or fixed amount)
+3.4 Step/Tab 3: Stock Management
+•	• Opening Stock (required)
+•	• Unit of Measurement (dropdown)
+•	• Minimum Stock Level (with alert)
+•	• Maximum Stock Level
+•	• Reorder Point
+•	• Reorder Quantity
+•	• Track Stock checkbox
+•	• Manage Stock Automatically checkbox
+•	• Allow Backorders checkbox
+•	• Multi-location stock (if enabled):
+  - Primary Location
+  - Shelf Number
+  - Bin Number
+  - Rack Number
+3.5 Step/Tab 4: Additional Details
+•	• Supplier Information:
+  - Primary Supplier dropdown
+  - Supplier Product Code
+  - Lead Time (days)
+•	• Warranty Information:
+  - Warranty Period
+  - Warranty Type (None/Manufacturer/Seller/Extended)
+  - Warranty Description
+•	• Product Specifications (dynamic key-value pairs):
+  - Add/remove specification rows
+  - Example: Display: 6.8" AMOLED
+•	• Product Type:
+  - Simple Product
+  - Variable Product (multiple variants)
+  - Bundle (group of products)
+  - Serial Tracked (IMEI/Serial Number)
+•	• Tags (multi-select with autocomplete)
+•	• Status (Active/Inactive/Draft)
+•	• Checkboxes:
+  - Show in POS
+  - Available for Online Sale
+  - Featured Product
+•	• Detailed Description (rich text editor)
+•	• Internal Notes (textarea, not visible to customers)
+3.6 Step/Tab 5: Images Upload
+✓ Drag & drop image upload area
+✓ Support: JPG, PNG, WebP (max 5MB per image)
+✓ Maximum 10 images per product
+✓ Image preview thumbnails
+✓ Drag to reorder images
+✓ Set primary image (star icon)
+✓ Edit/crop image button
+✓ Delete image button
+✓ Image Alt Text field (for SEO)
+3.7 Form Features
+•	• Real-time validation with inline error messages
+•	• Required fields marked with asterisk
+•	• Auto-fill features (SKU, barcode generation)
+•	• Smart defaults (category, brand from previous product)
+•	• Conditional fields (model enabled after brand selection)
+•	• Save options:
+  - Save & Add Another
+  - Save & Close
+  - Save as Draft
+  - Cancel (with unsaved changes warning)
+•	• Auto-save draft every 2 minutes
+•	• Keyboard shortcuts (Ctrl+S to save, Esc to cancel)
