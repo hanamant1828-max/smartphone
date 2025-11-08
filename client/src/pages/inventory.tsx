@@ -68,13 +68,19 @@ export default function Inventory() {
     },
   });
 
-  const filteredProducts = products.filter((p) =>
-    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (p.brand && p.brand.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    (p.model && p.model.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    (p.productCode && p.productCode.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    (p.imeiNumber && p.imeiNumber.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const filteredProducts = products.filter((p) => {
+    const query = searchQuery.toLowerCase().trim();
+    if (!query) return true;
+    
+    return (
+      (p.name && p.name.toLowerCase().includes(query)) ||
+      (p.brand && p.brand.toLowerCase().includes(query)) ||
+      (p.model && p.model.toLowerCase().includes(query)) ||
+      (p.productCode && p.productCode.toLowerCase().includes(query)) ||
+      (p.imeiNumber && p.imeiNumber.toLowerCase().includes(query)) ||
+      (p.category && p.category.toLowerCase().includes(query))
+    );
+  });
 
   const onSubmit = (data: any) => {
     if (editingProduct) {
