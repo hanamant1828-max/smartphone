@@ -1547,22 +1547,7 @@ function formatCategory(category) {
 }
 
 export async function init(app) {
-  try {
-    products = await api.getProducts();
-    filteredProducts = products;
-    
-    // Load categories, brands, and models from localStorage
-    categories = JSON.parse(localStorage.getItem('categories') || '[]');
-    brands = JSON.parse(localStorage.getItem('brands') || '[]');
-    models = JSON.parse(localStorage.getItem('brandModels') || '[]');
-    
-    updateTabContent();
-  } catch (error) {
-    console.error('Failed to load products:', error);
-    showToast('Failed to load products', 'error');
-  }
-
-  // Expose functions globally for onclick handlers
+  // Expose functions globally for onclick handlers FIRST
   window.switchTab = switchTab;
   window.openAddProductModal = openAddProductModal;
   window.saveProduct = saveProduct;
@@ -1570,6 +1555,11 @@ export async function init(app) {
   window.deleteProduct = deleteProduct;
   window.filterProducts = filterProducts;
   window.setFilter = setFilter;
+  window.toggleCategoryExpand = toggleCategoryExpand;
+  window.filterCategoriesByStatus = filterCategoriesByStatus;
+  window.openDeleteCategoryModal = openDeleteCategoryModal;
+  window.closeDeleteCategoryModal = closeDeleteCategoryModal;
+  window.confirmDeleteCategory = confirmDeleteCategory;
   
   // Category functions
   window.openCategoryModal = openCategoryModal;
@@ -1586,6 +1576,7 @@ export async function init(app) {
   window.editBrand = editBrand;
   window.deleteBrand = deleteBrand;
   window.filterBrands = filterBrands;
+  window.filterBrandsByStatus = filterBrandsByStatus;
   
   // Model functions
   window.openModelModal = openModelModal;
@@ -1595,6 +1586,22 @@ export async function init(app) {
   window.deleteModel = deleteModel;
   window.filterModels = filterModels;
   window.filterModelsByBrand = filterModelsByBrand;
+  window.filterModelsByStatus = filterModelsByStatus;
+
+  try {
+    products = await api.getProducts();
+    filteredProducts = products;
+    
+    // Load categories, brands, and models from localStorage
+    categories = JSON.parse(localStorage.getItem('categories') || '[]');
+    brands = JSON.parse(localStorage.getItem('brands') || '[]');
+    models = JSON.parse(localStorage.getItem('brandModels') || '[]');
+    
+    updateTabContent();
+  } catch (error) {
+    console.error('Failed to load products:', error);
+    showToast('Failed to load products', 'error');
+  }
 }
 
 function updateProductAction() {
