@@ -426,17 +426,17 @@ export function render(app) {
                 <input type="number" id="modelWarranty" class="form-input" value="12" min="0" />
               </div>
             </div>
-            
+
             <div class="form-group">
               <label class="form-label">Description</label>
               <textarea id="modelDescription" class="form-input" rows="3" placeholder="Model description"></textarea>
             </div>
-            
+
             <div class="form-group">
               <label class="form-label">Model Image URL</label>
               <input type="text" id="modelImage" class="form-input" placeholder="https://example.com/image.jpg" />
             </div>
-            
+
             <div class="form-group">
               <label class="form-label">Base Specifications</label>
               <div class="grid grid-cols-2 gap-4">
@@ -448,7 +448,7 @@ export function render(app) {
                 <input type="number" id="modelDisplayOrder" class="form-input" placeholder="Display Order" value="1" min="0" />
               </div>
             </div>
-            
+
             <div class="grid grid-cols-3 gap-4">
               <div class="form-group">
                 <label class="flex items-center gap-2">
@@ -463,7 +463,7 @@ export function render(app) {
                 </label>
               </div>
             </div>
-            
+
             <div class="form-group mt-6">
               <div class="flex justify-between items-center mb-4">
                 <h4 class="font-semibold">Model Variants</h4>
@@ -521,7 +521,7 @@ export function render(app) {
             </svg>
           </button>
         </div>
-        
+
         <!-- Step Indicators -->
         <div style="display: flex; justify-content: space-between; padding: 24px 24px 0; gap: 8px;">
           <div id="stepIndicator1" class="step-indicator active" onclick="jumpToProductStep(1)">
@@ -545,7 +545,7 @@ export function render(app) {
             <div class="step-label">Images</div>
           </div>
         </div>
-        
+
         <div class="modal-body">
           <form id="productForm">
             <!-- Step 1: Basic Information -->
@@ -600,7 +600,7 @@ export function render(app) {
                 <textarea id="productShortDesc" class="form-input" rows="3" maxlength="500" placeholder="Brief product description"></textarea>
               </div>
             </div>
-            
+
             <!-- Step 2: Pricing -->
             <div id="productStep2" class="product-step" style="display: none;">
               <h4 style="margin-bottom: 16px; font-size: 1.125rem; font-weight: 600;">Pricing Information</h4>
@@ -657,7 +657,7 @@ export function render(app) {
                 </div>
               </div>
             </div>
-            
+
             <!-- Step 3: Stock Management -->
             <div id="productStep3" class="product-step" style="display: none;">
               <h4 style="margin-bottom: 16px; font-size: 1.125rem; font-weight: 600;">Stock Management</h4>
@@ -714,11 +714,11 @@ export function render(app) {
                 </div>
               </div>
             </div>
-            
+
             <!-- Step 4: Additional Details -->
             <div id="productStep4" class="product-step" style="display: none;">
               <h4 style="margin-bottom: 16px; font-size: 1.125rem; font-weight: 600;">Additional Details</h4>
-              
+
               <h5 style="margin: 24px 0 12px; font-weight: 600;">Supplier Information</h5>
               <div class="grid grid-cols-3 gap-4">
                 <div class="form-group">
@@ -736,7 +736,7 @@ export function render(app) {
                   <input type="number" id="productLeadTime" class="form-input" placeholder="0" min="0" />
                 </div>
               </div>
-              
+
               <h5 style="margin: 24px 0 12px; font-weight: 600;">Warranty Information</h5>
               <div class="grid grid-cols-2 gap-4">
                 <div class="form-group">
@@ -757,7 +757,7 @@ export function render(app) {
                   <textarea id="productWarrantyDesc" class="form-input" rows="2" placeholder="Warranty terms and conditions"></textarea>
                 </div>
               </div>
-              
+
               <h5 style="margin: 24px 0 12px; font-weight: 600;">Product Configuration</h5>
               <div class="grid grid-cols-2 gap-4">
                 <div class="form-group">
@@ -778,7 +778,7 @@ export function render(app) {
                   </select>
                 </div>
               </div>
-              
+
               <div class="grid grid-cols-3 gap-4 mt-4">
                 <div class="form-group">
                   <label class="flex items-center gap-2">
@@ -799,18 +799,18 @@ export function render(app) {
                   </label>
                 </div>
               </div>
-              
+
               <div class="form-group mt-4">
                 <label class="form-label">Detailed Description</label>
                 <textarea id="productDetailedDesc" class="form-input" rows="4" placeholder="Detailed product description"></textarea>
               </div>
-              
+
               <div class="form-group">
                 <label class="form-label">Internal Notes (Not visible to customers)</label>
                 <textarea id="productInternalNotes" class="form-input" rows="3" placeholder="Internal notes for staff"></textarea>
               </div>
             </div>
-            
+
             <!-- Step 5: Images -->
             <div id="productStep5" class="product-step" style="display: none;">
               <h4 style="margin-bottom: 16px; font-size: 1.125rem; font-weight: 600;">Product Images</h4>
@@ -837,7 +837,7 @@ export function render(app) {
             </div>
           </form>
         </div>
-        
+
         <div class="modal-footer">
           <button class="btn btn-outline" onclick="closeProductModal()">Cancel</button>
           <button class="btn btn-outline" onclick="saveDraft()">Save Draft</button>
@@ -927,7 +927,7 @@ function renderProductsTab() {
         <div class="stat-card-value" data-testid="stat-total-products">${formatNumber(totalProducts)}</div>
         <div class="stat-card-label">Total Products</div>
       </div>
-      
+
       <div class="stat-card">
         <div class="stat-card-icon" style="background: var(--success);">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -938,7 +938,7 @@ function renderProductsTab() {
         <div class="stat-card-value" data-testid="stat-stock-value">${formatCurrency(totalStockValue)}</div>
         <div class="stat-card-label">Total Stock Value</div>
       </div>
-      
+
       <div class="stat-card">
         <div class="stat-card-icon" style="background: var(--warning);">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -950,7 +950,7 @@ function renderProductsTab() {
         <div class="stat-card-value" style="color: var(--warning);" data-testid="stat-low-stock">${formatNumber(lowStockCount)}</div>
         <div class="stat-card-label">Low Stock Alert</div>
       </div>
-      
+
       <div class="stat-card">
         <div class="stat-card-icon" style="background: var(--error);">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -975,7 +975,7 @@ function renderProductsTab() {
             </svg>
             Add New Product
           </button>
-          
+
           <div style="position: relative;">
             <button class="btn btn-outline" onclick="toggleExportMenu()">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1012,7 +1012,7 @@ function renderProductsTab() {
               </button>
             </div>
           </div>
-          
+
           <button class="btn btn-outline" onclick="showImportModal('products')">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -1021,7 +1021,7 @@ function renderProductsTab() {
             </svg>
             Import Products
           </button>
-          
+
           <button class="btn btn-outline" onclick="toggleViewSettings()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="3"/>
@@ -1057,6 +1057,13 @@ function renderProductsTab() {
             </svg>
           </button>
         </div>
+        <!-- Advanced Filter Button/UI would go here -->
+        <button class="btn btn-outline" onclick="toggleAdvancedFilters()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 3H2L10 10.67V17l4 4v-6.33L22 3z"></path>
+          </svg>
+          Filters
+        </button>
         <div style="display: flex; gap: 8px;">
           <button 
             class="btn ${currentFilter === 'all' ? 'btn-primary' : 'btn-outline'} btn-sm"
@@ -1542,7 +1549,7 @@ function renderProductRows() {
        <button class="btn btn-outline" onclick="clearSearch()">Clear Search</button>` :
       `<p style="margin-bottom: 16px;">No products in inventory</p>
        <button class="btn btn-primary" onclick="openAddProductModal()">Add New Product</button>`;
-    
+
     return `
       <tr>
         <td colspan="13" class="text-center" style="padding: 48px;">
@@ -1559,7 +1566,7 @@ function renderProductRows() {
                        product.stockQuantity <= product.minStockLevel ? 'Low Stock' : 'In Stock';
     const statusClass = product.stockQuantity === 0 ? 'badge-error' : 
                        product.stockQuantity <= product.minStockLevel ? 'badge-warning' : 'badge-success';
-    
+
     return `
       <tr data-product-id="${product.id}" style="background: ${index % 2 === 1 ? 'var(--bg-secondary)' : 'transparent'};" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='${index % 2 === 1 ? 'var(--bg-secondary)' : 'transparent'}'">
         <td>
@@ -2012,7 +2019,7 @@ function handleOpenBrandModal() {
   // Add event listener for auto-generating brand code
   const brandNameInput = document.getElementById('brandName');
   const brandCodeInput = document.getElementById('brandCode');
-  
+
   brandNameInput.oninput = function() {
     if (!editingBrandId) {
       brandCodeInput.value = autoGenerateBrandCode(this.value);
@@ -2379,15 +2386,15 @@ function openAddProductModal() {
   currentProductStep = 1;
   productFormData = {};
   productImages = [];
-  
+
   // Clear form
   document.getElementById('productForm').reset();
   document.getElementById('productModalTitle').textContent = 'Add New Product';
   document.getElementById('productModal').classList.remove('hidden');
-  
+
   updateProductStepIndicators();
   showProductStep(1);
-  
+
   // Start auto-save
   startAutoSave();
 }
@@ -2398,7 +2405,7 @@ function closeProductModal() {
       return;
     }
   }
-  
+
   stopAutoSave();
   document.getElementById('productModal').classList.add('hidden');
   editingProductId = null;
@@ -2410,20 +2417,20 @@ function closeProductModal() {
 async function editProduct(id) {
   const product = products.find(p => p.id === id);
   if (!product) return;
-  
+
   editingProductId = id;
   currentProductStep = 1;
   productFormData = { ...product };
   productImages = product.images || [];
-  
+
   // Populate form
   document.getElementById('productModalTitle').textContent = 'Edit Product';
   populateProductForm(product);
-  
+
   document.getElementById('productModal').classList.remove('hidden');
   updateProductStepIndicators();
   showProductStep(1);
-  
+
   startAutoSave();
 }
 
@@ -2437,7 +2444,7 @@ function populateProductForm(product) {
   document.getElementById('productSKU').value = product.productCode || '';
   document.getElementById('productBarcode').value = product.barcode || '';
   document.getElementById('productShortDesc').value = product.shortDescription || '';
-  
+
   // Step 2: Pricing
   document.getElementById('productPurchasePrice').value = product.costPrice || '';
   document.getElementById('productSellingPrice').value = product.price || '';
@@ -2447,7 +2454,7 @@ function populateProductForm(product) {
   document.getElementById('productHSN').value = product.hsnCode || '';
   document.getElementById('productDiscountType').value = product.discountType || 'percentage';
   document.getElementById('productDiscount').value = product.discount || '0';
-  
+
   // Step 3: Stock
   document.getElementById('productOpeningStock').value = product.stockQuantity || '';
   document.getElementById('productUOM').value = product.uom || 'pcs';
@@ -2458,7 +2465,7 @@ function populateProductForm(product) {
   document.getElementById('productTrackStock').checked = product.trackStock !== false;
   document.getElementById('productAutoManage').checked = product.autoManage || false;
   document.getElementById('productAllowBackorder').checked = product.allowBackorder || false;
-  
+
   // Step 4: Additional Details
   document.getElementById('productSupplier').value = product.supplierId || '';
   document.getElementById('productSupplierCode').value = product.supplierCode || '';
@@ -2473,13 +2480,13 @@ function populateProductForm(product) {
   document.getElementById('productFeatured').checked = product.featured || false;
   document.getElementById('productDetailedDesc').value = product.description || '';
   document.getElementById('productInternalNotes').value = product.internalNotes || '';
-  
+
   calculateProfitMargin();
 }
 
 function showProductStep(step) {
   currentProductStep = step;
-  
+
   // Hide all steps
   for (let i = 1; i <= 5; i++) {
     const stepEl = document.getElementById(`productStep${i}`);
@@ -2487,7 +2494,7 @@ function showProductStep(step) {
       stepEl.style.display = i === step ? 'block' : 'none';
     }
   }
-  
+
   updateProductStepIndicators();
   updateProductNavigationButtons();
 }
@@ -2511,15 +2518,15 @@ function updateProductNavigationButtons() {
   const prevBtn = document.getElementById('productPrevBtn');
   const nextBtn = document.getElementById('productNextBtn');
   const saveBtn = document.getElementById('productSaveBtn');
-  
+
   if (prevBtn) {
     prevBtn.style.display = currentProductStep === 1 ? 'none' : 'inline-flex';
   }
-  
+
   if (nextBtn) {
     nextBtn.style.display = currentProductStep === 5 ? 'none' : 'inline-flex';
   }
-  
+
   if (saveBtn) {
     saveBtn.style.display = currentProductStep === 5 ? 'inline-flex' : 'none';
   }
@@ -2548,36 +2555,36 @@ function jumpToProductStep(step) {
 
 function validateProductStep(step) {
   const errors = [];
-  
+
   if (step === 1) {
     const name = document.getElementById('productName').value.trim();
     const category = document.getElementById('productCategory').value;
     const brand = document.getElementById('productBrand').value;
-    
+
     if (!name) errors.push('Product name is required');
     if (!category) errors.push('Category is required');
     if (!brand) errors.push('Brand is required');
   }
-  
+
   if (step === 2) {
     const purchasePrice = parseFloat(document.getElementById('productPurchasePrice').value);
     const sellingPrice = parseFloat(document.getElementById('productSellingPrice').value);
-    
+
     if (!purchasePrice || purchasePrice <= 0) errors.push('Purchase price is required');
     if (!sellingPrice || sellingPrice <= 0) errors.push('Selling price is required');
     if (sellingPrice < purchasePrice) errors.push('Selling price cannot be less than purchase price');
   }
-  
+
   if (step === 3) {
     const stock = document.getElementById('productOpeningStock').value;
     if (!stock || stock < 0) errors.push('Opening stock is required');
   }
-  
+
   if (errors.length > 0) {
     showToast(errors.join(', '), 'error');
     return false;
   }
-  
+
   return true;
 }
 
@@ -2638,7 +2645,7 @@ async function saveProduct(saveAndAddAnother = false) {
     }
     saveStepData(i);
   }
-  
+
   try {
     const productData = {
       id: editingProductId || Date.now(),
@@ -2647,7 +2654,7 @@ async function saveProduct(saveAndAddAnother = false) {
       createdAt: editingProductId ? products.find(p => p.id === editingProductId)?.createdAt : new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
-    
+
     if (editingProductId) {
       const index = products.findIndex(p => p.id === editingProductId);
       if (index !== -1) {
@@ -2658,10 +2665,10 @@ async function saveProduct(saveAndAddAnother = false) {
       products.push(productData);
       showToast('Product added successfully', 'success');
     }
-    
+
     filteredProducts = [...products];
     updateTabContent();
-    
+
     if (saveAndAddAnother) {
       openAddProductModal();
     } else {
@@ -2730,7 +2737,7 @@ function generateBarcode() {
 function calculateProfitMargin() {
   const purchasePrice = parseFloat(document.getElementById('productPurchasePrice').value) || 0;
   const sellingPrice = parseFloat(document.getElementById('productSellingPrice').value) || 0;
-  
+
   if (purchasePrice > 0 && sellingPrice > 0) {
     const margin = ((sellingPrice - purchasePrice) / sellingPrice * 100).toFixed(2);
     const marginEl = document.getElementById('profitMargin');
@@ -2746,18 +2753,18 @@ function handleImageUpload(files) {
     showToast('Maximum 10 images allowed', 'error');
     return;
   }
-  
+
   Array.from(files).forEach(file => {
     if (file.size > 5 * 1024 * 1024) {
       showToast(`${file.name} is too large (max 5MB)`, 'error');
       return;
     }
-    
+
     if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
       showToast(`${file.name} has invalid format`, 'error');
       return;
     }
-    
+
     const reader = new FileReader();
     reader.onload = (e) => {
       productImages.push({
@@ -2776,7 +2783,7 @@ function handleImageUpload(files) {
 function renderProductImages() {
   const container = document.getElementById('productImagesContainer');
   if (!container) return;
-  
+
   container.innerHTML = productImages.map((img, index) => `
     <div class="image-preview" data-image-id="${img.id}" draggable="true" ondragstart="handleImageDragStart(event, ${index})" ondragover="handleImageDragOver(event)" ondrop="handleImageDrop(event, ${index})">
       <img src="${img.url}" alt="${img.name}" />
@@ -2839,13 +2846,13 @@ function handleImageDrop(event, targetIndex) {
 function loadBrandModels() {
   const brandSelect = document.getElementById('productBrand');
   const modelSelect = document.getElementById('productModel');
-  
+
   if (!brandSelect || !modelSelect) return;
-  
+
   const selectedBrand = brands.find(b => b.name === brandSelect.value);
-  
+
   modelSelect.innerHTML = '<option value="">Select Model</option>';
-  
+
   if (selectedBrand) {
     const brandModels = models.filter(m => m.brandId === selectedBrand.id && m.active);
     brandModels.forEach(model => {
@@ -2870,13 +2877,14 @@ async function deleteProduct(id) {
 function filterProducts() {
   const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
   const clearBtn = document.getElementById('clearSearchBtn');
-  
+
   if (clearBtn) {
     clearBtn.style.display = searchTerm ? 'block' : 'none';
   }
-  
+
   filteredProducts = products.filter(product => {
-    const matchesSearch = 
+    // Search filter
+    const matchesSearch = !searchTerm || 
       product.name.toLowerCase().includes(searchTerm) ||
       (product.brand && product.brand.toLowerCase().includes(searchTerm)) ||
       (product.model && product.model.toLowerCase().includes(searchTerm)) ||
@@ -2884,16 +2892,66 @@ function filterProducts() {
       (product.productCode && product.productCode.toLowerCase().includes(searchTerm)) ||
       (product.barcode && product.barcode.toLowerCase().includes(searchTerm));
 
-    if (currentFilter === 'all') return matchesSearch;
-    if (currentFilter === 'low-stock') return matchesSearch && product.stockQuantity <= product.minStockLevel;
-    return matchesSearch && product.category === currentFilter;
-  });
-  updateTabContent();
-}
+    if (!matchesSearch) return false;
 
-function setFilter(filter) {
-  currentFilter = filter;
-  filterProducts();
+    // Category filter
+    if (activeFilters.categories.length > 0 && !activeFilters.categories.includes(product.category)) {
+      return false;
+    }
+
+    // Brand filter
+    if (activeFilters.brands.length > 0 && !activeFilters.brands.includes(product.brand)) {
+      return false;
+    }
+
+    // Model filter
+    if (activeFilters.models.length > 0 && !activeFilters.models.includes(product.model)) {
+      return false;
+    }
+
+    // Stock status filter
+    if (activeFilters.stockStatus.length > 0) {
+      const stockStatus = getProductStockStatus(product);
+      if (!activeFilters.stockStatus.includes(stockStatus)) {
+        return false;
+      }
+    }
+
+    // Price range filter
+    if (product.price < activeFilters.priceRange.min || product.price > activeFilters.priceRange.max) {
+      return false;
+    }
+
+    // Product status filter
+    if (activeFilters.productStatus.length > 0 && !activeFilters.productStatus.includes(product.status || 'active')) {
+      return false;
+    }
+
+    // Product type filter
+    if (activeFilters.productType.length > 0 && !activeFilters.productType.includes(product.productType || 'simple')) {
+      return false;
+    }
+
+    // Has images filter
+    if (activeFilters.hasImages !== null) {
+      const hasImages = product.images && product.images.length > 0;
+      if (activeFilters.hasImages === 'true' && !hasImages) return false;
+      if (activeFilters.hasImages === 'false' && hasImages) return false;
+    }
+
+    // Date range filter
+    if (activeFilters.dateAdded.start && product.createdAt) {
+      if (new Date(product.createdAt) < new Date(activeFilters.dateAdded.start)) return false;
+    }
+    if (activeFilters.dateAdded.end && product.createdAt) {
+      if (new Date(product.createdAt) > new Date(activeFilters.dateAdded.end)) return false;
+    }
+
+    return true;
+  });
+
+  updateFilterURL();
+  updateTabContent();
 }
 
 // Model Functions
@@ -2927,7 +2985,7 @@ function getFilteredModels() {
 function autoGenerateModelCode(brandId, modelName) {
   const brand = brands.find(b => b.id === parseInt(brandId));
   if (!brand) return '';
-  
+
   const brandCode = brand.code || brand.name.substring(0, 4).toUpperCase();
   const modelCode = modelName.split(' ').map(w => w.charAt(0)).join('').toUpperCase();
   return `${brandCode}-${modelCode}`;
@@ -2958,13 +3016,13 @@ function handleOpenModelModal() {
   const modelBrandSelect = document.getElementById('modelBrand');
   const modelNameInput = document.getElementById('modelName');
   const modelCodeInput = document.getElementById('modelCode');
-  
+
   const updateModelCode = () => {
     if (!editingModelId && modelBrandSelect.value && modelNameInput.value) {
       modelCodeInput.value = autoGenerateModelCode(modelBrandSelect.value, modelNameInput.value);
     }
   };
-  
+
   modelBrandSelect.onchange = updateModelCode;
   modelNameInput.oninput = updateModelCode;
 
@@ -2978,7 +3036,7 @@ function closeModelModal() {
 function addVariantRow() {
   const container = document.getElementById('variantsContainer');
   const variantId = Date.now();
-  
+
   const variantRow = document.createElement('div');
   variantRow.className = 'variant-row';
   variantRow.style.cssText = 'display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 40px; gap: 8px; margin-bottom: 8px; padding: 12px; background: var(--surface); border-radius: 8px;';
@@ -2994,37 +3052,37 @@ function addVariantRow() {
       </svg>
     </button>
   `;
-  
+
   container.appendChild(variantRow);
 }
 
 function getVariantsFromForm() {
   const variants = [];
   const variantRows = document.querySelectorAll('.variant-row');
-  
+
   variantRows.forEach(row => {
     const ram = row.querySelector('.variant-ram').value.trim();
     const storage = row.querySelector('.variant-storage').value.trim();
     const color = row.querySelector('.variant-color').value.trim();
     const sku = row.querySelector('.variant-sku').value.trim();
-    
+
     if (ram || storage || color) {
       variants.push({ ram, storage, color, sku });
     }
   });
-  
+
   return variants;
 }
 
 function saveModel() {
   const brandId = document.getElementById('modelBrand').value;
   const name = document.getElementById('modelName').value.trim();
-  
+
   if (!brandId) {
     showToast('Please select a brand', 'error');
     return;
   }
-  
+
   if (!name) {
     showToast('Model name is required', 'error');
     return;
@@ -3118,7 +3176,7 @@ function handleDeleteModel(id) {
   if (!model) return;
 
   const variantCount = model.variants ? model.variants.length : 0;
-  
+
   if (variantCount > 0) {
     if (!confirm(`This model has ${variantCount} variants. Are you sure you want to delete it?`)) {
       return;
@@ -3240,7 +3298,7 @@ function viewModelVariants(id) {
   document.getElementById('modelVariantsModalTitle').textContent = `${brand?.name || ''} ${model.name} - Variants`;
 
   const content = document.getElementById('modelVariantsContent');
-  
+
   if (!model.variants || model.variants.length === 0) {
     content.innerHTML = '<p class="text-center" style="padding: 48px; color: var(--text-secondary);">No variants defined for this model</p>';
   } else {
@@ -3302,23 +3360,23 @@ function sortProducts(column) {
     currentSort.column = column;
     currentSort.direction = 'asc';
   }
-  
+
   filteredProducts.sort((a, b) => {
     let aVal = a[column];
     let bVal = b[column];
-    
+
     if (typeof aVal === 'string') {
       aVal = aVal.toLowerCase();
       bVal = bVal.toLowerCase();
     }
-    
+
     if (currentSort.direction === 'asc') {
       return aVal > bVal ? 1 : -1;
     } else {
       return aVal < bVal ? 1 : -1;
     }
   });
-  
+
   updateTabContent();
 }
 
@@ -3340,7 +3398,7 @@ function toggleExportMenu() {
 function exportInventory(format) {
   toggleExportMenu();
   showToast(`Exporting inventory to ${format.toUpperCase()}...`, 'info');
-  
+
   const headers = ['Product Name', 'SKU', 'Brand', 'Model', 'Category', 'Stock', 'Purchase Price', 'Selling Price', 'Status'];
   const data = filteredProducts.map(p => [
     p.name,
@@ -3353,7 +3411,7 @@ function exportInventory(format) {
     p.price,
     p.stockQuantity === 0 ? 'Out of Stock' : p.stockQuantity <= p.minStockLevel ? 'Low Stock' : 'In Stock'
   ]);
-  
+
   const csv = [headers, ...data].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
   const blob = new Blob([csv], { type: 'text/csv' });
   const url = URL.createObjectURL(blob);
@@ -3362,7 +3420,7 @@ function exportInventory(format) {
   a.download = `inventory_${new Date().toISOString().split('T')[0]}.${format}`;
   a.click();
   URL.revokeObjectURL(url);
-  
+
   showToast('Inventory exported successfully', 'success');
 }
 
@@ -3391,6 +3449,75 @@ function viewProduct(productId) {
   }
 }
 
+// Placeholder for advanced filter state
+let activeFilters = {
+  categories: [],
+  brands: [],
+  models: [],
+  stockStatus: [], // e.g., ['In Stock', 'Low Stock']
+  priceRange: { min: 0, max: 1000000 },
+  productStatus: [], // e.g., ['Active', 'Inactive']
+  productType: [], // e.g., ['simple', 'variable']
+  hasImages: null, // true, false, or null
+  dateAdded: { start: null, end: null },
+  tags: []
+};
+
+function getProductStockStatus(product) {
+  if (product.stockQuantity === 0) return 'Out of Stock';
+  if (product.stockQuantity <= product.minStockLevel) return 'Low Stock';
+  return 'In Stock';
+}
+
+function updateFilterURL() {
+  const params = new URLSearchParams();
+  if (activeFilters.categories.length > 0) params.set('categories', activeFilters.categories.join(','));
+  if (activeFilters.brands.length > 0) params.set('brands', activeFilters.brands.join(','));
+  if (activeFilters.models.length > 0) params.set('models', activeFilters.models.join(','));
+  if (activeFilters.stockStatus.length > 0) params.set('stockStatus', activeFilters.stockStatus.join(','));
+  if (activeFilters.priceRange.min !== 0 || activeFilters.priceRange.max !== 1000000) {
+    params.set('priceMin', activeFilters.priceRange.min);
+    params.set('priceMax', activeFilters.priceRange.max);
+  }
+  if (activeFilters.productStatus.length > 0) params.set('productStatus', activeFilters.productStatus.join(','));
+  if (activeFilters.productType.length > 0) params.set('productType', activeFilters.productType.join(','));
+  if (activeFilters.hasImages !== null) params.set('hasImages', activeFilters.hasImages);
+  if (activeFilters.dateAdded.start) params.set('dateAddedStart', activeFilters.dateAdded.start);
+  if (activeFilters.dateAdded.end) params.set('dateAddedEnd', activeFilters.dateAdded.end);
+  if (activeFilters.tags.length > 0) params.set('tags', activeFilters.tags.join(','));
+
+  window.history.replaceState({}, '', `?${params.toString()}`);
+}
+
+function loadFiltersFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  
+  if (params.has('categories')) activeFilters.categories = params.get('categories').split(',');
+  if (params.has('brands')) activeFilters.brands = params.get('brands').split(',');
+  if (params.has('models')) activeFilters.models = params.get('models').split(',');
+  if (params.has('stockStatus')) activeFilters.stockStatus = params.get('stockStatus').split(',');
+  if (params.has('priceMin') || params.has('priceMax')) {
+    activeFilters.priceRange = {
+      min: parseFloat(params.get('priceMin')) || 0,
+      max: parseFloat(params.get('priceMax')) || 1000000
+    };
+  }
+  if (params.has('productStatus')) activeFilters.productStatus = params.get('productStatus').split(',');
+  if (params.has('productType')) activeFilters.productType = params.get('productType').split(',');
+  if (params.has('hasImages')) activeFilters.hasImages = params.get('hasImages');
+  if (params.has('dateAddedStart')) activeFilters.dateAdded.start = params.get('dateAddedStart');
+  if (params.has('dateAddedEnd')) activeFilters.dateAdded.end = params.get('dateAddedEnd');
+  if (params.has('tags')) activeFilters.tags = params.get('tags').split(',');
+
+  // Update UI elements based on loaded filters if necessary
+}
+
+function toggleAdvancedFilters() {
+  // This function would toggle the visibility of the advanced filter panel
+  alert('Advanced filters UI not yet implemented.');
+}
+
+
 export async function init(app) {
   // Keyboard shortcuts
   document.addEventListener('keydown', (e) => {
@@ -3406,7 +3533,7 @@ export async function init(app) {
         }
       }
     }
-    
+
     // Escape to close modal
     if (e.key === 'Escape') {
       const productModal = document.getElementById('productModal');
@@ -3504,6 +3631,10 @@ export async function init(app) {
   window.handleImageDragOver = handleImageDragOver;
   window.handleImageDrop = handleImageDrop;
   window.loadBrandModels = loadBrandModels;
+  window.toggleAdvancedFilters = toggleAdvancedFilters; // Expose the new function
+
+  // Load filters from URL on initialization
+  loadFiltersFromURL();
 
   // Load initial data
   try {
@@ -3515,7 +3646,7 @@ export async function init(app) {
     console.error('Failed to load initial data:', error);
     showToast('Failed to load initial data', 'error');
   }
-  
+
   // Close export menu when clicking outside
   document.addEventListener('click', (e) => {
     const exportMenu = document.getElementById('exportMenu');
