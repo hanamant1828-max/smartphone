@@ -11,8 +11,10 @@ if (!existsSync(dataDir)) {
 }
 
 // Store database in .data directory for persistence
+// Use absolute path to ensure consistency with drizzle.config.ts
 const dbPath = path.join(dataDir, "database.db");
 console.log("Database path:", dbPath);
+console.log("Database exists:", existsSync(dbPath));
 
 const sqlite = new Database(dbPath);
 export const db = drizzle(sqlite, { schema });
