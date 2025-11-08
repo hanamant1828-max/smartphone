@@ -70,18 +70,18 @@ export default function AddProduct() {
     }
   };
 
-  // Disable browser unsaved changes detection
+  // Prevent browser's "unsaved changes" warning
   React.useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      e.returnValue = '';
+    const preventUnloadWarning = () => {
+      // Explicitly allow navigation by not preventing default
+      // This overrides any implicit browser beforeunload behavior
     };
-
-    // Remove the event listener to prevent unsaved changes dialog
-    window.removeEventListener('beforeunload', handleBeforeUnload);
-
+    
+    // Remove any beforeunload listeners to prevent warnings
+    window.onbeforeunload = null;
+    
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.onbeforeunload = null;
     };
   }, []);
 
