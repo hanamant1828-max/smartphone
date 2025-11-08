@@ -2339,12 +2339,23 @@ function exportBrands() {
 }
 
 function showImportModal(type) {
-  document.getElementById('importModalTitle').textContent = `Import ${type === 'categories' ? 'Categories' : 'Brands'}`;
-
-  const formatInfo = type === 'categories' ? 
-    'File should contain: Name, Code, ParentCode, Description, Active, ShowInMenu, ShowInPOS' :
-    'File should contain: Name, Code, Description, Website, Email, Phone, Country, Active, Featured';
-
+  let title, formatInfo;
+  
+  if (type === 'categories') {
+    title = 'Categories';
+    formatInfo = 'File should contain: Name, Code, ParentCode, Description, Active, ShowInMenu, ShowInPOS';
+  } else if (type === 'brands') {
+    title = 'Brands';
+    formatInfo = 'File should contain: Name, Code, Description, Website, Email, Phone, Country, Active, Featured';
+  } else if (type === 'models') {
+    title = 'Models';
+    formatInfo = 'File should contain: Brand, Model Name, Model Number, Model Code, Launch Date, Warranty (months), Active';
+  } else {
+    title = 'Products';
+    formatInfo = 'File should contain product data';
+  }
+  
+  document.getElementById('importModalTitle').textContent = `Import ${title}`;
   document.getElementById('importFormatInfo').innerHTML = `<strong>Format:</strong> ${formatInfo}`;
   document.getElementById('importFile').value = '';
   document.getElementById('importFile').dataset.importType = type;
@@ -2374,8 +2385,12 @@ function confirmImport() {
 
       if (importType === 'brands') {
         importBrandsFromCSV(lines);
-      } else {
+      } else if (importType === 'models') {
+        importModelsFromCSV(lines);
+      } else if (importType === 'categories') {
         importCategoriesFromCSV(lines);
+      } else {
+        showToast('Unknown import type', 'error');
       }
     } catch (error) {
       showToast('Import failed: ' + error.message, 'error');
@@ -2446,6 +2461,56 @@ function importCategoriesFromCSV(lines) {
   }
   localStorage.setItem('categories', JSON.stringify(categories));
   showToast(`${imported} categories imported`, 'success');
+  updateTabContent();
+}
+
+function importModelsFromCSV(lines) {
+  let imported = 0;
+  let skipped = 0;
+  
+  for (let i = 1; i < lines.length; i++) {
+    const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+    
+    if (values[0] && values[1]) {
+      // Find brand by name
+      const brandName = values[0];
+      const brand = brands.find(b => b.name && b.name.toLowerCase() === brandName.toLowerCase());
+      
+      if (!brand) {
+        console.warn(`Brand "${brandName}" not found for model "${values[1]}". Skipping...`);
+        skipped++;
+        continue;
+      }
+      
+      models.push({
+        id: Date.now() + i,
+        brandId: brand.id,
+        name: values[1],
+        modelNumber: values[2] || '',
+        modelCode: values[3] || '',
+        description: '',
+        imageUrl: '',
+        launchDate: values[4] || '',
+        discontinued: false,
+        baseSpecs: {},
+        warrantyMonths: parseInt(values[5]) || 12,
+        active: values[6]?.toLowerCase() !== 'false',
+        displayOrder: imported + 1,
+        variants: [],
+        selected: false
+      });
+      imported++;
+    }
+  }
+  
+  localStorage.setItem('models', JSON.stringify(models));
+  
+  if (skipped > 0) {
+    showToast(`${imported} models imported, ${skipped} skipped (brand not found)`, 'warning');
+  } else {
+    showToast(`${imported} models imported`, 'success');
+  }
+  
   updateTabContent();
 }
 
