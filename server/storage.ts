@@ -127,12 +127,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createProduct(data: InsertProduct): Promise<Product> {
-    const now = Date.now();
-    const [product] = await db.insert(products).values({
-      ...data,
-      createdAt: now,
-      updatedAt: now,
-    }).returning();
+    const [product] = await db.insert(products).values(data).returning();
     return product;
   }
 
@@ -350,7 +345,7 @@ export class DatabaseStorage implements IStorage {
       // Insert sale
       const [sale] = await tx
         .insert(sales)
-        .values({...saleInfo, createdAt: Date.now(), updatedAt: Date.now()})
+        .values(saleInfo)
         .returning();
 
       // Insert sale items
@@ -483,7 +478,7 @@ export class DatabaseStorage implements IStorage {
 
   async createCategory(data: schema.InsertCategory) {
     const result = await db.insert(schema.categories)
-      .values({...data, createdAt: Date.now(), updatedAt: Date.now()})
+      .values(data)
       .returning();
     return result[0];
   }
@@ -522,7 +517,7 @@ export class DatabaseStorage implements IStorage {
 
   async createBrand(data: schema.InsertBrand) {
     const result = await db.insert(schema.brands)
-      .values({...data, createdAt: Date.now(), updatedAt: Date.now()})
+      .values(data)
       .returning();
     return result[0];
   }
@@ -586,7 +581,7 @@ export class DatabaseStorage implements IStorage {
     const { variants, ...modelData } = data;
 
     const result = await db.insert(schema.models)
-      .values({...modelData, createdAt: Date.now(), updatedAt: Date.now()})
+      .values(modelData)
       .returning();
 
     const model = result[0];
