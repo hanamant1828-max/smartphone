@@ -8,6 +8,7 @@ import path from "path";
 const dataDir = path.join(process.cwd(), ".data");
 if (!existsSync(dataDir)) {
   mkdirSync(dataDir, { recursive: true });
+  console.log("Created .data directory");
 }
 
 // Store database in .data directory for persistence
@@ -16,5 +17,14 @@ const dbPath = path.join(dataDir, "database.db");
 console.log("Database path:", dbPath);
 console.log("Database exists:", existsSync(dbPath));
 
-const sqlite = new Database(dbPath);
+// Enable verbose mode and WAL mode for better concurrency
+const sqlite = new Database(dbPath, { 
+  verbose: (msg) => console.log("[SQLite]", msg),
+  fileMustExist: false 
+});
+
+// Enable Write-Ahead Logging for better concurrency
+sqlite.pragma('journal_mode = WAL');
+sqlite.pragma('synchronous = NORMAL');
+
 export const db = drizzle(sqlite, { schema });
