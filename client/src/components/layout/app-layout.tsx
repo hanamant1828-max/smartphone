@@ -18,7 +18,6 @@ export default function AppLayout({ children, currentPage = "dashboard" }: AppLa
     { id: "customers", label: "Customers", icon: Users, href: "#customers" },
     { id: "sales", label: "Sales History", icon: Receipt, href: "#sales" },
     { id: "reports", label: "Reports", icon: BarChart3, href: "#reports" },
-    { id: "master-data", label: "Master Data", icon: Database, href: "#master-data" },
   ];
 
   const handleLogout = () => {
