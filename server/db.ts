@@ -4,14 +4,14 @@ import * as schema from "@shared/schema";
 import { existsSync, mkdirSync } from "fs";
 import path from "path";
 
-// Ensure .data directory exists for persistent storage
-const dataDir = path.join(process.cwd(), ".data");
+// Ensure Database directory exists for persistent storage
+const dataDir = path.join(process.cwd(), "Database");
 if (!existsSync(dataDir)) {
   mkdirSync(dataDir, { recursive: true });
-  console.log("Created .data directory");
+  console.log("Created Database directory");
 }
 
-// Store database in .data directory for persistence
+// Store database in Database directory for persistence
 // Use absolute path to ensure consistency with drizzle.config.ts
 const dbPath = path.join(dataDir, "database.db");
 console.log("Database path:", dbPath);

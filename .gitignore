@@ -10,3 +10,7 @@ vite.config.ts.*
 database/*.db
 database/*.db-shm
 database/*.db-wal
+
+# Data directory
+.data/
+Database/
