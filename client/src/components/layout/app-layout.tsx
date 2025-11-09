@@ -1,7 +1,24 @@
-
 import { useState } from "react";
 import { SidebarProvider, Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
-import { LayoutDashboard, Package, ShoppingCart, Users, Receipt, BarChart3, Database, LogOut, Menu } from "lucide-react";
+import {
+  LayoutDashboard,
+  Package,
+  ShoppingCart,
+  Users,
+  TrendingUp,
+  BarChart3,
+  Settings,
+  LogOut,
+  Menu,
+  X,
+  Bell,
+  Search,
+  Database,
+  Upload,
+  Barcode,
+  AlertTriangle,
+  FileText,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
@@ -15,9 +32,15 @@ export default function AppLayout({ children, currentPage = "dashboard" }: AppLa
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, href: "#dashboard" },
     { id: "inventory", label: "Inventory", icon: Package, href: "#inventory" },
     { id: "pos", label: "Point of Sale", icon: ShoppingCart, href: "#pos" },
+    { id: "add-product", label: "Add Product", icon: Package, href: "#add-product" },
+    { id: "import-products", label: "Import Products", icon: Upload, href: "#import-products" },
+    { id: "barcode-generator", label: "Barcode Generator", icon: Barcode, href: "#barcode-generator" },
+    { id: "low-stock-alerts", label: "Low Stock Alerts", icon: AlertTriangle, href: "#low-stock-alerts" },
+    { id: "inventory-reports", label: "Inventory Reports", icon: FileText, href: "#inventory-reports" },
     { id: "customers", label: "Customers", icon: Users, href: "#customers" },
-    { id: "sales", label: "Sales History", icon: Receipt, href: "#sales" },
+    { id: "sales", label: "Sales History", icon: TrendingUp, href: "#sales" },
     { id: "reports", label: "Reports", icon: BarChart3, href: "#reports" },
+    { id: "master-data", label: "Master Data", icon: Database, href: "#master-data" },
   ];
 
   const handleLogout = () => {
