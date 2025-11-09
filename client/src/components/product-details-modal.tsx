@@ -386,8 +386,16 @@ export default function ProductDetailsModal({
                       <span className="text-sm">{product.minStockLevel || 5}</span>
                     </div>
                     <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Max Level</span>
+                      <span className="text-sm">{product.maxStockLevel || 50}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Reorder Point</span>
-                      <span className="text-sm">10</span>
+                      <span className="text-sm">{product.reorderPoint || 10}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Reorder Quantity</span>
+                      <span className="text-sm">{product.reorderQty || 20}</span>
                     </div>
                     <Button variant="outline" size="sm" className="w-full">
                       <History className="h-4 w-4 mr-2" />

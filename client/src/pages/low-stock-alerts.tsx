@@ -27,6 +27,10 @@ import { Label } from "@/components/ui/label";
 export default function LowStockAlerts() {
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [reorderProduct, setReorderProduct] = useState<any>(null);
+  const [notificationSettingsOpen, setNotificationSettingsOpen] = useState(false);
+  const [emailAlerts, setEmailAlerts] = useState(true);
+  const [smsAlerts, setSmsAlerts] = useState(false);
+  const [markedAsOrdered, setMarkedAsOrdered] = useState<Set<number>>(new Set());
 
   const { data: products = [] } = useQuery({
     queryKey: ["/api/products"],
@@ -53,6 +57,27 @@ export default function LowStockAlerts() {
     setReorderProduct(product);
   };
 
+  const handleMarkAsOrdered = () => {
+    const newMarked = new Set(markedAsOrdered);
+    selectedIds.forEach(id => newMarked.add(id));
+    setMarkedAsOrdered(newMarked);
+    setSelectedIds(new Set());
+  };
+
+  const calculateRecommendedQty = (product: any) => {
+    const avgMonthlySales = 60; // Mock: 2 per day * 30 days
+    const leadTimeDays = 4; // Average of 3-5 days
+    const safetyStock = product.minStockLevel || 5;
+    const leadTimeDemand = Math.ceil((avgMonthlySales / 30) * leadTimeDays);
+    return leadTimeDemand + safetyStock - product.stockQuantity;
+  };
+
+  const calculateExpectedDelivery = () => {
+    const today = new Date();
+    today.setDate(today.getDate() + 4); // 4 days lead time
+    return today.toISOString().split('T')[0];
+  };
+
   const ProductsTable = ({ products, priorityColor }: { products: any[]; priorityColor: string }) => (
     <Table>
       <TableHeader>
@@ -69,7 +94,7 @@ export default function LowStockAlerts() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {products.map((product: any) => (
+        {products.filter(p => !markedAsOrdered.has(p.id)).map((product: any) => (
           <TableRow key={product.id}>
             <TableCell>
               <Checkbox
@@ -133,13 +158,9 @@ export default function LowStockAlerts() {
           <p className="text-muted-foreground">Monitor and manage low stock products</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => setNotificationSettingsOpen(true)}>
             <Mail className="h-4 w-4 mr-2" />
-            Email Alerts
-          </Button>
-          <Button variant="outline">
-            <MessageSquare className="h-4 w-4 mr-2" />
-            SMS Alerts
+            Notification Settings
           </Button>
         </div>
       </div>
@@ -199,7 +220,7 @@ export default function LowStockAlerts() {
                   <Download className="h-4 w-4 mr-2" />
                   Export
                 </Button>
-                <Button size="sm" variant="outline">
+                <Button size="sm" variant="outline" onClick={handleMarkAsOrdered}>
                   <CheckCircle className="h-4 w-4 mr-2" />
                   Mark as Ordered
                 </Button>
@@ -271,6 +292,61 @@ export default function LowStockAlerts() {
         </Tabs>
       </Card>
 
+      {/* Notification Settings Dialog */}
+      <Dialog open={notificationSettingsOpen} onOpenChange={setNotificationSettingsOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Notification Settings</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Email Alerts</Label>
+                <p className="text-xs text-muted-foreground">Receive low stock alerts via email</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={emailAlerts}
+                onChange={(e) => setEmailAlerts(e.target.checked)}
+                className="h-4 w-4"
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>SMS Alerts</Label>
+                <p className="text-xs text-muted-foreground">Receive low stock alerts via SMS</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={smsAlerts}
+                onChange={(e) => setSmsAlerts(e.target.checked)}
+                className="h-4 w-4"
+              />
+            </div>
+            {emailAlerts && (
+              <div className="space-y-2">
+                <Label>Email Address</Label>
+                <Input type="email" placeholder="admin@shop.com" />
+              </div>
+            )}
+            {smsAlerts && (
+              <div className="space-y-2">
+                <Label>Phone Number</Label>
+                <Input type="tel" placeholder="+91 98765 43210" />
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setNotificationSettingsOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => setNotificationSettingsOpen(false)}>
+              Save Settings
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Reorder Dialog */}
       <Dialog open={!!reorderProduct} onOpenChange={() => setReorderProduct(null)}>
         <DialogContent>
@@ -291,9 +367,9 @@ export default function LowStockAlerts() {
 
             <div className="space-y-2">
               <Label>Recommended Reorder Quantity</Label>
-              <Input type="number" value={20} />
+              <Input type="number" value={reorderProduct ? calculateRecommendedQty(reorderProduct) : 20} />
               <p className="text-xs text-muted-foreground">
-                Based on average monthly sales, lead time, and safety stock
+                Based on average monthly sales (60 units), lead time (4 days), and safety stock
               </p>
             </div>
 
@@ -305,11 +381,11 @@ export default function LowStockAlerts() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Last Purchase Price</Label>
-                <Input value="₹75,000" disabled />
+                <Input value={`₹${reorderProduct?.costPrice?.toLocaleString() || '75,000'}`} disabled />
               </div>
               <div className="space-y-2">
                 <Label>Expected Delivery</Label>
-                <Input value="2025-01-20" disabled />
+                <Input value={calculateExpectedDelivery()} disabled />
               </div>
             </div>
           </div>

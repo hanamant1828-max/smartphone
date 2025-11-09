@@ -9,6 +9,9 @@ import Inventory from "@/pages/inventory";
 import AddProduct from "@/pages/add-product";
 import ImportProducts from "@/pages/import-products";
 import MasterData from "@/pages/master-data";
+import LowStockAlerts from "./pages/low-stock-alerts";
+import BarcodeGenerator from "./pages/barcode-generator";
+import InventoryReports from "./pages/inventory-reports";
 import AppLayout from "@/components/layout/app-layout";
 import { useEffect, useState } from "react";
 
@@ -30,8 +33,10 @@ function Router() {
         <Route path="/inventory/add" component={AddProduct} />
         <Route path="/inventory/import" component={ImportProducts} />
         <Route path="/master-data" component={MasterData} />
-        {/* Fallback to 404 */}
-        <Route component={NotFound} />
+        <Route path="/low-stock-alerts" element={<LowStockAlerts />} />
+        <Route path="/barcode-generator" element={<BarcodeGenerator />} />
+        <Route path="/inventory-reports" element={<InventoryReports />} />
+        <Route path="*" element={<NotFound />} />
       </Switch>
     </AppLayout>
   );
