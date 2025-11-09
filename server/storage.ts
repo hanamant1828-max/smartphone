@@ -134,7 +134,7 @@ export class DatabaseStorage implements IStorage {
   async updateProduct(id: number, data: Partial<InsertProduct>): Promise<Product | undefined> {
     const [updated] = await db
       .update(products)
-      .set({ ...data, updatedAt: new Date() })
+      .set({ ...data, updatedAt: Date.now() })
       .where(eq(products.id, id))
       .returning();
     return updated || undefined;
@@ -168,7 +168,7 @@ export class DatabaseStorage implements IStorage {
   async bulkUpdateProducts(productIds: number[], updates: Partial<InsertProduct>): Promise<void> {
     await db
       .update(products)
-      .set({ ...updates, updatedAt: new Date() })
+      .set({ ...updates, updatedAt: Date.now() })
       .where(inArray(products.id, productIds));
   }
 
@@ -209,7 +209,7 @@ export class DatabaseStorage implements IStorage {
 
       await db
         .update(products)
-        .set({ [field]: newPrice, updatedAt: new Date() } as any)
+        .set({ [field]: newPrice, updatedAt: Date.now() } as any)
         .where(eq(products.id, product.id));
     }
   }
@@ -259,7 +259,7 @@ export class DatabaseStorage implements IStorage {
     // Update product stock
     await db
       .update(products)
-      .set({ stockQuantity: quantityAfter, updatedAt: new Date() })
+      .set({ stockQuantity: quantityAfter, updatedAt: Date.now() })
       .where(eq(products.id, productId));
 
     // Create adjustment log
@@ -273,7 +273,7 @@ export class DatabaseStorage implements IStorage {
       reason,
       notes,
       referenceNumber,
-      adjustmentDate: new Date(),
+      adjustmentDate: Date.now(),
     });
 
     const updatedProduct = await this.getProduct(productId);
@@ -321,7 +321,7 @@ export class DatabaseStorage implements IStorage {
   async updateCustomer(id: number, customer: Partial<InsertCustomer>): Promise<Customer | undefined> {
     const [updated] = await db
       .update(customers)
-      .set({ ...customer, updatedAt: new Date() })
+      .set({ ...customer, updatedAt: Date.now() })
       .where(eq(customers.id, id))
       .returning();
     return updated || undefined;
@@ -363,7 +363,7 @@ export class DatabaseStorage implements IStorage {
             .update(products)
             .set({
               stockQuantity: sql`${products.stockQuantity} - ${item.quantity}`,
-              updatedAt: new Date(),
+              updatedAt: Date.now(),
             })
             .where(eq(products.id, item.productId));
         }
@@ -374,7 +374,7 @@ export class DatabaseStorage implements IStorage {
             .update(customers)
             .set({
               totalPurchases: sql`${customers.totalPurchases} + ${sale.totalAmount}`,
-              updatedAt: new Date(),
+              updatedAt: Date.now(),
             })
             .where(eq(customers.id, sale.customerId));
         }
@@ -392,8 +392,8 @@ export class DatabaseStorage implements IStorage {
     if (filters?.startDate && filters?.endDate) {
       query = query.where(
         and(
-          gte(sales.createdAt, new Date(filters.startDate)),
-          lte(sales.createdAt, new Date(filters.endDate))
+          gte(sales.createdAt, new Date(filters.startDate).getTime()),
+          lte(sales.createdAt, new Date(filters.endDate).getTime())
         )
       ) as any;
     }
@@ -485,7 +485,7 @@ export class DatabaseStorage implements IStorage {
 
   async updateCategory(id: number, data: Partial<schema.InsertCategory>) {
     const result = await db.update(schema.categories)
-      .set({ ...data, updatedAt: new Date() })
+      .set({ ...data, updatedAt: Date.now() })
       .where(eq(schema.categories.id, id))
       .returning();
     return result[0];
@@ -524,7 +524,7 @@ export class DatabaseStorage implements IStorage {
 
   async updateBrand(id: number, data: Partial<schema.InsertBrand>) {
     const result = await db.update(schema.brands)
-      .set({ ...data, updatedAt: new Date() })
+      .set({ ...data, updatedAt: Date.now() })
       .where(eq(schema.brands.id, id))
       .returning();
     return result[0];
@@ -598,7 +598,7 @@ export class DatabaseStorage implements IStorage {
     const { variants, ...modelData } = data;
 
     const result = await db.update(schema.models)
-      .set({ ...modelData, updatedAt: new Date() })
+      .set({ ...modelData, updatedAt: Date.now() })
       .where(eq(schema.models.id, id))
       .returning();
 
@@ -709,8 +709,8 @@ export class DatabaseStorage implements IStorage {
       .from(sales)
       .where(
         and(
-          gte(sales.createdAt, new Date(startDate)),
-          lte(sales.createdAt, new Date(endDate))
+          gte(sales.createdAt, new Date(startDate).getTime()),
+          lte(sales.createdAt, new Date(endDate).getTime())
         )
       );
 
