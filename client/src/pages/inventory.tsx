@@ -102,6 +102,20 @@ export default function Inventory() {
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [sortColumn, setSortColumn] = useState<SortColumn>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+  const [columnSettingsOpen, setColumnSettingsOpen] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState({
+    image: true,
+    name: true,
+    category: true,
+    brand: true,
+    model: true,
+    sku: true,
+    barcode: true,
+    costPrice: true,
+    price: true,
+    stock: true,
+    status: true,
+  });
 
   // Fetch products
   const { data: products = [], isLoading } = useQuery<Product[]>({
@@ -427,7 +441,7 @@ export default function Inventory() {
           Import Products
         </Button>
 
-        <Button variant="outline" className="gap-2" data-testid="button-settings">
+        <Button variant="outline" className="gap-2" onClick={() => setColumnSettingsOpen(true)} data-testid="button-settings">
           <Settings className="h-4 w-4" />
           View Settings
         </Button>
@@ -508,31 +522,31 @@ export default function Inventory() {
                           data-testid="checkbox-select-all"
                         />
                       </TableHead>
-                      <TableHead data-testid="header-image">Image</TableHead>
-                      <TableHead className="cursor-pointer" onClick={() => handleSort('name')} data-testid="header-product-name">
+                      {visibleColumns.image && <TableHead data-testid="header-image">Image</TableHead>}
+                      {visibleColumns.name && <TableHead className="cursor-pointer" onClick={() => handleSort('name')} data-testid="header-product-name">
                         Product Name {getSortIcon('name')}
-                      </TableHead>
-                      <TableHead className="cursor-pointer" onClick={() => handleSort('category')} data-testid="header-category">
+                      </TableHead>}
+                      {visibleColumns.category && <TableHead className="cursor-pointer" onClick={() => handleSort('category')} data-testid="header-category">
                         Category {getSortIcon('category')}
-                      </TableHead>
-                      <TableHead className="cursor-pointer" onClick={() => handleSort('brand')} data-testid="header-brand">
+                      </TableHead>}
+                      {visibleColumns.brand && <TableHead className="cursor-pointer" onClick={() => handleSort('brand')} data-testid="header-brand">
                         Brand {getSortIcon('brand')}
-                      </TableHead>
-                      <TableHead className="cursor-pointer" onClick={() => handleSort('model')} data-testid="header-model">
+                      </TableHead>}
+                      {visibleColumns.model && <TableHead className="cursor-pointer" onClick={() => handleSort('model')} data-testid="header-model">
                         Model {getSortIcon('model')}
-                      </TableHead>
-                      <TableHead data-testid="header-sku">SKU</TableHead>
-                      <TableHead data-testid="header-barcode">Barcode</TableHead>
-                      <TableHead className="cursor-pointer" onClick={() => handleSort('costPrice')} data-testid="header-purchase-price">
+                      </TableHead>}
+                      {visibleColumns.sku && <TableHead data-testid="header-sku">SKU</TableHead>}
+                      {visibleColumns.barcode && <TableHead data-testid="header-barcode">Barcode</TableHead>}
+                      {visibleColumns.costPrice && <TableHead className="cursor-pointer" onClick={() => handleSort('costPrice')} data-testid="header-purchase-price">
                         Purchase Price {getSortIcon('costPrice')}
-                      </TableHead>
-                      <TableHead className="cursor-pointer" onClick={() => handleSort('price')} data-testid="header-selling-price">
+                      </TableHead>}
+                      {visibleColumns.price && <TableHead className="cursor-pointer" onClick={() => handleSort('price')} data-testid="header-selling-price">
                         Selling Price {getSortIcon('price')}
-                      </TableHead>
-                      <TableHead className="cursor-pointer" onClick={() => handleSort('stockQuantity')} data-testid="header-stock">
+                      </TableHead>}
+                      {visibleColumns.stock && <TableHead className="cursor-pointer" onClick={() => handleSort('stockQuantity')} data-testid="header-stock">
                         Current Stock {getSortIcon('stockQuantity')}
-                      </TableHead>
-                      <TableHead data-testid="header-status">Stock Status</TableHead>
+                      </TableHead>}
+                      {visibleColumns.status && <TableHead data-testid="header-status">Stock Status</TableHead>}
                       <TableHead data-testid="header-actions">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -554,7 +568,7 @@ export default function Inventory() {
                               data-testid={`checkbox-product-${product.id}`}
                             />
                           </TableCell>
-                          <TableCell>
+                          {visibleColumns.image && <TableCell>
                             <div className="w-[60px] h-[60px] rounded-md overflow-hidden bg-muted flex items-center justify-center">
                               {product.imageUrl ? (
                                 <img
@@ -567,29 +581,29 @@ export default function Inventory() {
                                 <Package className="h-6 w-6 text-muted-foreground" />
                               )}
                             </div>
-                          </TableCell>
-                          <TableCell>
+                          </TableCell>}
+                          {visibleColumns.name && <TableCell>
                             <div>
                               <p className="font-medium" data-testid={`text-name-${product.id}`}>{product.name}</p>
                               <p className="text-xs text-muted-foreground" data-testid={`text-code-${product.id}`}>
                                 {product.productCode || "N/A"}
                               </p>
                             </div>
-                          </TableCell>
-                          <TableCell data-testid={`text-category-${product.id}`}>{product.category || "N/A"}</TableCell>
-                          <TableCell data-testid={`text-brand-${product.id}`}>{product.brand || "N/A"}</TableCell>
-                          <TableCell data-testid={`text-model-${product.id}`}>{product.model || "N/A"}</TableCell>
-                          <TableCell>
+                          </TableCell>}
+                          {visibleColumns.category && <TableCell data-testid={`text-category-${product.id}`}>{product.category || "N/A"}</TableCell>}
+                          {visibleColumns.brand && <TableCell data-testid={`text-brand-${product.id}`}>{product.brand || "N/A"}</TableCell>}
+                          {visibleColumns.model && <TableCell data-testid={`text-model-${product.id}`}>{product.model || "N/A"}</TableCell>}
+                          {visibleColumns.sku && <TableCell>
                             <code className="text-xs bg-muted px-2 py-1 rounded" data-testid={`text-sku-${product.id}`}>
                               {product.productCode || "N/A"}
                             </code>
-                          </TableCell>
-                          <TableCell data-testid={`text-barcode-${product.id}`}>
+                          </TableCell>}
+                          {visibleColumns.barcode && <TableCell data-testid={`text-barcode-${product.id}`}>
                             {product.barcode || "N/A"}
-                          </TableCell>
-                          <TableCell data-testid={`text-cost-price-${product.id}`}>₹{product.costPrice.toLocaleString()}</TableCell>
-                          <TableCell data-testid={`text-price-${product.id}`}>₹{product.price.toLocaleString()}</TableCell>
-                          <TableCell>
+                          </TableCell>}
+                          {visibleColumns.costPrice && <TableCell data-testid={`text-cost-price-${product.id}`}>₹{product.costPrice.toLocaleString()}</TableCell>}
+                          {visibleColumns.price && <TableCell data-testid={`text-price-${product.id}`}>₹{product.price.toLocaleString()}</TableCell>}
+                          {visibleColumns.stock && <TableCell>
                             <div className="flex items-center gap-2">
                               <Button
                                 variant="outline"
@@ -613,12 +627,12 @@ export default function Inventory() {
                                 <Plus className="h-3 w-3" />
                               </Button>
                             </div>
-                          </TableCell>
-                          <TableCell>
+                          </TableCell>}
+                          {visibleColumns.status && <TableCell>
                             <Badge variant={stockStatus.variant} data-testid={`badge-status-${product.id}`}>
                               {stockStatus.label}
                             </Badge>
-                          </TableCell>
+                          </TableCell>}
                           <TableCell>
                             <div className="flex gap-1">
                               <Button
@@ -740,6 +754,173 @@ export default function Inventory() {
           onDelete={handleDeleteFromModal}
         />
       )}
+
+      {/* Column Settings Dialog */}
+      <AlertDialog open={columnSettingsOpen} onOpenChange={setColumnSettingsOpen}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Customize Table Columns</AlertDialogTitle>
+            <AlertDialogDescription>
+              Select which columns you want to display in the inventory table
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-3 py-4">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="col-image"
+                checked={visibleColumns.image}
+                onCheckedChange={(checked) =>
+                  setVisibleColumns({ ...visibleColumns, image: checked as boolean })
+                }
+              />
+              <label htmlFor="col-image" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Product Image
+              </label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="col-name"
+                checked={visibleColumns.name}
+                onCheckedChange={(checked) =>
+                  setVisibleColumns({ ...visibleColumns, name: checked as boolean })
+                }
+              />
+              <label htmlFor="col-name" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Product Name
+              </label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="col-category"
+                checked={visibleColumns.category}
+                onCheckedChange={(checked) =>
+                  setVisibleColumns({ ...visibleColumns, category: checked as boolean })
+                }
+              />
+              <label htmlFor="col-category" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Category
+              </label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="col-brand"
+                checked={visibleColumns.brand}
+                onCheckedChange={(checked) =>
+                  setVisibleColumns({ ...visibleColumns, brand: checked as boolean })
+                }
+              />
+              <label htmlFor="col-brand" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Brand
+              </label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="col-model"
+                checked={visibleColumns.model}
+                onCheckedChange={(checked) =>
+                  setVisibleColumns({ ...visibleColumns, model: checked as boolean })
+                }
+              />
+              <label htmlFor="col-model" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Model
+              </label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="col-sku"
+                checked={visibleColumns.sku}
+                onCheckedChange={(checked) =>
+                  setVisibleColumns({ ...visibleColumns, sku: checked as boolean })
+                }
+              />
+              <label htmlFor="col-sku" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                SKU
+              </label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="col-barcode"
+                checked={visibleColumns.barcode}
+                onCheckedChange={(checked) =>
+                  setVisibleColumns({ ...visibleColumns, barcode: checked as boolean })
+                }
+              />
+              <label htmlFor="col-barcode" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Barcode
+              </label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="col-costPrice"
+                checked={visibleColumns.costPrice}
+                onCheckedChange={(checked) =>
+                  setVisibleColumns({ ...visibleColumns, costPrice: checked as boolean })
+                }
+              />
+              <label htmlFor="col-costPrice" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Purchase Price
+              </label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="col-price"
+                checked={visibleColumns.price}
+                onCheckedChange={(checked) =>
+                  setVisibleColumns({ ...visibleColumns, price: checked as boolean })
+                }
+              />
+              <label htmlFor="col-price" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Selling Price
+              </label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="col-stock"
+                checked={visibleColumns.stock}
+                onCheckedChange={(checked) =>
+                  setVisibleColumns({ ...visibleColumns, stock: checked as boolean })
+                }
+              />
+              <label htmlFor="col-stock" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Current Stock
+              </label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="col-status"
+                checked={visibleColumns.status}
+                onCheckedChange={(checked) =>
+                  setVisibleColumns({ ...visibleColumns, status: checked as boolean })
+                }
+              />
+              <label htmlFor="col-status" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Stock Status
+              </label>
+            </div>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Close</AlertDialogCancel>
+            <AlertDialogAction onClick={() => {
+              const allTrue = Object.values(visibleColumns).every(v => v);
+              setVisibleColumns({
+                image: !allTrue,
+                name: !allTrue,
+                category: !allTrue,
+                brand: !allTrue,
+                model: !allTrue,
+                sku: !allTrue,
+                barcode: !allTrue,
+                costPrice: !allTrue,
+                price: !allTrue,
+                stock: !allTrue,
+                status: !allTrue,
+              });
+            }}>
+              {Object.values(visibleColumns).every(v => v) ? 'Deselect All' : 'Select All'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
