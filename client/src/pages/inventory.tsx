@@ -1,87 +1,15 @@
-import { useState, useRef, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useLocation } from "wouter";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
-} from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useForm } from "react-hook-form";
-import { Plus, Search, Edit, Trash2, Package, MoreVertical, X, Plus as PlusIcon, Minus, Calendar as CalendarIcon, Upload } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format } from "date-fns";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import ProductDetailsModal from "@/components/product-details-modal";
-
-interface Product {
-  id: number;
-  name: string;
-  brand?: string;
-  model?: string;
-  category: string;
-  price: number;
-  costPrice: number;
-  stockQuantity: number;
-  imeiNumber?: string;
-  color?: string;
-  storage?: string;
-  ram?: string;
-  isActive?: boolean;
+export default function Inventory() {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen p-6">
+      <div className="text-center">
+        <h1 className="text-3xl font-bold tracking-tight mb-4">Inventory</h1>
+        <p className="text-muted-foreground">Inventory management functionality</p>
+      </div>
+    </div>
+  );
 }
 
-export default function Inventory() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
-  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
-  const [showStockModal, setShowStockModal] = useState(false);
-  const [showBulkStockModal, setShowBulkStockModal] = useState(false);
-  const [stockProduct, setStockProduct] = useState<Product | null>(null);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showBulkActionDialog, setShowBulkActionDialog] = useState<'category' | 'status' | 'price' | 'tags' | 'barcode' | 'export' | 'edit' | null>(null);
-  const [showBulkPreview, setShowBulkPreview] = useState(false);
-  const [bulkPreviewData, setBulkPreviewData] = useState<any[]>([]);
-  const [selectAllPages, setSelectAllPages] = useState(false);
-  const [detailsProduct, setDetailsProduct] = useState<Product | null>(null);
-
-  const [, setLocation] = useLocation();
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
-
-  const { data: products = [], refetch } = useQuery<Product[]>({
-    queryKey: ["/api/products"],
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-  });
+  
 
   const form = useForm({
     defaultValues: {
