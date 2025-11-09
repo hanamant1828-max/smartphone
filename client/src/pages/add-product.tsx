@@ -60,7 +60,7 @@ const productSchema = z.object({
   supplierId: z.string().optional(),
   supplierProductCode: z.string().optional(),
   leadTime: z.number().min(0).optional(),
-  
+
   // Image
   imageUrl: z.string().optional(),
 });
@@ -86,6 +86,10 @@ export default function AddProduct() {
     queryKey: ["/api/brands"],
   });
 
+  const { data: allModels = [] } = useQuery({
+    queryKey: ["/api/models"],
+  });
+
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -99,6 +103,8 @@ export default function AddProduct() {
       leadTime: 0,
     },
   });
+
+  const { watch, setValue } = form;
 
   const createProduct = useMutation({
     mutationFn: async (data: ProductFormData) => {
@@ -125,19 +131,19 @@ export default function AddProduct() {
   const onSubmit = (data: ProductFormData) => {
     // Add the primary image URL if available
     const primaryImage = imageFiles.find(img => img.isPrimary);
-    
+
     // Convert supplier ID to number if it exists
     const productData = {
       ...data,
       imageUrl: primaryImage?.preview || undefined,
       supplierId: data.supplierId ? parseInt(data.supplierId) : undefined,
     };
-    
+
     // Remove undefined values to prevent API issues
     const cleanedData = Object.fromEntries(
       Object.entries(productData).filter(([_, v]) => v !== undefined && v !== '')
     );
-    
+
     createProduct.mutate(cleanedData);
   };
 
@@ -187,7 +193,7 @@ export default function AddProduct() {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     const filesToProcess = files.slice(0, 10 - imageFiles.length);
-    
+
     filesToProcess.forEach((file) => {
       if (file.size > 5 * 1024 * 1024) {
         toast({
@@ -197,7 +203,7 @@ export default function AddProduct() {
         });
         return;
       }
-      
+
       const reader = new FileReader();
       reader.onload = (event) => {
         setImageFiles(prev => [...prev, {
@@ -248,6 +254,14 @@ export default function AddProduct() {
 
   const profitMargin = calculateProfitMargin();
   const profitColor = profitMargin < 10 ? "text-red-600" : profitMargin < 25 ? "text-yellow-600" : "text-green-600";
+
+  const selectedBrand = watch("brand");
+  const selectedCategory = watch("category");
+
+  // Filter models based on selected brand
+  const availableModels = selectedBrand
+    ? allModels.filter((model: any) => model.brandId === parseInt(selectedBrand))
+    : [];
 
   return (
     <div className="container mx-auto py-6 px-4">
@@ -343,7 +357,7 @@ export default function AddProduct() {
                     </SelectTrigger>
                     <SelectContent>
                       {brands && Array.isArray(brands) && brands.map((brand: any) => (
-                        <SelectItem key={brand.id} value={brand.name}>{brand.name}</SelectItem>
+                        <SelectItem key={brand.id} value={brand.id.toString()}>{brand.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -354,11 +368,29 @@ export default function AddProduct() {
 
                 <div className="space-y-2">
                   <Label htmlFor="model">Model</Label>
-                  <Input
-                    id="model"
-                    {...form.register("model")}
-                    placeholder="e.g., A2894"
-                  />
+                  <Select
+                    onValueChange={(value) => setValue("model", value)}
+                    value={watch("model")}
+                    disabled={!selectedBrand}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={selectedBrand ? "Select Model" : "Select Brand First"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableModels.length === 0 ? (
+                        <SelectItem value="none" disabled>No models available</SelectItem>
+                      ) : (
+                        availableModels.map((model: any) => (
+                          <SelectItem key={model.id} value={model.name}>
+                            {model.name}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                  {form.formState.errors.model && (
+                    <p className="text-sm text-destructive">{form.formState.errors.model.message}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -643,8 +675,8 @@ export default function AddProduct() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="supplierId">Primary Supplier</Label>
-                    <Select 
-                      value={form.watch("supplierId")} 
+                    <Select
+                      value={form.watch("supplierId")}
                       onValueChange={(value) => form.setValue("supplierId", value)}
                     >
                       <SelectTrigger>
