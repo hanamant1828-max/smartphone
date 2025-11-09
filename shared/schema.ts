@@ -327,28 +327,8 @@ export const insertStockAdjustmentSchema = createInsertSchema(stockAdjustments).
   createdAt: true,
 });
 
-export const insertCategorySchema = createInsertSchema(categories).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const insertBrandSchema = createInsertSchema(brands).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const insertModelSchema = createInsertSchema(models).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const insertModelVariantSchema = createInsertSchema(modelVariants).omit({
-  id: true,
-  createdAt: true,
-});
+// Export all table references
+export { categories, brands, models, modelVariants };
 
 // Types
 export type User = typeof users.$inferSelect;

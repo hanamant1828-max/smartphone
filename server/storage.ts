@@ -178,16 +178,11 @@ export class DatabaseStorage implements IStorage {
     operation: string,
     value: number
   ): Promise<void> {
-    // Get all products to update
-    const productsToUpdate = await db
-      .select()
-      .from(products)
-      .where(inArray(products.id, productIds));
+    const products = await db.select().from(schema.products).where(inArray(schema.products.id, productIds));
 
-    // Calculate new prices and update each product
-    for (const product of productsToUpdate) {
+    for (const product of products) {
+      let newPrice: number;
       const currentPrice = (product as any)[field] || 0;
-      let newPrice = currentPrice;
 
       switch (operation) {
         case 'increase':
@@ -205,12 +200,13 @@ export class DatabaseStorage implements IStorage {
         case 'set':
           newPrice = value;
           break;
+        default:
+          throw new Error('Invalid operation');
       }
 
-      await db
-        .update(products)
-        .set({ [field]: newPrice, updatedAt: Date.now() } as any)
-        .where(eq(products.id, product.id));
+      await db.update(schema.products)
+        .set({ [field]: newPrice, updatedAt: new Date() })
+        .where(eq(schema.products.id, product.id));
     }
   }
 
@@ -457,18 +453,18 @@ export class DatabaseStorage implements IStorage {
     } as any;
   }
 
-  // Category methods
-  async getCategories(filters?: { active?: boolean }) {
+  // Category operations
+  async getCategories(filters?: any): Promise<any[]> {
     let query = db.select().from(schema.categories);
 
     if (filters?.active !== undefined) {
       query = query.where(eq(schema.categories.active, filters.active));
     }
 
-    return await query.all();
+    return await query.orderBy(schema.categories.displayOrder, schema.categories.name);
   }
 
-  async getCategory(id: number) {
+  async getCategory(id: number): Promise<any | undefined> {
     const result = await db.select()
       .from(schema.categories)
       .where(eq(schema.categories.id, id))
@@ -476,38 +472,45 @@ export class DatabaseStorage implements IStorage {
     return result[0];
   }
 
-  async createCategory(data: schema.InsertCategory) {
+  async createCategory(categoryData: any): Promise<any> {
     const result = await db.insert(schema.categories)
-      .values(data)
+      .values({
+        ...categoryData,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
       .returning();
     return result[0];
   }
 
-  async updateCategory(id: number, data: Partial<schema.InsertCategory>) {
+  async updateCategory(id: number, categoryData: any): Promise<any | undefined> {
     const result = await db.update(schema.categories)
-      .set({ ...data, updatedAt: Date.now() })
+      .set({
+        ...categoryData,
+        updatedAt: new Date(),
+      })
       .where(eq(schema.categories.id, id))
       .returning();
     return result[0];
   }
 
-  async deleteCategory(id: number) {
-    await db.delete(schema.categories)
-      .where(eq(schema.categories.id, id));
+  async deleteCategory(id: number): Promise<boolean> {
+    await db.delete(schema.categories).where(eq(schema.categories.id, id));
+    return true;
   }
 
-  // Brand methods
-  async getBrands(filters?: { active?: boolean }) {
+  // Brand operations
+  async getBrands(filters?: any): Promise<any[]> {
     let query = db.select().from(schema.brands);
 
     if (filters?.active !== undefined) {
       query = query.where(eq(schema.brands.active, filters.active));
     }
 
-    return await query.all();
+    return await query.orderBy(schema.brands.displayOrder, schema.brands.name);
   }
 
-  async getBrand(id: number) {
+  async getBrand(id: number): Promise<any | undefined> {
     const result = await db.select()
       .from(schema.brands)
       .where(eq(schema.brands.id, id))
@@ -515,46 +518,49 @@ export class DatabaseStorage implements IStorage {
     return result[0];
   }
 
-  async createBrand(data: schema.InsertBrand) {
+  async createBrand(brandData: any): Promise<any> {
     const result = await db.insert(schema.brands)
-      .values(data)
+      .values({
+        ...brandData,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
       .returning();
     return result[0];
   }
 
-  async updateBrand(id: number, data: Partial<schema.InsertBrand>) {
+  async updateBrand(id: number, brandData: any): Promise<any | undefined> {
     const result = await db.update(schema.brands)
-      .set({ ...data, updatedAt: Date.now() })
+      .set({
+        ...brandData,
+        updatedAt: new Date(),
+      })
       .where(eq(schema.brands.id, id))
       .returning();
     return result[0];
   }
 
-  async deleteBrand(id: number) {
-    await db.delete(schema.brands)
-      .where(eq(schema.brands.id, id));
+  async deleteBrand(id: number): Promise<boolean> {
+    await db.delete(schema.brands).where(eq(schema.brands.id, id));
+    return true;
   }
 
-  // Model methods
-  async getModels(filters?: { brandId?: number; active?: boolean }) {
+  // Model operations
+  async getModels(filters?: any): Promise<any[]> {
     let query = db.select().from(schema.models);
 
-    const conditions = [];
     if (filters?.brandId) {
-      conditions.push(eq(schema.models.brandId, filters.brandId));
+      query = query.where(eq(schema.models.brandId, parseInt(filters.brandId)));
     }
+
     if (filters?.active !== undefined) {
-      conditions.push(eq(schema.models.active, filters.active));
+      query = query.where(eq(schema.models.active, filters.active));
     }
 
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-    }
-
-    return await query.all();
+    return await query.orderBy(schema.models.displayOrder, schema.models.name);
   }
 
-  async getModel(id: number) {
+  async getModel(id: number): Promise<any | undefined> {
     const result = await db.select()
       .from(schema.models)
       .where(eq(schema.models.id, id))
@@ -562,14 +568,13 @@ export class DatabaseStorage implements IStorage {
     return result[0];
   }
 
-  async getModelWithVariants(id: number) {
+  async getModelWithVariants(id: number): Promise<any | undefined> {
     const model = await this.getModel(id);
-    if (!model) return null;
+    if (!model) return undefined;
 
     const variants = await db.select()
       .from(schema.modelVariants)
-      .where(eq(schema.modelVariants.modelId, id))
-      .all();
+      .where(eq(schema.modelVariants.modelId, id));
 
     return {
       ...model,
@@ -577,53 +582,34 @@ export class DatabaseStorage implements IStorage {
     };
   }
 
-  async createModel(data: schema.InsertModel & { variants?: schema.InsertModelVariant[] }) {
-    const { variants, ...modelData } = data;
-
+  async createModel(modelData: any): Promise<any> {
     const result = await db.insert(schema.models)
-      .values(modelData)
+      .values({
+        ...modelData,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
       .returning();
-
-    const model = result[0];
-
-    if (variants && variants.length > 0) {
-      await db.insert(schema.modelVariants)
-        .values(variants.map(v => ({ ...v, modelId: model.id })));
-    }
-
-    return model;
-  }
-
-  async updateModel(id: number, data: Partial<schema.InsertModel> & { variants?: schema.InsertModelVariant[] }) {
-    const { variants, ...modelData } = data;
-
-    const result = await db.update(schema.models)
-      .set({ ...modelData, updatedAt: Date.now() })
-      .where(eq(schema.models.id, id))
-      .returning();
-
-    if (variants !== undefined) {
-      // Delete existing variants
-      await db.delete(schema.modelVariants)
-        .where(eq(schema.modelVariants.modelId, id));
-
-      // Insert new variants
-      if (variants.length > 0) {
-        await db.insert(schema.modelVariants)
-          .values(variants.map(v => ({ ...v, modelId: id })));
-      }
-    }
-
     return result[0];
   }
 
-  async deleteModel(id: number) {
-    // Delete variants first
-    await db.delete(schema.modelVariants)
-      .where(eq(schema.modelVariants.modelId, id));
+  async updateModel(id: number, modelData: any): Promise<any | undefined> {
+    const result = await db.update(schema.models)
+      .set({
+        ...modelData,
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.models.id, id))
+      .returning();
+    return result[0];
+  }
 
-    await db.delete(schema.models)
-      .where(eq(schema.models.id, id));
+  async deleteModel(id: number): Promise<boolean> {
+    // Delete variants first
+    await db.delete(schema.modelVariants).where(eq(schema.modelVariants.modelId, id));
+    // Delete model
+    await db.delete(schema.models).where(eq(schema.models.id, id));
+    return true;
   }
 
 
