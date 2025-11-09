@@ -8,7 +8,6 @@ export function renderSidebar(currentPage) {
     { id: 'customers', label: 'Customers', icon: customersIcon },
     { id: 'sales', label: 'Sales History', icon: salesIcon },
     { id: 'reports', label: 'Reports', icon: reportsIcon },
-    { id: 'master-data', label: 'Master Data', icon: masterDataIcon }, // Added Master Data link
   ];
 
   return `
