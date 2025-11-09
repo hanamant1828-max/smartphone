@@ -126,25 +126,20 @@ export class DatabaseStorage implements IStorage {
     return product || undefined;
   }
 
-  async createProduct(product: InsertProduct): Promise<Product> {
-    console.log('Creating product with data:', product);
-    try {
-      const [newProduct] = await db
-        .insert(products)
-        .values(product)
-        .returning();
-      console.log('Product created successfully:', newProduct);
-      return newProduct;
-    } catch (error) {
-      console.error('Error creating product:', error);
-      throw error;
-    }
+  async createProduct(data: InsertProduct): Promise<Product> {
+    const now = Date.now();
+    const [product] = await db.insert(products).values({
+      ...data,
+      createdAt: now,
+      updatedAt: now,
+    }).returning();
+    return product;
   }
 
-  async updateProduct(id: number, product: Partial<InsertProduct>): Promise<Product | undefined> {
+  async updateProduct(id: number, data: Partial<InsertProduct>): Promise<Product | undefined> {
     const [updated] = await db
       .update(products)
-      .set({ ...product, updatedAt: new Date() })
+      .set({ ...data, updatedAt: new Date() })
       .where(eq(products.id, id))
       .returning();
     return updated || undefined;
@@ -355,7 +350,7 @@ export class DatabaseStorage implements IStorage {
       // Insert sale
       const [sale] = await tx
         .insert(sales)
-        .values(saleInfo)
+        .values({...saleInfo, createdAt: Date.now(), updatedAt: Date.now()})
         .returning();
 
       // Insert sale items
@@ -373,6 +368,7 @@ export class DatabaseStorage implements IStorage {
             .update(products)
             .set({
               stockQuantity: sql`${products.stockQuantity} - ${item.quantity}`,
+              updatedAt: new Date(),
             })
             .where(eq(products.id, item.productId));
         }
@@ -487,7 +483,7 @@ export class DatabaseStorage implements IStorage {
 
   async createCategory(data: schema.InsertCategory) {
     const result = await db.insert(schema.categories)
-      .values(data)
+      .values({...data, createdAt: Date.now(), updatedAt: Date.now()})
       .returning();
     return result[0];
   }
@@ -526,7 +522,7 @@ export class DatabaseStorage implements IStorage {
 
   async createBrand(data: schema.InsertBrand) {
     const result = await db.insert(schema.brands)
-      .values(data)
+      .values({...data, createdAt: Date.now(), updatedAt: Date.now()})
       .returning();
     return result[0];
   }
@@ -590,7 +586,7 @@ export class DatabaseStorage implements IStorage {
     const { variants, ...modelData } = data;
 
     const result = await db.insert(schema.models)
-      .values(modelData)
+      .values({...modelData, createdAt: Date.now(), updatedAt: Date.now()})
       .returning();
 
     const model = result[0];

@@ -176,7 +176,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/products', authenticateToken, async (req, res) => {
     try {
       const productData = req.body;
-      console.log('Received product data:', productData);
+      console.log('Received product data:', JSON.stringify(productData, null, 2));
       
       // Ensure required fields are present
       if (!productData.name || !productData.category || !productData.brand) {
@@ -185,24 +185,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Ensure numeric fields are numbers
-      const cleanedData = {
-        ...productData,
+      // Ensure numeric fields are numbers and remove undefined values
+      const cleanedData: any = {
+        name: productData.name,
+        category: productData.category,
+        brand: productData.brand,
         costPrice: Number(productData.costPrice) || 0,
         price: Number(productData.price) || 0,
         stockQuantity: Number(productData.stockQuantity) || 0,
         minStockLevel: Number(productData.minStockLevel) || 5,
         warrantyMonths: Number(productData.warrantyMonths) || 12,
         salesDiscount: Number(productData.salesDiscount) || 0,
-        leadTime: productData.leadTime ? Number(productData.leadTime) : undefined,
         isActive: productData.isActive !== undefined ? productData.isActive : true,
       };
+
+      // Add optional fields only if they have values
+      if (productData.model) cleanedData.model = productData.model;
+      if (productData.productCode) cleanedData.productCode = productData.productCode;
+      if (productData.imeiNumber) cleanedData.imeiNumber = productData.imeiNumber;
+      if (productData.description) cleanedData.description = productData.description;
+      if (productData.color) cleanedData.color = productData.color;
+      if (productData.storage) cleanedData.storage = productData.storage;
+      if (productData.ram) cleanedData.ram = productData.ram;
+      if (productData.hsnCode) cleanedData.hsnCode = productData.hsnCode;
+      if (productData.purchaseUnit) cleanedData.purchaseUnit = productData.purchaseUnit;
+      if (productData.salesUnit) cleanedData.salesUnit = productData.salesUnit;
+      if (productData.imageUrl) cleanedData.imageUrl = productData.imageUrl;
+      if (productData.supplierId) cleanedData.supplierId = Number(productData.supplierId);
+      if (productData.supplierProductCode) cleanedData.supplierProductCode = productData.supplierProductCode;
+      if (productData.leadTime !== undefined && productData.leadTime !== '') {
+        cleanedData.leadTime = Number(productData.leadTime);
+      }
+      
+      console.log('Cleaned data for insertion:', JSON.stringify(cleanedData, null, 2));
       
       const product = await storage.createProduct(cleanedData);
-      console.log('Product created successfully:', product);
+      console.log('Product created successfully with ID:', product.id);
       res.status(201).json(product);
     } catch (error: any) {
       console.error('Create product error:', error);
+      console.error('Error stack:', error.stack);
       res.status(500).json({ message: 'Failed to create product', error: error.message });
     }
   });
